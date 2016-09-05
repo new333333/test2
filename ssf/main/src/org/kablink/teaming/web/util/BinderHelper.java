@@ -160,6 +160,7 @@ import org.kablink.teaming.util.XmlUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.tree.DomTreeHelper;
+import org.kablink.teaming.web.tree.SearchTreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.FixupFolderDefsThread;
 import org.kablink.teaming.domain.Definition;
@@ -446,8 +447,33 @@ public class BinderHelper {
 
 		return null;
 	}
-	
-	public static void setupStandardBeans(AllModulesInjected bs, RenderRequest request, 
+
+
+	public static void addWorkspaceDomTreeToModel(AllModulesInjected ami, Long binderId, Map<String, Object> model) {
+		if (binderId==null) {
+			binderId = RequestContextHolder.getRequestContext().getZoneId();
+		}
+		Document pTree = DocumentHelper.createDocument();
+		Element rootElement = pTree.addElement(DomTreeBuilder.NODE_ROOT);
+		Document wsTree = ami.getBinderModule().getDomBinderTree(binderId, new WsDomTreeBuilder(null, true, ami, new SearchTreeHelper()), 1);
+		rootElement.appendAttributes(wsTree.getRootElement());
+		rootElement.appendContent(wsTree.getRootElement());
+		model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binderId.toString());
+		model.put(WebKeys.WORKSPACE_DOM_TREE, pTree);
+	}
+
+	public static void setupStandardBeansForCustomJsp(AllModulesInjected bs, RenderRequest request,
+										  RenderResponse response, Map<String,Object> model, Long binderId) {
+		Binder binder = bs.getBinderModule().getBinder(binderId);
+		model.put(WebKeys.BINDER, binder);
+		model.put(WebKeys.DEFINITION_ENTRY, binder);
+		if (binder instanceof Workspace) {
+			addWorkspaceDomTreeToModel(bs, binderId, model);
+		}
+		BinderHelper.setupStandardBeans(bs, request, response, model, binderId);
+	}
+
+	public static void setupStandardBeans(AllModulesInjected bs, RenderRequest request,
 			RenderResponse response, Map<String,Object> model) {
 		Long binderId = null;
 		setupStandardBeans(bs, request, response, model, binderId);

@@ -6549,15 +6549,9 @@ public class GwtViewHelper {
 				// ...page...
 	    		Map accessControlMap = BinderHelper.getAccessControlMapBean(xssModel);
 	    		accessControlMap.put("generateReport", am.testAccess(AdminOperation.report));
-	    		
-	    		Document pTree = DocumentHelper.createDocument();
-	        	Element rootElement = pTree.addElement(DomTreeBuilder.NODE_ROOT);
-	        	Document wsTree = bm.getDomBinderTree(RequestContextHolder.getRequestContext().getZoneId(), new WsDomTreeBuilder(null, true, bs, new SearchTreeHelper()), 1);
-	        	rootElement.appendAttributes(wsTree.getRootElement());
-	        	rootElement.appendContent(wsTree.getRootElement());
-	     		xssModel.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
-	     		xssModel.put(WebKeys.WORKSPACE_DOM_TREE, pTree);		
-	    		
+
+				BinderHelper.addWorkspaceDomTreeToModel(bs, null, xssModel);
+
 	    		// ...and run the JSP to produce the target HTML.
 				html = GwtServerHelper.executeJsp(
 					bs,

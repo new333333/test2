@@ -78,10 +78,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.Node;
+import org.dom4j.*;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 
@@ -330,6 +327,7 @@ import org.kablink.teaming.util.XmlUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
+import org.kablink.teaming.web.tree.SearchTreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -1893,8 +1891,8 @@ public class GwtServerHelper {
 		}
 		
 		Map<String, String> inputMap = new HashMap<String, String>();
-		inputMap.put(ObjectKeys.FIELD_ENTITY_TITLE,       title);
-		inputMap.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
+		inputMap.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
+		inputMap.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc);
 		inputMap.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf(Description.FORMAT_HTML));
 		inputMap.put(ObjectKeys.FIELD_ENTITY_GWT_COMMENT_ENTRY,  String.valueOf(Boolean.TRUE)           );
 		MapInputData inputData = new MapInputData(inputMap);
@@ -2098,21 +2096,18 @@ public class GwtServerHelper {
 				binderIdObj = model.get("binderId");
 			}
 			if (binderIdObj!=null) {
-				Long binderIdL = null;
+				Long binderIdL;
 				if (binderIdObj instanceof Number) {
 					binderIdL = ((Number) binderIdObj).longValue();
 				} else {
 					binderIdL = Long.parseLong(binderIdObj.toString());
 				}
-				Binder binder = bs.getBinderModule().getBinder(binderIdL);
-				model.put(WebKeys.BINDER, binder);
-				model.put(WebKeys.DEFINITION_ENTRY, binder);
-				BinderHelper.setupStandardBeans(bs, renderReq, renderRes, model, binderIdL);
+				BinderHelper.setupStandardBeansForCustomJsp(bs, renderReq, renderRes, model, binderIdL);
 			}
 			else {
 				BinderHelper.setupStandardBeans(bs, renderReq, renderRes, model);
 			}
-			
+
 			// Put the data that setupWorkspaceBeans() put in model
 			// into the request.
 			for (String key:  model.keySet()) {
@@ -2146,8 +2141,7 @@ public class GwtServerHelper {
 		
 		return results;
 	}
-	
-	
+
 	/**
 	 * Returns a TreeInfo containing the display information for the
 	 * Binder hierarchy referred to by a List<Long> of Binder IDs
