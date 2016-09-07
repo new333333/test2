@@ -54,6 +54,13 @@ public class BinderViewContainer extends BinderViewDefBase {
         this.children = children;
     }
 
+    public void addChild(BinderViewDefBase child) {
+        if (this.children==null) {
+            this.children = new ArrayList<BinderViewDefBase>();
+        }
+        this.children.add(child);
+    }
+
     public Width getWidth() {
         return width;
     }
@@ -61,4 +68,18 @@ public class BinderViewContainer extends BinderViewDefBase {
     public void setWidth(Width width) {
         this.width = width;
     }
+
+    public boolean hasChild(Class<? extends BinderViewDefBase> clss) {
+        for (BinderViewDefBase child : children) {
+            if (child.getClass()==clss) {
+                return true;
+            } else if (child instanceof BinderViewContainer) {
+                if (((BinderViewContainer)child).hasChild(clss)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 }

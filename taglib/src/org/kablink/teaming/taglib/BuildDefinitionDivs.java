@@ -72,12 +72,7 @@ import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.repository.RepositoryUtil;
-import org.kablink.teaming.util.LongIdUtil;
-import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.util.LocaleUtils;
+import org.kablink.teaming.util.*;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -658,7 +653,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					if (propertyConfig.attributeValue("readonly", "false").equalsIgnoreCase("true")) {
 						readonly = "readonly=\"true\" disabled=\"disabled\"";
 					}
-					String propertyConfigCaption = NLT.getDef(propertyConfig.attributeValue("caption", ""))
+					String propertyConfigCaption = getLocalizedCaption(propertyConfig.attributeValue("caption", ""))
 						.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 					List propertyValues = new ArrayList();
 					if (properties != null) {
@@ -721,7 +716,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							checked = "checked=\"checked\"";
 						}
 						sb.append("<div><input type=\"checkbox\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" "+checked+" "+readonly+"/> ");
-						sb.append(NLT.getDef(propertyConfig.attributeValue("caption", ""))
+						sb.append(getLocalizedCaption(propertyConfig.attributeValue("caption", ""))
 								.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
 						sb.append("</div>");
 					
@@ -1986,7 +1981,7 @@ public class BuildDefinitionDivs extends TagSupport {
 								if (!configCaption.equals("")) caption = configCaption;
 							}
 						}
-						if (!caption.equals("")) name = NLT.getDef(caption);
+						if (!caption.equals("")) name = getLocalizedCaption(caption);
 						String value = property.attributeValue("value", "");
 						if (!name.equals("") && !value.equals("")) {
 							if (!startDivText.equals("")) {
@@ -2025,6 +2020,14 @@ public class BuildDefinitionDivs extends TagSupport {
 		ListIterator itItems = root.selectNodes("./item").listIterator();
 		while (itItems.hasNext()) buildPropertyInfoDivs((Element)itItems.next(), sb, hb);
 	}
+
+	private String getLocalizedCaption(String caption) {
+		if ("__useJspRenderer".equals(caption)) {
+			return NLT.get(caption, new Object[] {ReleaseInfo.getName()});
+		}
+		return NLT.getDef(caption);
+	}
+
 	@Override
 	public int doEndTag() throws JspException {
 		return EVAL_PAGE;
@@ -2073,7 +2076,7 @@ public class BuildDefinitionDivs extends TagSupport {
 		}
 		else {
 			if (value.startsWith("__"))
-			     reply = NLT.getDef(value);
+			     reply = getLocalizedCaption(value);
 			else reply = Html.formatTo(value);
 		}
 		return reply;

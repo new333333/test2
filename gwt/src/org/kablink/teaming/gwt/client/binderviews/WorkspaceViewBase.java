@@ -46,7 +46,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetWorkspaceContributorIdsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetWorkspaceContributorIdsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.BinderViewHtmlEntry;
+import org.kablink.teaming.gwt.client.util.BinderViewHtmlBlock;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -329,7 +329,7 @@ public abstract class WorkspaceViewBase extends ViewBase
 		return lpPanel;
 	}
 
-	protected VibeFlowPanel buildHTMLPanel(HasWidgets parentPanel, BinderViewHtmlEntry htmlEntry, ViewReady viewReady) {
+	protected VibeFlowPanel buildHTMLPanel(HasWidgets parentPanel, BinderViewHtmlBlock htmlEntry, ViewReady viewReady) {
 		VibeFlowPanel htmlElementPanel = new VibeFlowPanel();
 		htmlElementPanel.addStyleName("vibe-binderView_HtmlElementPanel");
 		parentPanel.add( htmlElementPanel );
@@ -343,7 +343,7 @@ public abstract class WorkspaceViewBase extends ViewBase
 
 	@Override
 	protected boolean scrollEntireView() {
-		return m_binderInfo.isBinderWorkspace() && !m_binderInfo.isBinderGlobalRootWS()
+		return !m_binderInfo.isBinderTrash() && m_binderInfo.isBinderWorkspace() && !m_binderInfo.isBinderGlobalRootWS()
 				&& !m_binderInfo.isBinderProfilesRootWS() && !m_binderInfo.isBinderTeamsRootWS();
 	}
 

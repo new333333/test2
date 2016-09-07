@@ -65,6 +65,7 @@ import org.kablink.teaming.dao.util.Restrictions;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.IndexNode;
+import org.kablink.teaming.domain.KeyShieldConfig;
 import org.kablink.teaming.domain.MobileDevice;
 import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.Principal;
@@ -238,6 +239,12 @@ public class TelemetryService extends HibernateDaoSupport {
 			long workspaceCount = countWorkspaces(null);
 			tier2.setWorkspaceCount(workspaceCount);
 			
+			int zoneCount = countZones();
+			tier2.setZoneCount(zoneCount);
+			
+			int kshieldEnabledZoneCount = countKshieldEnabledZoneCount();
+			tier2.setKshieldEnabledZoneCount(kshieldEnabledZoneCount);
+			
 			// Net folder
 			NetFolder netFolder = new NetFolder();
 			tier2.setNetFolder(netFolder);
@@ -338,6 +345,28 @@ public class TelemetryService extends HibernateDaoSupport {
 		mapper.writeValue(new File(prettySampleFilePath), data);	
 	}
 	
+	private int countKshieldEnabledZoneCount() {
+		FilterControls filter = new FilterControls();
+		filter.setZoneCheck(false);
+		List<KeyShieldConfig> kshieldConfigs = getCoreDao().loadObjects(KeyShieldConfig.class, filter, null);
+		int enabledCount = 0;
+		if(kshieldConfigs != null) {
+			for(KeyShieldConfig kshieldConfig:kshieldConfigs) {
+				if(kshieldConfig.getEnabled())
+					enabledCount++;
+			}
+		}
+		return enabledCount;
+	}
+
+	private int countZones() {
+		List zones = getZoneModule().getZoneInfos();
+		if(zones != null)
+			return zones.size();
+		else
+			return 0;
+	}
+
 	public  void uploadTelemetryData() throws IOException {
 		String ftpHostname = SPropsUtil.getString("telemetry.ftp.hostname", "productfeedback.novell.com");
 		if(ftpHostname.isEmpty()) {
@@ -883,6 +912,14 @@ public class TelemetryService extends HibernateDaoSupport {
 	static class TelemetryDataTier2 {
 		@JsonProperty("hypervisorType")
 		String hypervisorType;
+		@JsonProperty("personalStorageFileCount")
+		long personalStorageFileCount;
+		@JsonProperty("workspaceCount")
+		long workspaceCount;
+		@JsonProperty("zoneCount")
+		int zoneCount;
+		@JsonProperty("kshieldEnabledZoneCount")
+		int kshieldEnabledZoneCount;
 		@JsonProperty("os")
 		Os os;
 		@JsonProperty("java")
@@ -895,10 +932,6 @@ public class TelemetryService extends HibernateDaoSupport {
 		User user;
 		@JsonProperty("group")
 		Group group;	
-		@JsonProperty("personalStorageFileCount")
-		long personalStorageFileCount;
-		@JsonProperty("workspaceCount")
-		long workspaceCount;
 		@JsonProperty("netFolder")
 		NetFolder netFolder;
 		@JsonProperty("device")
@@ -941,6 +974,18 @@ public class TelemetryService extends HibernateDaoSupport {
 		}
 		public void setWorkspaceCount(long workspaceCount) {
 			this.workspaceCount = workspaceCount;
+		}
+		public int getZoneCount() {
+			return zoneCount;
+		}
+		public void setZoneCount(int zoneCount) {
+			this.zoneCount = zoneCount;
+		}
+		public int getKshieldEnabledZoneCount() {
+			return kshieldEnabledZoneCount;
+		}
+		public void setKshieldEnabledZoneCount(int kshieldEnabledZoneCount) {
+			this.kshieldEnabledZoneCount = kshieldEnabledZoneCount;
 		}
 		public String getHypervisorType() {
 			return hypervisorType;

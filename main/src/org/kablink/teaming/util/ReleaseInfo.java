@@ -51,6 +51,7 @@ public class ReleaseInfo {
 	protected static Log m_logger = LogFactory.getLog( ReleaseInfo.class );
 	
 	static String name;
+	static String legacyName;
 	static String version;
 	static String versionTag;
 	static String buildNumber,buildDate;
@@ -63,6 +64,8 @@ public class ReleaseInfo {
 		name = SPropsUtil.getString("product.name", "");
 		if(name.equalsIgnoreCase(KABLINK_TEAMING))
 			licenseRequiredEdition = false;
+
+		legacyName = SPropsUtil.getString("product.name.legacy", name);
 			
 		version = SPropsUtil.getString("release.version", "0");
 		versionTag = SPropsUtil.getString("release.version.tag", null);
@@ -130,6 +133,10 @@ public class ReleaseInfo {
 	public static final String getNameAndVersion()
 	{
 		return name + " " + getDisplayVersion();
+	}
+
+	public static final String getLegacyName() {
+		return legacyName;
 	}
 	
 	/**

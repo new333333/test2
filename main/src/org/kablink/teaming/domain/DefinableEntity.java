@@ -47,6 +47,7 @@ import org.dom4j.Document;
 
 import org.kablink.teaming.comparator.FileAttachmentComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.util.CollectionUtil;
 import org.kablink.teaming.util.IconSize;
@@ -640,4 +641,21 @@ public abstract class DefinableEntity extends BaseEntity {
     public boolean supportsCustomFields() {
     	return true;
     }
+
+    public CustomAttribute getMashupPropertiesAttribute() {
+        CustomAttribute customAttr;
+        customAttr = getCustomAttribute( "mashup" + DefinitionModule.MASHUP_PROPERTIES );
+
+        if (customAttr==null ||  customAttr.getValueType() != CustomAttribute.XML) {
+            for (Object obj : getCustomAttributes().values()) {
+                CustomAttribute attr = (CustomAttribute) obj;
+                if (attr.getName().endsWith(DefinitionModule.MASHUP_PROPERTIES) && attr.getValueType() == CustomAttribute.XML) {
+                    customAttr = attr;
+                    break;
+                }
+            }
+        }
+        return customAttr;
+    }
+
 }

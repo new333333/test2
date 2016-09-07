@@ -32,6 +32,10 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Comment;
+import org.jsoup.select.Elements;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
@@ -51,6 +55,10 @@ import java.util.*;
  * Created by david on 4/13/16.
  */
 public class GwtFolderViewHelper {
+    private static final String HTML_INSERTION_POINT = "ss_insertion_point";
+    private static final String HTML_FRAGMENT_BEGIN = "ss_fragment_begin";
+    private static final String HTML_FRAGMENT_END = "ss_fragment_end";
+
     private static Set<WorkspaceType> standardBinderViews = new HashSet<WorkspaceType>() {
         {
             add(WorkspaceType.ADMINISTRATOR_MANAGEMENT);
@@ -73,14 +81,14 @@ public class GwtFolderViewHelper {
     public static BinderViewLayout buildBinderViewLayout(Binder binder) throws GwtTeamingException {
         BinderViewLayout layout = new BinderViewLayout();
         List<Node> viewItems = getBinderViewElementNodes(binder);
-        layout.setChildren(toBinderViewList(viewItems));
+        layout.setChildren(toBinderViewList(viewItems, layout));
         return layout;
     }
 
-    private static List<BinderViewDefBase> toBinderViewList(List<Node> viewItems) throws GwtTeamingException {
+    private static List<BinderViewDefBase> toBinderViewList(List<Node> viewItems, BinderViewContainer parent) throws GwtTeamingException {
         List<BinderViewDefBase> layoutItems = new ArrayList<BinderViewDefBase>(viewItems.size());
         for (Node viewItem : viewItems) {
-            BinderViewDefBase layoutItem = factoryBinderViewItem((Element) viewItem);
+            BinderViewDefBase layoutItem = factoryBinderViewItem((Element) viewItem, parent);
             if (layoutItem!=null) {
                 layoutItems.add(layoutItem);
             }
@@ -88,12 +96,12 @@ public class GwtFolderViewHelper {
         return layoutItems;
     }
 
-    public static List<BinderViewDefBase> factoryBinderViewChildren(Element viewItem) throws GwtTeamingException {
+    public static List<BinderViewDefBase> factoryBinderViewChildren(Element viewItem, BinderViewContainer parent) throws GwtTeamingException {
         List<Node> viewItems = viewItem.selectNodes("item");
-        return toBinderViewList(viewItems);
+        return toBinderViewList(viewItems, parent);
     }
 
-    public static BinderViewDefBase factoryBinderViewItem(Element viewItem) throws GwtTeamingException {
+    public static BinderViewDefBase factoryBinderViewItem(Element viewItem, BinderViewContainer parent) throws GwtTeamingException {
         BinderViewDefBase binderView = null;
         String name = viewItem.attributeValue("name");
         if (!binderViewsToSkip.contains(name)) {
@@ -113,7 +121,25 @@ public class GwtFolderViewHelper {
                 }
                 Map<String, String> properties = DefinitionHelper.getDefinitionProperties(viewItem);
                 if (binderView instanceof BinderViewContainer) {
-                    ((BinderViewContainer) binderView).setChildren(factoryBinderViewChildren(viewItem));
+                    if (binderView instanceof BinderViewHtmlContainer) {
+                        String htmlTop = properties.get("htmlTop");
+                        String htmlBottom = properties.get("htmlBottom");
+                        String outerTop = null;
+                        String outerBottom = null;
+
+                        if (parent instanceof BinderViewHtmlContainer) {
+                            outerTop = ((BinderViewHtmlContainer)parent).getHtmlTop();
+                            outerBottom = ((BinderViewHtmlContainer)parent).getHtmlBottom();
+                        }
+
+                        BinderViewHtmlContainer newContainer = parseHtml(htmlTop, htmlBottom, outerTop, outerBottom);
+                        newContainer.setName(binderView.getName());
+                        newContainer.setHtmlTop(outerTop == null ? htmlTop : outerTop + htmlTop);
+                        newContainer.setHtmlBottom(outerBottom == null ? htmlBottom : outerBottom + htmlBottom);
+
+                        binderView = newContainer;
+                    }
+                    ((BinderViewContainer) binderView).setChildren(factoryBinderViewChildren(viewItem, (BinderViewContainer) binderView));
                     if (binderView instanceof BinderViewTwoColumnTable) {
                         BinderViewTwoColumnTable tableView = (BinderViewTwoColumnTable) binderView;
                         tableView.setWidth(Width.parseWidth(properties.get("tableWidth")));
@@ -130,11 +156,7 @@ public class GwtFolderViewHelper {
                         boxView.setBorder("square".equals(properties.get("style")));
                     }
                 } else {
-                    if (binderView instanceof BinderViewHtmlEntry) {
-                        BinderViewHtmlEntry htmlEntry = (BinderViewHtmlEntry) binderView;
-                        htmlEntry.setHtmlTop(properties.get("htmlTop"));
-                        htmlEntry.setHtmlBottom(properties.get("htmlBottom"));
-                    } else if (binderView instanceof BinderViewFolderDataItem) {
+                    if (binderView instanceof BinderViewFolderDataItem) {
                         String formItem = viewItem.attributeValue("formItem");
                         if ("mashupCanvas".equals(formItem)) {
                             binderView = new BinderViewLandingPageLayout();
@@ -167,8 +189,11 @@ public class GwtFolderViewHelper {
         return binderView;
     }
 
-    public static boolean hasCustomView(AllModulesInjected ami, Binder binder) {
+    public static boolean hasCustomView(AllModulesInjected ami, Binder binder, boolean trash) {
         if (binder==null) {
+            return false;
+        }
+        if (trash) {
             return false;
         }
         if (binder instanceof Workspace) {
@@ -205,4 +230,165 @@ public class GwtFolderViewHelper {
         return reply;
     }
 
+    public static BinderViewHtmlContainer parseHtml(String htmlTop, String htmlBottom) {
+        return parseHtml(htmlTop, htmlBottom, null, null);
+    }
+
+    public static BinderViewHtmlContainer parseHtml(String htmlTop, String htmlBottom, String outerTop, String outerBottom) {
+        String htmlStr = htmlTop + "<!--" + HTML_INSERTION_POINT + "-->" + htmlBottom;
+        if (outerTop!=null && outerBottom!=null) {
+            htmlStr = outerTop + "<!--" + HTML_FRAGMENT_BEGIN + "-->" + htmlStr + "<!--" + HTML_FRAGMENT_END + "-->" + outerBottom;
+        } else if (outerTop!=null) {
+            htmlStr = outerTop + "<!--" + HTML_FRAGMENT_BEGIN + "-->" + htmlStr + "<!--" + HTML_FRAGMENT_END + "-->";
+        } else if (outerBottom!=null) {
+            htmlStr = "<!--" + HTML_FRAGMENT_BEGIN + "-->" + htmlStr + "<!--" + HTML_FRAGMENT_END + "-->" + outerBottom;
+        }
+        org.jsoup.nodes.Document doc = Jsoup.parseBodyFragment(htmlStr);
+        Elements elements = extractFragmentElements(doc);
+        Stack<org.jsoup.nodes.Element> parents = getCommentParentHierarchy(elements, HTML_INSERTION_POINT);
+
+        HTMLListInsertionPointPair pair = buildHtmlStructure(elements, parents, outerTop, outerBottom);
+        if (pair.children!=null && pair.children.size()==1 && pair.children.get(0) instanceof BinderViewHtmlContainer) {
+            return (BinderViewHtmlContainer) pair.children.get(0);
+        } else {
+            BinderViewHtmlContainer container = new BinderViewHtmlContainer();
+            for (BinderViewHtml child : pair.children) {
+                container.addChild((BinderViewDefBase) child);
+            }
+            container.setChildInsertionPoint(pair.insertionPoint);
+            return container;
+        }
+    }
+
+    private static Elements extractFragmentElements(org.jsoup.nodes.Document doc) {
+        Elements elements = new Elements();
+        Comment begin = findComment(doc.body(), HTML_FRAGMENT_BEGIN);
+        Comment end = findComment(doc.body(), HTML_FRAGMENT_END);
+        if (begin!=null) {
+            org.jsoup.nodes.Node node = begin.nextSibling();
+            while (node!=null && node!=end) {
+                if (node instanceof org.jsoup.nodes.Element) {
+                    elements.add((org.jsoup.nodes.Element) node);
+                }
+                node = node.nextSibling();
+            }
+        } else {
+            elements = doc.body().children();
+        }
+        return elements;
+    }
+
+    private static Comment findComment(Elements elements, String commentText) {
+        for (org.jsoup.nodes.Element element : elements) {
+            Comment comment = findComment(element, commentText);
+            if (comment!=null) {
+                return comment;
+            }
+        }
+        return null;
+    }
+    private static Comment findComment(org.jsoup.nodes.Element element, String commentText) {
+        List<org.jsoup.nodes.Node> nodes = element.childNodes();
+        for (org.jsoup.nodes.Node node : nodes) {
+            if (node instanceof Comment) {
+                Comment comment = (Comment) node;
+                if (commentText.equals(comment.getData().trim())) {
+                    return comment;
+                }
+            } else if (node instanceof org.jsoup.nodes.Element) {
+                Comment comment = findComment((org.jsoup.nodes.Element)node, commentText);
+                if (comment!=null) {
+                    return comment;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static BinderViewHtmlBlock buildHtmlBlock(org.jsoup.nodes.Element element) {
+        BinderViewHtmlBlock block = new BinderViewHtmlBlock();
+        populateTagInformation(block, element);
+        block.setInnerHtml(element.html());
+        return block;
+    }
+
+    private static BinderViewHtmlContainer buildHtmlElement(org.jsoup.nodes.Element element,
+                                                            Stack<org.jsoup.nodes.Element> placeholderHierarchy) {
+        BinderViewHtmlContainer html = new BinderViewHtmlContainer();
+        populateTagInformation(html, element);
+        html.setText(element.text());
+
+        BinderViewHtmlContainer insertionPoint = null;
+        if (placeholderHierarchy.empty()) {
+            insertionPoint = html;
+        }
+
+        HTMLListInsertionPointPair structure = buildHtmlComponents(html, element.children(), placeholderHierarchy);
+        for (BinderViewHtml child : structure.children) {
+            html.addChild((BinderViewDefBase) child);
+        }
+        if (insertionPoint!=null) {
+            html.setChildInsertionPoint(insertionPoint);
+        } else {
+            html.setChildInsertionPoint(structure.insertionPoint);
+        }
+        return html;
+    }
+
+    private static void populateTagInformation(BinderViewHtml html, org.jsoup.nodes.Element element) {
+        html.setTag(element.tagName());
+        for (org.jsoup.nodes.Attribute attr : element.attributes()) {
+            html.setAttribute(attr.getKey(), attr.getValue());
+        }
+    }
+
+    private static HTMLListInsertionPointPair buildHtmlComponents(BinderViewHtmlContainer parent, Elements elements, Stack<org.jsoup.nodes.Element> placeholderHierarchy) {
+        org.jsoup.nodes.Element placeholderChild = null;
+        BinderViewHtmlContainer insertionPoint = null;
+        if (!placeholderHierarchy.empty()) {
+            placeholderChild = placeholderHierarchy.pop();
+        }
+        List<BinderViewHtml> children = new ArrayList<BinderViewHtml>();
+        for (org.jsoup.nodes.Element child : elements) {
+            if (placeholderChild!=null && child==placeholderChild) {
+                BinderViewHtmlContainer container = buildHtmlElement(child, placeholderHierarchy);
+                container.setParent(parent);
+                children.add(container);
+                insertionPoint = container.getChildInsertionPoint();
+            } else {
+                children.add(buildHtmlBlock(child));
+            }
+        }
+        HTMLListInsertionPointPair pair = new HTMLListInsertionPointPair();
+        pair.children = children;
+        pair.insertionPoint = insertionPoint;
+        return pair;
+    }
+
+    private static HTMLListInsertionPointPair buildHtmlStructure(Elements elements, Stack<org.jsoup.nodes.Element> placeholderHierarchy, String outerTop, String outerBottom) {
+        return buildHtmlComponents(null, elements, placeholderHierarchy);
+    }
+
+    private static Stack<org.jsoup.nodes.Element> getCommentParentHierarchy(Elements elements, String commentText) {
+        Comment comment = findComment(elements, commentText);
+        if (comment!=null) {
+            Stack<org.jsoup.nodes.Element> parents = new Stack<org.jsoup.nodes.Element>();
+            org.jsoup.nodes.Element parent = (org.jsoup.nodes.Element)comment.parent();
+            while (parent!=null) {
+                parents.push(parent);
+                if (elements.contains(parent)) {
+                    parent = null;
+                } else {
+                    parent = parent.parent();
+                }
+            }
+            return parents;
+        }
+        return new Stack<org.jsoup.nodes.Element>();
+    }
+
+    static class HTMLListInsertionPointPair {
+        List<BinderViewHtml> children;
+        BinderViewHtmlContainer insertionPoint;
+    }
 }

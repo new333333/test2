@@ -78,7 +78,7 @@ public class GraphicProperties
 		m_width = -1;
 		m_widthUnits = Style.Unit.PCT;
 		m_height = -1;
-		m_heightUnits = Style.Unit.PX;
+		m_heightUnits = Style.Unit.PCT;
 		m_overflow = Style.Overflow.HIDDEN;
 
 	}// end GraphicProperties()

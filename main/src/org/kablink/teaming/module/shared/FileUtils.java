@@ -412,12 +412,22 @@ public class FileUtils {
 	
 	//Routine to get the contentType for a file being downloaded to a browser
 	public static String validateDownloadContentType(String contentType) {
-		//Protect against XSS attacks if this is an HTML file
-		if (contentType.toLowerCase().contains("text/html")) {
-			if (SPropsUtil.getBoolean("xss.forceDownloadedHtmlFilesToBeSavedToDisk", true)) {
-				contentType = DEFAULT_MIME_CONTENT_TYPE;
-			}
+		// (bug 990717) Protect against XSS attacks if this is a file whose type is known to be vulnerable (not just a HTML file).
+		contentType = contentType.toLowerCase();
+		if(contentType.contains("text/html") &&
+				SPropsUtil.getBoolean("xss.forceDownloadedHtmlFilesToBeSavedToDisk", true)) {
+			// For backward compatibility of the deprecated configuration setting
+			contentType = DEFAULT_MIME_CONTENT_TYPE;
 		}
+		else {
+			String[] xssContentTypes = SPropsUtil.getStringArray("xss.forceDownloadedFilesToBeSavedToDisk.contentTypes", ",");
+			for (int i=0; i < xssContentTypes.length; i++) {
+				if(contentType.contains(xssContentTypes[i])) {
+					contentType = DEFAULT_MIME_CONTENT_TYPE;
+					break;
+				}
+			}
+		}		
 		return contentType;
 	}
 

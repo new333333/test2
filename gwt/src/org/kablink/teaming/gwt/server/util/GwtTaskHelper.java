@@ -956,17 +956,22 @@ public class GwtTaskHelper {
 		reply.setEndIsCalculated(null != calcEnd);
 
 		// ...and extract the event's duration fields from the Map.
+		TaskDuration taskDuration = buildTaskDuration(m);
+		reply.setDuration(taskDuration);
+
+		// If we get here, reply refers to the TaskEvent object
+		// constructed from the information in the Map.  Return it.
+		return reply;
+	}
+
+	public static TaskDuration buildTaskDuration(Map m) {
 		TaskDuration taskDuration = new TaskDuration();
 		taskDuration.setSeconds(GwtEventHelper.getIntFromEntryMap(m, buildDurationFieldName(Constants.DURATION_FIELD_SECONDS)));
 		taskDuration.setMinutes(GwtEventHelper.getIntFromEntryMap(m, buildDurationFieldName(Constants.DURATION_FIELD_MINUTES)));
 		taskDuration.setHours(  GwtEventHelper.getIntFromEntryMap(m, buildDurationFieldName(Constants.DURATION_FIELD_HOURS  )));
 		taskDuration.setDays(   GwtEventHelper.getIntFromEntryMap(m, buildDurationFieldName(Constants.DURATION_FIELD_DAYS   )));
 		taskDuration.setWeeks(  GwtEventHelper.getIntFromEntryMap(m, buildDurationFieldName(Constants.DURATION_FIELD_WEEKS  )));
-		reply.setDuration(taskDuration);
-
-		// If we get here, reply refers to the TaskEvent object
-		// constructed from the information in the Map.  Return it.
-		return reply;
+		return taskDuration;
 	}
 
 	/**

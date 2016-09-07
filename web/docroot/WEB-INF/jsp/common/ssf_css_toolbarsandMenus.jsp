@@ -420,7 +420,7 @@ div.ss_inline_menu a {
 	}
 .ss_actions_bar_submenu a, .ss_actions_bar_submenu a:visited {
 /*	color:${ss_box_title_color}; */
-	color: #fff;
+	color: #fff !important;
 	}
 /* utils bar (dashboard)  */
 div.ss_dashboardContainer {

@@ -347,10 +347,10 @@ public class ActionsPopupMenu extends PopupMenu {
 		}
 
 		if (null != m_viewDetailsMenuItem) {
-			if (entry instanceof ActivityStreamTopEntry) {
+			final EntityId entityId = m_entry.getEntryEntityId();
+			if (entry instanceof ActivityStreamTopEntry && entityId!=null) {
 				m_viewDetailsMenuItem.setVisible(true);
 
-				final EntityId entityId = m_entry.getEntryEntityId();
 				GetViewFolderEntryUrlCmd cmd = new GetViewFolderEntryUrlCmd(entityId.getBinderId(), entityId.getEntityId());
 				GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 					@Override

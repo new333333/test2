@@ -155,6 +155,14 @@ public class ProfileAttributeWidget  {
 			} else {
 				int type = attr.getValueType();
 				switch(type){
+					case ProfileAttribute.HTML:
+						if(attr.getValue() != null) {
+							String s = attr.getValue().toString();
+							if(hasAttrValue(s)){
+								widget = new HTML(s);
+							}
+						}
+						break;
 					case ProfileAttribute.STRING:
 					case ProfileAttribute.BOOLEAN:
 					case ProfileAttribute.LONG:

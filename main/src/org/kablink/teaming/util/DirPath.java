@@ -33,6 +33,8 @@
 package org.kablink.teaming.util;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -96,5 +98,41 @@ public class DirPath {
 		String staticPath = ObjectKeys.STATIC_DIR + File.separator + SPropsUtil.getString(ObjectKeys.STATIC_DIR_PROPERTY, "xxx") + File.separator;
 		return getWebappDirPathVisible(staticPath + "images");
 	}
-	
+
+	public static String findCustomJsp(String jspName, String defaultExtensionName) {
+		if (jspName.contains("../")) {
+			return null;
+		}
+		List<String> pathsToTry = new ArrayList<>(3);
+		String [] extensionInfo = extractJspExtensionName(jspName);
+		if (extensionInfo!=null) {
+			pathsToTry.add("ext" + File.separator + Utils.getZoneKey() + File.separator + extensionInfo[0] +
+					File.separator + "jsp" + File.separator + extensionInfo[1]);
+		}
+		if (defaultExtensionName!=null) {
+			pathsToTry.add("ext" + File.separator + Utils.getZoneKey() + File.separator + defaultExtensionName +
+					File.separator + "jsp" + File.separator + jspName);
+		}
+		pathsToTry.add("jsp" + File.separator + "custom_jsps" + File.separator + jspName);
+		for (String path : pathsToTry) {
+			if (doesCustomJspExist(path)) {
+				return "/WEB-INF/" + path.replace('\\', '/');
+			}
+		}
+		return null;
+	}
+
+	private static boolean doesCustomJspExist(String jspName) {
+		String fullPath = getWebinfDirPath() + File.separator + jspName;
+		return new File(fullPath).isFile();
+	}
+
+
+	private static String [] extractJspExtensionName(String jspName) {
+		String [] parts = jspName.split("[\\/\\\\]", 3);
+		if (parts.length==3 && parts[0].length()>0 && parts[1].equals("jsp")) {
+			return new String [] {parts[0], parts[2]};
+		}
+		return null;
+	}
 }
