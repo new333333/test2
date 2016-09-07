@@ -49,7 +49,9 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
 
 /**
  * ?
@@ -64,6 +66,7 @@ public class EnhancedViewWidget extends VibeWidget
 	private AsyncCallback<VibeRpcResponse> m_executeJspCallback = null;
 	private VibeFlowPanel m_mainPanel;
 	private String m_html;		// The html that we got from executing a jsp
+	private String m_landingPageStyle;
 	
 	/**
 	 * Create the appropriate widget based on what type of enhanced view we are dealing with
@@ -318,6 +321,37 @@ public class EnhancedViewWidget extends VibeWidget
 						
 						responseData = (StringRpcResponseData) response.getResponseData();
 						m_html = responseData.getStringValue();
+						if(m_properties.getViewType() == EnhancedViewType.DISPLAY_CALENDAR || m_properties.getViewType() == EnhancedViewType.DISPLAY_MY_CALENDAR_EVENTS){
+							//landingPageWidgetTitlePanel_dark folderWidgetTitlePanel_dark
+							String styleToSearchAndReplace="ss_mashup_folder_header_view";
+							String elementToSearchAndReplace="<span";
+							String styleToSearchAndReplacePadding="ss_mashup_element";
+							
+							int index=m_html.indexOf(styleToSearchAndReplacePadding);
+							if(index>=0){
+								m_html=m_html.substring(0,index) + m_html.substring(index+styleToSearchAndReplacePadding.length());
+							}
+																			
+							index=m_html.indexOf(styleToSearchAndReplace);
+							if(index>=0){
+								String landingPageTitleStyle="landingPageWidgetTitlePanel" + m_landingPageStyle;
+								String calendarWidgetTitleStyle="folderWidgetTitlePanel" + m_landingPageStyle;
+								String backgroundColor="\" style=\"background-color:"+m_widgetStyles.getHeaderBgColor();
+								String widgetStyle=landingPageTitleStyle + " " + calendarWidgetTitleStyle+backgroundColor;
+								m_html=m_html.substring(0,index) + widgetStyle + m_html.substring(index+styleToSearchAndReplace.length());
+							}
+							
+							index=m_html.indexOf(elementToSearchAndReplace);
+							if(index>=0){
+								String titleStyle=" class=\"gwt-InlineLabel folderWidgetTitleLabel" + m_landingPageStyle+"\"";								
+								String textStyle="";
+								if(m_widgetStyles.getHeaderTextColor()!=null){
+									textStyle="style=\"color:"+m_widgetStyles.getHeaderTextColor()+"\"";								
+								}
+								String styleToApply=titleStyle+" "+textStyle;
+								m_html=m_html.substring(0,index+elementToSearchAndReplace.length())+styleToApply+m_html.substring(index+elementToSearchAndReplace.length());
+							}
+						}
 					}
 
 					cmd = new Scheduler.ScheduledCommand()
@@ -346,6 +380,7 @@ public class EnhancedViewWidget extends VibeWidget
 	private VibeFlowPanel init( EnhancedViewProperties properties, WidgetStyles widgetStyles, String landingPageStyle )
 	{
 		m_widgetStyles = widgetStyles;
+		m_landingPageStyle = landingPageStyle;
 		
 		m_properties = new EnhancedViewProperties();
 		m_properties.copy( properties );
@@ -354,6 +389,7 @@ public class EnhancedViewWidget extends VibeWidget
 		m_mainPanel = new VibeFlowPanel();
 		m_mainPanel.addStyleName( "landingPageWidgetMainPanel" + landingPageStyle );
 		m_mainPanel.addStyleName( "enhancedViewWidgetMainPanel" + landingPageStyle );
+		m_mainPanel.addStyleName( "landingPageWidgetShowBorder");
 
 		// Set the width and height
 		{
@@ -384,10 +420,10 @@ public class EnhancedViewWidget extends VibeWidget
 				style.setOverflow( Style.Overflow.HIDDEN );
 				
 				// Leave room for a scrollbar on the right.
-				style.setPaddingRight( 14, Unit.PX );
+				//style.setPaddingRight( 14, Unit.PX );
 				
 				// Leave room for a scrollbar on the bottom.
-				style.setPaddingBottom( 14, Unit.PX );
+				//style.setPaddingBottom( 14, Unit.PX );
 			}
 			else
 			{

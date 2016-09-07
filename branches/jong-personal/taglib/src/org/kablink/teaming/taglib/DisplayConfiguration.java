@@ -61,12 +61,7 @@ import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.profile.ProfileModule;
-import org.kablink.teaming.util.DirPath;
-import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.ResolveIds;
-import org.kablink.teaming.util.SZoneConfig;
-import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.*;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.util.Validator;
@@ -141,8 +136,14 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 							String jspName = jspEle.attributeValue("value");
 							if ("true".equals(jspEle.attributeValue("inherit"))) inherit=Boolean.TRUE;							
 							if (!inherit && Validator.isNotNull(jspName)) {
-								if (Validator.isNotNull(jspBase)) customJsp = jspBase + jspName;
-								else customJsp = DEFAULT_JSP_BASE + jspName;
+								customJsp = DirPath.findCustomJsp(jspName, extensionName);
+								if (customJsp==null) {
+									if (Validator.isNotNull(jspBase)) {
+										customJsp = jspBase + jspName;
+									} else {
+										customJsp = DEFAULT_JSP_BASE + jspName;
+									}
+								}
 							}
 						}
 
@@ -184,7 +185,7 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 							String defaultJsp=configBuilder.getItemJspByStyle(itemDefinition, itemType, this.configJspStyle);
 							if (itemType.equals("customJsp")) {
 								jspName = DefinitionUtils.getPropertyValue(nextItem, "formJsp");
-								if (Validator.isNotNull(jspName)) customJsp = DEFAULT_JSP_BASE + jspName;
+								if (Validator.isNotNull(jspName)) getCustomJspPath(jspName, extensionName);
 							} else if (customJsp == null && "dataView".equals(nextItem.attributeValue("type")) &&
 									(inherit || formItem.equals("customJsp"))) { //wraps a form element
 								Element entryFormItem = (Element)configDefinition.getRootElement().selectSingleNode("item[@type='form']");
@@ -199,13 +200,13 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 												String jspType = "viewJsp";
 												if (configJspStyle.equals(Definition.JSP_STYLE_MOBILE)) jspType = "mobileJsp";
 												jspName = DefinitionUtils.getPropertyValue(nextItem, jspType);
-												if (Validator.isNotNull(jspName)) customJsp = DEFAULT_JSP_BASE + jspName;
+												if (Validator.isNotNull(jspName)) customJsp = getCustomJspPath(jspName, extensionName);
 											}
 											if (Validator.isNull(customJsp) && inherit) {
 												jspEle= (Element)itemEle.selectSingleNode("./jsps/jsp[@name='custom']");
 												if (jspEle != null) {
 													jspName = jspEle.attributeValue("value");
-													if (Validator.isNotNull(jspName) ) customJsp = DEFAULT_JSP_BASE + jspName;
+													if (Validator.isNotNull(jspName) ) customJsp = getCustomJspPath(jspName, extensionName);
 												}
 												
 											}
@@ -216,7 +217,7 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 								String jspType = "viewJsp";
 								if (configJspStyle.equals(Definition.JSP_STYLE_MOBILE)) jspType = "mobileJsp";
 								jspName = DefinitionUtils.getPropertyValue(nextItem, jspType);
-								if (Validator.isNotNull(jspName)) customJsp = DEFAULT_JSP_BASE + jspName;
+								if (Validator.isNotNull(jspName)) customJsp = getCustomJspPath(jspName, extensionName);
 							}
 							if ("dataView".equals(nextItem.attributeValue("type"))) { 
 								//See if this element has per-user data
@@ -258,7 +259,8 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 								req.setAttribute("property_name", "");
 								req.setAttribute("property_caption", "");
 								req.setAttribute("property_required", "false");
-									
+								req.setAttribute("productName", ReleaseInfo.getName());
+
 								//Also set up the default values for all properties defined in the definition configuration
 								//  These will be overwritten by the real values (if they exist) below
 								List<Element> itemDefinitionProperties = new ArrayList<Element>();
@@ -497,6 +499,14 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 	    }
 	    
 	    return EVAL_PAGE;
+	}
+
+	private String getCustomJspPath(String jspName, String extensionName) {
+		String jspPath = DirPath.findCustomJsp(jspName, extensionName);
+		if (jspPath==null) {
+			jspPath = DEFAULT_JSP_BASE + jspName;
+		}
+		return jspPath;
 	}
 
 	public void setConfigDefinition(Document configDefinition) {

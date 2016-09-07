@@ -71,6 +71,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
@@ -160,6 +161,7 @@ import org.kablink.teaming.util.XmlUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.tree.DomTreeHelper;
+import org.kablink.teaming.web.tree.SearchTreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.FixupFolderDefsThread;
 import org.kablink.teaming.domain.Definition;
@@ -447,8 +449,33 @@ public class BinderHelper {
 
 		return null;
 	}
-	
-	public static void setupStandardBeans(AllModulesInjected bs, RenderRequest request, 
+
+
+	public static void addWorkspaceDomTreeToModel(AllModulesInjected ami, Long binderId, Map<String, Object> model) {
+		if (binderId==null) {
+			binderId = RequestContextHolder.getRequestContext().getZoneId();
+		}
+		Document pTree = DocumentHelper.createDocument();
+		Element rootElement = pTree.addElement(DomTreeBuilder.NODE_ROOT);
+		Document wsTree = ami.getBinderModule().getDomBinderTree(binderId, new WsDomTreeBuilder(null, true, ami, new SearchTreeHelper()), 1);
+		rootElement.appendAttributes(wsTree.getRootElement());
+		rootElement.appendContent(wsTree.getRootElement());
+		model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binderId.toString());
+		model.put(WebKeys.WORKSPACE_DOM_TREE, pTree);
+	}
+
+	public static void setupStandardBeansForCustomJsp(AllModulesInjected bs, RenderRequest request,
+										  RenderResponse response, Map<String,Object> model, Long binderId) {
+		Binder binder = bs.getBinderModule().getBinder(binderId);
+		model.put(WebKeys.BINDER, binder);
+		model.put(WebKeys.DEFINITION_ENTRY, binder);
+		if (binder instanceof Workspace) {
+			addWorkspaceDomTreeToModel(bs, binderId, model);
+		}
+		BinderHelper.setupStandardBeans(bs, request, response, model, binderId);
+	}
+
+	public static void setupStandardBeans(AllModulesInjected bs, RenderRequest request,
 			RenderResponse response, Map<String,Object> model) {
 		Long binderId = null;
 		setupStandardBeans(bs, request, response, model, binderId);
@@ -1345,6 +1372,32 @@ public class BinderHelper {
 		if (displayDef != null) viewType = DefinitionUtils.getViewType(displayDef.getDefinition());
 		if (viewType == null) return "";
 		return viewType;
+	}
+
+	public static boolean useJspRenderer(Binder binder) {
+		Boolean jspOverride = (Boolean) binder.getProperty(ObjectKeys.BINDER_PROPERTY_RENDER_JSP_VIEW);
+		if (jspOverride==null) {
+			jspOverride = getForceJspRenderingSettingInDefinition(binder);
+		}
+		return Boolean.TRUE.equals(jspOverride);
+	}
+
+	static public Boolean getForceJspRenderingSettingInDefinition(Binder binder) {
+		Boolean jspOverride = null;
+		Definition viewDef    = binder.getDefaultViewDef();
+		Document viewDefDoc = ((null == viewDef) ? null : viewDef.getDefinition());
+		if (null != viewDefDoc) {
+			// Yes!  Does it contain any HTML <item>'s?
+			String viewName;
+			if (binder instanceof Folder)
+				viewName = "forumView";
+			else viewName = "workspaceView";
+			Element reply = (Element) viewDefDoc.selectSingleNode("//item[@name='" + viewName + "']/properties/property[@name='forceJspRenderer']");
+			if (reply!=null) {
+				jspOverride = "true".equalsIgnoreCase(reply.attributeValue("value"));
+			}
+		}
+		return jspOverride;
 	}
 
 	static public String getViewListingJsp(AllModulesInjected bs) {
@@ -4779,7 +4832,7 @@ public class BinderHelper {
 			if (bs.getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
 				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS, columns);
 				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER_LIST, columnOrder);
-				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER, null);
+				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER, StringUtils.join(columnOrder, "|"));
 				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_TITLES, columnsText);
 			}
 		}

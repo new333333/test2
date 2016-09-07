@@ -534,7 +534,7 @@ public class HistoryHelper {
 				// ...and process it.
 				if (null != historyInfo)
 				     processHistoryInfoAsync(historyInfo);
-				else FullUIReloadEvent.fireOneAsync();
+				//else FullUIReloadEvent.fireOneAsync(); //  Disbled by Lokesh.  Do we really need this? With references this will cause unnecessary page reload.  Disabling this for now to fix bug 985732.
 			}
 		} );
 	}

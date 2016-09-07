@@ -214,20 +214,7 @@ import org.kablink.teaming.security.runwith.RunWithTemplate;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.task.TaskHelper.FilterType;
-import org.kablink.teaming.util.AllModulesInjected;
-import org.kablink.teaming.util.DateComparer;
-import org.kablink.teaming.util.FileIconsHelper;
-import org.kablink.teaming.util.FileLinkAction;
-import org.kablink.teaming.util.GangliaMonitoring;
-import org.kablink.teaming.util.IconSize;
-import org.kablink.teaming.util.LongIdUtil;
-import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.ReleaseInfo;
-import org.kablink.teaming.util.ResolveIds;
-import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.SimpleProfiler;
-import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.*;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.tree.SearchTreeHelper;
@@ -6115,6 +6102,10 @@ public class GwtViewHelper {
 											// store it.
 											String descFmt = GwtServerHelper. getStringFromEntryMap(entryMap, Constants.DESC_FORMAT_FIELD);
 											boolean isHtml = ((null != descFmt) && "1".equals(descFmt));
+											if (isHtml) {
+												value = MarkupUtil.markupStringReplacement(null, null, request, null,
+															user, value, WebKeys.MARKUP_VIEW);
+											}
 											fr.setColumnValue(fc, new DescriptionHtml(value, isHtml));
 										}
 										
@@ -6558,15 +6549,9 @@ public class GwtViewHelper {
 				// ...page...
 	    		Map accessControlMap = BinderHelper.getAccessControlMapBean(xssModel);
 	    		accessControlMap.put("generateReport", am.testAccess(AdminOperation.report));
-	    		
-	    		Document pTree = DocumentHelper.createDocument();
-	        	Element rootElement = pTree.addElement(DomTreeBuilder.NODE_ROOT);
-	        	Document wsTree = bm.getDomBinderTree(RequestContextHolder.getRequestContext().getZoneId(), new WsDomTreeBuilder(null, true, bs, new SearchTreeHelper()), 1);
-	        	rootElement.appendAttributes(wsTree.getRootElement());
-	        	rootElement.appendContent(wsTree.getRootElement());
-	     		xssModel.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
-	     		xssModel.put(WebKeys.WORKSPACE_DOM_TREE, pTree);		
-	    		
+
+				BinderHelper.addWorkspaceDomTreeToModel(bs, null, xssModel);
+
 	    		// ...and run the JSP to produce the target HTML.
 				html = GwtServerHelper.executeJsp(
 					bs,
@@ -6613,7 +6598,10 @@ public class GwtViewHelper {
 				// Create a model Map for the custom JSP...
 				Map<String, Object> htmlElementModel = buildCustomJspModelMap(model);
 
-				jspPath = ("/WEB-INF/jsp/custom_jsps/" + buildJspName((String) model.get("customJsp")));
+				jspPath = DirPath.findCustomJsp(buildJspName((String) model.get("customJsp")), null);
+				if (jspPath==null) {
+					jspPath = ("/WEB-INF/jsp/custom_jsps/" + buildJspName((String) model.get("customJsp")));
+				}
 				try {
 		    		// ...and run the JSP to produce the target HTML.
 					html = GwtServerHelper.executeJsp(
@@ -9557,6 +9545,10 @@ public class GwtViewHelper {
 		}
 
 		Binder binder = bs.getBinderModule().getBinderWithoutAccessCheck(binderId);
+
+		// Are we showing the trash on a this binder?
+		boolean showTrash = getQueryParameterBoolean(nvMap, WebKeys.URL_SHOW_TRASH);
+
 		// Is the binder a workspace?
 		User user = GwtServerHelper.getCurrentUser();
 		vi.setViewType(ViewType.BINDER);
@@ -9581,7 +9573,7 @@ public class GwtViewHelper {
 					bi = GwtServerHelper.getBinderInfo(bs, request, String.valueOf(homeId));
 					vi.setRenderEngine(RenderEngine.GWT_CUSTOMIZED);
 				}
-			} else if (GwtFolderViewHelper.hasCustomView(bs, binder)) {
+			} else if (GwtFolderViewHelper.hasCustomView(bs, binder, showTrash)) {
 				vi.setViewLayout(GwtFolderViewHelper.buildBinderViewLayout(binder));
 				vi.setRenderEngine(RenderEngine.GWT_CUSTOMIZED);
 				checkBinderForJspOverride = true;
@@ -9629,29 +9621,27 @@ public class GwtViewHelper {
 						checkBinderForJspOverride = true;
 					}
 				}
-			} else if (GwtFolderViewHelper.hasCustomView(bs, binder)) {
+			} else if (GwtFolderViewHelper.hasCustomView(bs, binder, showTrash)) {
 				vi.setViewLayout(GwtFolderViewHelper.buildBinderViewLayout(binder));
 				vi.setRenderEngine(RenderEngine.GWT_CUSTOMIZED);
 				checkBinderForJspOverride = true;
 			}
 		}
 
-		if (checkBinderForJspOverride) {
-			if (Boolean.TRUE.equals(binder.getProperty(ObjectKeys.BINDER_PROPERTY_RENDER_JSP_VIEW))) {
-				bi.setForceJspRendering(true);
-			}
+		if (checkBinderForJspOverride && binder!=null && BinderHelper.useJspRenderer(binder)) {
+			bi.setForceJspRendering(true);
 		}
 		
 		// Store any BinderInfo change we made in the ViewInfo.
 		vi.setBinderInfo(bi);
 
 		// Are we showing the trash on a this binder?
-		boolean showTrash = getQueryParameterBoolean(nvMap, WebKeys.URL_SHOW_TRASH);
 		if (showTrash) {
 			// Yes!  Update the folder/workspace type
 			// accordingly.
 			if      (bi.isBinderFolder())    bi.setFolderType(   FolderType.TRASH   );
 			else if (bi.isBinderWorkspace()) bi.setWorkspaceType(WorkspaceType.TRASH);
+			bi.setForceJspRendering(false);
 		}
 
 		// Are we supposed to invoke the share dialog on this binder?

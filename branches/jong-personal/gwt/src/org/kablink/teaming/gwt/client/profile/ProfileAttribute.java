@@ -59,6 +59,7 @@ public class ProfileAttribute implements IsSerializable, VibeRpcResponseData {
    	public static final int COMMASEPARATEDSTRING=11;
    	public static final int SURVEY= 12;
    	public static final int PACKEDSTRING= 14;
+	public static final int HTML=STRING | 0x100;
 
 	private String title;
 	 /**
@@ -122,6 +123,11 @@ public class ProfileAttribute implements IsSerializable, VibeRpcResponseData {
 
 	public void setDataName(String dn) {
 		this.dataName = dn;
+	}
+
+	public void setHtmlValue(String value) {
+		setValue(value);
+		this.valueType = HTML;
 	}
 	
 	public void setValue(Object value) {
@@ -187,6 +193,7 @@ public class ProfileAttribute implements IsSerializable, VibeRpcResponseData {
 		
 	public Object getValue() {
 	    switch(getValueType()) {
+    		case HTML:
     		case STRING:
     		    if (stringValue != null)
     		        return stringValue;

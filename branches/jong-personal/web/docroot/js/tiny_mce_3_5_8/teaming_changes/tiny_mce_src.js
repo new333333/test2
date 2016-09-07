@@ -13756,6 +13756,8 @@ tinymce.create('tinymce.ui.Toolbar:tinymce.ui.Container', {
 			if (!tinymce.relaxedDomain || !u)
 				t.initContentBody();
 
+			DOM.get(n.id).style.height=h+'px';
+			
 			e = n = o = null; // Cleanup
 		},
 

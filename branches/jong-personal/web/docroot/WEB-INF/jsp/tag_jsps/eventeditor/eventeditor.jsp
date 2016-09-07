@@ -81,6 +81,16 @@
 	 */
 %>
 
+<c:set var="interval" value="0" />
+<c:set var="frequency" value="none" />
+<c:set var="sundaySeleted" value="false" />
+<c:set var="mondaySeleted" value="false" />
+<c:set var="tuesdaySeleted" value="false" />
+<c:set var="wednesdaySeleted" value="false" />
+<c:set var="thursdaySeleted" value="false" />
+<c:set var="fridaySeleted" value="false" />
+<c:set var="saturdaySeleted" value="false" />
+
 <div class="ss_event_editor tundra">
 	<table class="ss_style">
 		<tr>
@@ -566,11 +576,15 @@
 
 		function checkWidgetHasValue(id,err) {
 			var	eWidget = document.getElementById(id);
-			var	sValue = eWidget.value;
-			if ((null == sValue) || (0 == sValue.length)) {
-				alert(err);
-				window.setTimeout(function(){eWidget.focus();}, 100);
-				return( false );
+			if (eWidget!=null) {
+				var sValue = eWidget.value;
+				if ((null == sValue) || (0 == sValue.length)) {
+					alert(err);
+					window.setTimeout(function () {
+						eWidget.focus();
+					}, 100);
+					return ( false );
+				}
 			}
 			return( true );
 		}
@@ -683,7 +697,8 @@
 			<c:if test="${required}">
 				if (!(checkWidgetHasValue("event_start_${prefix}", "<ssf:escapeJavaScript><ssf:nlt tag="event.error.no.start" /></ssf:escapeJavaScript>"))) return( false );
 				if (!(checkWidgetHasValue("event_end_${prefix}",   "<ssf:escapeJavaScript><ssf:nlt tag="event.error.no.end"   /></ssf:escapeJavaScript>"))) return( false );
-				if (!(document.getElementById("${prefix}_allDayEvent").checked)) {
+                var allDayElem = document.getElementById("${prefix}_allDayEvent");
+                if (allDayElem!=null && !allDayElem.checked) {
 					if (!(checkWidgetHasValue("event_start_time_${prefix}", "<ssf:escapeJavaScript><ssf:nlt tag="event.error.no.start.time" /></ssf:escapeJavaScript>"))) return( false );
 					if (!(checkWidgetHasValue("event_end_time_${prefix}",   "<ssf:escapeJavaScript><ssf:nlt tag="event.error.no.end.time"   /></ssf:escapeJavaScript>"))) return( false );
 				}

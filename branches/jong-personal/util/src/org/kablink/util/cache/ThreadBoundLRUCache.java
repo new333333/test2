@@ -196,6 +196,24 @@ public class ThreadBoundLRUCache {
 		return null;
 	}
 	
+	public static void remove(Object... keys) {
+		LRUCache cache = threadCache.get();
+		if(cache != null)
+			cache.remove(getSingleKey(keys));
+	}
+	
+	public static void remove(String[] keys) {
+		LRUCache cache = threadCache.get();
+		if(cache != null)
+			cache.remove(getSingleKey(keys));
+	}
+	
+	public static void remove(String key) {
+		LRUCache cache = threadCache.get();
+		if(cache != null)
+			cache.remove(key);
+	}
+
 	private static String getSingleKey(Object[] keys) {
 		if(keys == null)
 			return null;

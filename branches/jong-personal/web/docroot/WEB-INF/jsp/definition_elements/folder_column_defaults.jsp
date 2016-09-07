@@ -1,3 +1,6 @@
+<%@ page import="org.apache.commons.logging.Log" %>
+<%@ page import="org.apache.commons.logging.LogFactory" %>
+<%@ page import="org.apache.commons.lang.StringUtils" %>
 <%
 /**
  * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
@@ -34,6 +37,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
   <%
+	  Log logger = LogFactory.getLog("org.kablink.jsp");
 	Map ssFolderColumns = (Map) ssUserFolderProperties.get("userFolderColumns");
 	Map ssFolderColumnTitles = (Map) ssUserFolderProperties.get("userFolderColumnTitles");
 	String ssFolderColumnSort = (String) ssUserFolderProperties.get("userFolderColumnSortOrder");
@@ -42,8 +46,10 @@
 <c:when test="${ss_folderViewColumnsType == 'file'}">
   <%
 	if (ssFolderColumns == null) {
-		ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");
-		ssFolderColumnTitles = (Map)ssBinder.getProperty("folderColumnTitles");
+		ssFolderColumns = (Map) ssBinder.getProperty("folderColumns");
+		ssFolderColumnTitles = (Map) ssBinder.getProperty("folderColumnTitles");
+	}
+	if (ssFolderColumnSort == null) {
 		ssFolderColumnSort = (String)ssBinder.getProperty("folderColumnSortOrder");
 	}
 	if (ssFolderColumns == null) {
@@ -67,7 +73,9 @@
 	if (ssFolderColumns == null) {
 		ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");
 		ssFolderColumnTitles = (Map)ssBinder.getProperty("folderColumnTitles");
-		ssFolderColumnSort = (String)ssBinder.getProperty("folderColumnSortOrder");
+    }
+      if (ssFolderColumnSort == null) {
+          ssFolderColumnSort = (String)ssBinder.getProperty("folderColumnSortOrder");
 	}
 	if (ssFolderColumns == null) {
 		ssFolderColumns = new java.util.HashMap();
@@ -89,7 +97,9 @@
 	if (ssFolderColumns == null) {
 		ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");
 		ssFolderColumnTitles = (Map)ssBinder.getProperty("folderColumnTitles");
-		ssFolderColumnSort = (String)ssBinder.getProperty("folderColumnSortOrder");
+    }
+      if (ssFolderColumnSort == null) {
+          ssFolderColumnSort = (String)ssBinder.getProperty("folderColumnSortOrder");
 	}
 	if (ssFolderColumns == null) {
 		ssFolderColumns = new java.util.HashMap();

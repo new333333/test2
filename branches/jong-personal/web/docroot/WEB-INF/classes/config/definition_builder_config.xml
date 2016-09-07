@@ -734,6 +734,7 @@
 				<option name="miniblog" caption="__folder_miniblog" />
 				<help>ihelp.designers.view_type</help>
 			</property>
+			<property name="forceJspRenderer" caption="__useJspRenderer" type="boolean" default="false"/>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="folderTitleView" />
@@ -2484,6 +2485,7 @@
 				<option name="project" caption="__project_management" />
 				<option name="landingPage" caption="__landingPage" />
 			</property>
+			<property name="forceJspRenderer" caption="__useJspRenderer" type="boolean" default="false"/>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="workspaceTitleView" />
@@ -4094,7 +4096,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html.jsp" />
 		</jsps>
 		<folderViews>
-			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewHtmlEntry" />
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewHtmlContainer" />
 		</folderViews>
 		<notify velocity="html.vm" />
 	</item>

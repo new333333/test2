@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <% // selectbox option %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%
@@ -61,7 +62,7 @@
   		selected="selected"
   	</c:if>
   >
-  <c:out value="${property_caption}"/><ssf:displayConfiguration 
+  <c:out value="${fn:replace(property_caption, '&amp;', '&')}"/><ssf:displayConfiguration 
   configDefinition="${ssConfigDefinition}" 
   configElement="<%= item %>" 
   configJspStyle="${ssConfigJspStyle}" /></option>

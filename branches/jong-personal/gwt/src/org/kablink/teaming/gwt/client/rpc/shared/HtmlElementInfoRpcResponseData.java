@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -50,6 +51,8 @@ public class HtmlElementInfoRpcResponseData implements IsSerializable, VibeRpcRe
 	 * Inner class used to represent an instance of a user_list <item>.
 	 */
 	public static class HtmlElementInfo implements IsSerializable {
+		private String  m_rootTagName;
+		private Map<String, String> m_rootAttributes;
 		private String	m_caption;			//
 		private String	m_customJspHtml;	//
 		private String	m_dataName;			//
@@ -85,7 +88,13 @@ public class HtmlElementInfoRpcResponseData implements IsSerializable, VibeRpcRe
 			setHtmlBottom(   htmlBottom   );
 			setCustomJspHtml(customJspHtml);
 		}
-		
+
+		public HtmlElementInfo(String rootTagName, Map<String, String> rootAttributes, String html) {
+			this.m_rootTagName = rootTagName;
+			this.m_rootAttributes = rootAttributes;
+			this.m_htmlTop = html;
+		}
+
 		/**
 		 * Get'er methods.
 		 * 
@@ -107,6 +116,24 @@ public class HtmlElementInfoRpcResponseData implements IsSerializable, VibeRpcRe
 		public void setDataName(     String dataName)      {m_dataName      = dataName;     }
 		public void setHtmlBottom(   String htmlBottom)    {m_htmlBottom    = htmlBottom;   }
 		public void setHtmlTop(      String htmlTop)       {m_htmlTop       = htmlTop;      }
+
+		public String getRootTagName() {
+			return m_rootTagName;
+		}
+
+		public void setRootTagName(String m_rootTagName) {
+			this.m_rootTagName = m_rootTagName;
+		}
+
+		public Map<String, String> getRootAttributes() {
+			return m_rootAttributes;
+		}
+
+		public void setRootAttributes(Map<String, String> m_rootAttributes) {
+			this.m_rootAttributes = m_rootAttributes;
+		}
+
+
 	}
 	
 	/**

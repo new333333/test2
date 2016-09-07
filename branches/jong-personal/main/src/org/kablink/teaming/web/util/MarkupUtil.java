@@ -108,7 +108,7 @@ public class MarkupUtil {
 	// Fix for bug 727558, uploadImagePattern was changed to be case insensitive.  In IE, the tinyMCE editor is adding <IMG instead of the normal <img
 	// the Pattern.CASE_INSENSITIVE parameter was added to all the Patter.compile() calls.  Some of these calls
 	// already had this parameter.
-	protected final static Pattern uploadImagePattern = Pattern.compile("(<img[^>]*\\ssrc\\s*=\\s*\"[^{}\"]*viewType=ss_viewUploadFile[^>]*>)", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern uploadImagePattern = Pattern.compile("(<img[^>]*\\ssrc\\s*=\\s*\"[^{}\"]*viewType=ss_viewUploadFile[^>]*>)", Pattern.CASE_INSENSITIVE);
 	protected final static Pattern urlSrcPattern = Pattern.compile("\\ssrc\\s*=\\s*\"([^{}\"]*)\"", Pattern.CASE_INSENSITIVE );
 	protected final static String uploadImageViewTypePattern = "viewType=ss_viewUploadFile(&amp%3b)?";
 	
@@ -141,10 +141,11 @@ public class MarkupUtil {
 	protected final static Pattern m_dataMceSrcPattern = Pattern.compile( "((data-mce-src=\")([^\"]*))", Pattern.CASE_INSENSITIVE );
 
 	protected final static Pattern attachmentUrlPattern = Pattern.compile("(cid:\\{\\{attachmentUrl: ([^}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern v2AttachmentUrlPattern = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern attachmentUrlPattern2 = Pattern.compile("(cid:%7b%7battachmentUrl:%20(.*?)%7d%7d)", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern v2AttachmentUrlPattern = Pattern.compile("(?<!cid:)(\\{\\{attachmentUrl: ([^}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
 	protected final static Pattern v1AttachmentFileIdPattern = Pattern.compile("(\\{\\{attachmentFileId: ([^}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
 	protected final static Pattern titleUrlPattern = Pattern.compile("(cid:\\{\\{titleUrl: ([^\\}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern v2TitleUrlPattern = Pattern.compile("(\\{\\{titleUrl: ([^\\}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern v2TitleUrlPattern = Pattern.compile("(?<!cid:)(\\{\\{titleUrl: ([^\\}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
 	protected final static Pattern titleUrlBinderPattern = Pattern.compile("binderId=([^\\s]*)", Pattern.CASE_INSENSITIVE );
 	protected final static Pattern titleUrlBinderPattern2 = Pattern.compile("binderId%3d([^\\s]*)", Pattern.CASE_INSENSITIVE );
 	protected final static Pattern titleUrlZoneUUIDPattern = Pattern.compile("zoneUUID=([^\\s]*)", Pattern.CASE_INSENSITIVE );
@@ -164,7 +165,7 @@ public class MarkupUtil {
 	protected static Integer youtubeDivId = 0;
 
 	protected final static Pattern vibeFunctionPattern = Pattern.compile("(cid:\\{\\{vibe:([^\\}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern v2VibeFunctionPattern = Pattern.compile("(\\{\\{vibe:([^\\}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern v2VibeFunctionPattern = Pattern.compile("(?<!cid:)(\\{\\{vibe:([^\\}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
 
 	private static BinderModule binderModule;
 	private static FolderModule folderModule;
@@ -598,7 +599,7 @@ public class MarkupUtil {
 			public String getVibeFunctionResult(String functionText) {
 				String defId = (String)searchResults.get(Constants.COMMAND_DEFINITION_FIELD);
 				Definition def = null;
-				if (defId != null) def = definitionModule.getDefinition(defId);
+				if (defId != null) def = getDefinitionModule().getDefinition(defId);
 				User user = RequestContextHolder.getRequestContext().getUser();
 				Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 				String result = "";
@@ -946,7 +947,7 @@ public class MarkupUtil {
 
 			//vibe functions
 			public String getVibeFunctionResult(String functionText) {
-				Definition def = definitionModule.getDefinition(entity.getEntryDefId());
+				Definition def = getDefinitionModule().getDefinition(entity.getEntryDefId());
 				User user = RequestContextHolder.getRequestContext().getUser();
 				Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 				String result = "";
@@ -1079,7 +1080,7 @@ public class MarkupUtil {
 			HttpServletRequest httpReq, HttpServletResponse httpRes, UrlBuilder builder, 
 			String entityId, String entityType, String inputString, String type, Boolean isMobile) {
 		if (Validator.isNull(inputString)) return inputString;  //don't waste time
-		StringBuffer outputBuf = new StringBuffer(inputString);
+		StringBuffer outputBuf = new StringBuffer(StringEscapeUtils.unescapeHtml(inputString));
 
 //why?		outputString = outputString.replaceAll("%20", " ");
 //		outputString = outputString.replaceAll("%7B", "{");
@@ -1122,7 +1123,7 @@ public class MarkupUtil {
 			}
 
 			//Replace the markup urls with real urls "cid:{{attachmentUrl: tempFileHandle}}"
-			outputBuf = markupReplaceAttachmentReference(outputBuf, attachmentUrlPattern, builder);
+			outputBuf = markupReplaceAttachmentReference(outputBuf, attachmentUrlPattern2, builder);
 			//Replace the markup urls with real urls "{{attachmentUrl: tempFileHandle}}"
 			outputBuf = markupReplaceAttachmentReference(outputBuf, v2AttachmentUrlPattern, builder);
 
@@ -1811,120 +1812,13 @@ public class MarkupUtil {
 			    	//Scan the text for {{titleUrl: binderId=xxx zoneUUID=xxx title=xxx}}
 					//  Remove the zoneUUID if it is the same as the current zone
 					StringBuffer outputBuf = new StringBuffer(description.getText());
-					Matcher matcher = titleUrlPattern.matcher(outputBuf.toString());
-					int loopDetector;
-					matcher = titleUrlPattern.matcher(outputBuf.toString());
-					if (matcher.find()) {
-						loopDetector = 0;
-						outputBuf = new StringBuffer();
-						do {
-							if (loopDetector++ > 2000) {
-								logger.error("Error processing markup [10]: " + description.getText());
-								break;
-							}
-							if (matcher.groupCount() < 2) continue;
-				    		String link = matcher.group();
-					    		
-							String s_binderId = "";
-							Matcher fieldMatcher = titleUrlBinderPattern.matcher(link);
-							if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_binderId = fieldMatcher.group(1).trim();
-					    	if (!s_binderId.equals("")) {
-					    		Long sourceBinderId = Long.valueOf(s_binderId);
-					    		if (binderIdMap.containsKey(sourceBinderId) && 
-					    				!binderIdMap.get(sourceBinderId).toString().equals(s_binderId)) {
-					    			link = link.replaceFirst("binderId=" + s_binderId + " ", 
-					    					"binderId=" + binderIdMap.get(sourceBinderId).toString() + " ");
-					    		}
-					    	}
-							String s_zoneUUID = "";
-							fieldMatcher = titleUrlZoneUUIDPattern.matcher(link);
-							if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) 
-								s_zoneUUID = fieldMatcher.group(1).trim();
-					    	if (!s_zoneUUID.equals("") && s_zoneUUID.equals(ExportHelper.getZoneInfo().getId().toString())) {
-					    		link = link.replaceFirst("zoneUUID=" + s_zoneUUID, "");
-					    	}
-			    			matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(link.toString()));
-				    	} while (matcher.find());
-						matcher.appendTail(outputBuf);
-						if (!outputBuf.toString().equals(description.getText())) {
-							description.setText(outputBuf.toString());
-							dataChanged = true;
-						}
-					}
-					
-					//Scan for permalinks to fix up
-					outputBuf = new StringBuffer(description.getText());
-					matcher = permaLinkUrlPattern.matcher(outputBuf.toString());
-					if (matcher.find()) {
-						loopDetector = 0;
-						outputBuf = new StringBuffer();
-						do {
-							if (loopDetector++ > 2000) {
-								logger.error("Error processing markup [10.1]: " + description.getText());
-								break;
-							}
-							if (matcher.groupCount() < 1) continue;
-							String s_url = matcher.group(1);
-							String s_entryId = "";
-							Matcher fieldMatcher = permaLinkEntryIdPattern.matcher(s_url);
-							if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_entryId = fieldMatcher.group(1);
-							String s_entryTitle = "";
-							fieldMatcher = permaLinkEntryTitlePattern.matcher(s_url);
-							if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_entryTitle = fieldMatcher.group(1);
-							String s_binderId = "";
-							fieldMatcher = permaLinkBinderIdPattern.matcher(s_url);
-							if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_binderId = fieldMatcher.group(1);
-							String s_entityType = "";
-							fieldMatcher = permaLinkEntityTypePattern.matcher(s_url);
-							if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_entityType = fieldMatcher.group(1);
-							String s_zoneUUID = entity_zoneUUID;
-							fieldMatcher = permaLinkZoneUUIDPattern.matcher(s_url);
-							if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_zoneUUID = fieldMatcher.group(1);
-							String href = "";
-							fieldMatcher = permaLinkHrefPattern.matcher(s_url);
-							if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) href = fieldMatcher.group(1);
-							if (s_zoneUUID != null && !s_zoneUUID.equals("")) {
-								//This permalink was exported from another system. See if it can be recast to this system
-								String url = "";
-								if (!s_binderId.equals("") && binderIdMap.containsKey(Long.valueOf(s_binderId)) && 
-										((EntityType.folder.name().equals(s_entityType)) || 
-										EntityType.workspace.name().equals(s_entityType))) {
-									s_binderId = String.valueOf(binderIdMap.get(Long.valueOf(s_binderId)));
-									url = PermaLinkUtil.getPermalink(Long.valueOf(s_binderId), EntityType.valueOf(s_entityType));
-								}
-								if (!s_entryId.equals("") && entryIdMap.containsKey(Long.valueOf(s_entryId)) &&
-										EntityType.folderEntry.name().equals(s_entityType)) {
-									s_entryId = String.valueOf(entryIdMap.get(Long.valueOf(s_entryId)));
-									url = PermaLinkUtil.getPermalink(Long.valueOf(s_entryId), EntityType.valueOf(s_entityType));
-								}
-								if (!url.equals("")) {
-									s_url = href + url;
-								
-								} else {
-									//Recast the url to this system without doing the id translation
-									if (!s_binderId.equals("") &&  (EntityType.folder.name().equals(s_entityType)) || 
-											EntityType.workspace.name().equals(s_entityType)) {
-										url = PermaLinkUtil.getPermalink(Long.valueOf(s_binderId), EntityType.valueOf(s_entityType));
-									}
-									if (!s_entryId.equals("") && EntityType.folderEntry.name().equals(s_entityType)) {
-										url = PermaLinkUtil.getPermalink(Long.valueOf(s_entryId), EntityType.valueOf(s_entityType));
-									}
-									if (!url.equals("")) {
-										url += "&zoneUUID=" + s_zoneUUID;
-										s_url = href + url;
-									}
-								}
-							}
-					    		
-			    			matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(s_url));
-				    	} while (matcher.find());
-						matcher.appendTail(outputBuf);
-						if (!outputBuf.toString().equals(description.getText())) {
-							description.setText(outputBuf.toString());
-							dataChanged = true;
-						}
-					}
-					
+					outputBuf = fixupV2Urls(outputBuf, v2AttachmentUrlPattern);
+					outputBuf = fixupV2Urls(outputBuf, v2TitleUrlPattern);
+					outputBuf = fixupV2Urls(outputBuf, v2VibeFunctionPattern);
+
+					outputBuf = fixupTitleUrls(outputBuf, titleUrlPattern, binderIdMap);
+					outputBuf = fixupPermalinkUrls(outputBuf, permaLinkUrlPattern, entity_zoneUUID, binderIdMap, entryIdMap);
+					dataChanged = !outputBuf.toString().equals(description.getText());
 				}
 				
 				//Save any changes to the description
@@ -2012,6 +1906,144 @@ public class MarkupUtil {
 				}
 			}
 		}
+	}
+
+	private static StringBuffer fixupPermalinkUrls(StringBuffer inputBuf, Pattern permaLinkUrlPattern, String entity_zoneUUID,
+													 Map<Long, Long> binderIdMap, Map<Long, Long> entryIdMap) {
+		//Scan for permalinks to fix up
+		StringBuffer outputBuf = inputBuf;
+		Matcher matcher = permaLinkUrlPattern.matcher(outputBuf.toString());
+		if (matcher.find()) {
+            int loopDetector = 0;
+            outputBuf = new StringBuffer();
+            do {
+                if (loopDetector++ > 2000) {
+                    logger.error("Error processing markup [10.1]: " + inputBuf.toString());
+                    break;
+                }
+                if (matcher.groupCount() < 1) continue;
+                String s_url = matcher.group(1);
+                String s_entryId = "";
+                Matcher fieldMatcher = permaLinkEntryIdPattern.matcher(s_url);
+                if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_entryId = fieldMatcher.group(1);
+                String s_entryTitle = "";
+                fieldMatcher = permaLinkEntryTitlePattern.matcher(s_url);
+                if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_entryTitle = fieldMatcher.group(1);
+                String s_binderId = "";
+                fieldMatcher = permaLinkBinderIdPattern.matcher(s_url);
+                if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_binderId = fieldMatcher.group(1);
+                String s_entityType = "";
+                fieldMatcher = permaLinkEntityTypePattern.matcher(s_url);
+                if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_entityType = fieldMatcher.group(1);
+                String s_zoneUUID = entity_zoneUUID;
+                fieldMatcher = permaLinkZoneUUIDPattern.matcher(s_url);
+                if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_zoneUUID = fieldMatcher.group(1);
+                String href = "";
+                fieldMatcher = permaLinkHrefPattern.matcher(s_url);
+                if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) href = fieldMatcher.group(1);
+                if (s_zoneUUID != null && !s_zoneUUID.equals("")) {
+                    //This permalink was exported from another system. See if it can be recast to this system
+                    String url = "";
+                    if (!s_binderId.equals("") && binderIdMap.containsKey(Long.valueOf(s_binderId)) &&
+                            ((EntityType.folder.name().equals(s_entityType)) ||
+                            EntityType.workspace.name().equals(s_entityType))) {
+                        s_binderId = String.valueOf(binderIdMap.get(Long.valueOf(s_binderId)));
+                        url = PermaLinkUtil.getPermalink(Long.valueOf(s_binderId), EntityType.valueOf(s_entityType));
+                    }
+                    if (!s_entryId.equals("") && entryIdMap.containsKey(Long.valueOf(s_entryId)) &&
+                            EntityType.folderEntry.name().equals(s_entityType)) {
+                        s_entryId = String.valueOf(entryIdMap.get(Long.valueOf(s_entryId)));
+                        url = PermaLinkUtil.getPermalink(Long.valueOf(s_entryId), EntityType.valueOf(s_entityType));
+                    }
+                    if (!url.equals("")) {
+                        s_url = href + url;
+
+                    } else {
+                        //Recast the url to this system without doing the id translation
+                        if (!s_binderId.equals("") &&  (EntityType.folder.name().equals(s_entityType)) ||
+                                EntityType.workspace.name().equals(s_entityType)) {
+                            url = PermaLinkUtil.getPermalink(Long.valueOf(s_binderId), EntityType.valueOf(s_entityType));
+                        }
+                        if (!s_entryId.equals("") && EntityType.folderEntry.name().equals(s_entityType)) {
+                            url = PermaLinkUtil.getPermalink(Long.valueOf(s_entryId), EntityType.valueOf(s_entityType));
+                        }
+                        if (!url.equals("")) {
+                            url += "&zoneUUID=" + s_zoneUUID;
+                            s_url = href + url;
+                        }
+                    }
+                }
+
+                matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(s_url));
+            } while (matcher.find());
+            matcher.appendTail(outputBuf);
+        }
+		return outputBuf;
+	}
+
+	private static StringBuffer fixupTitleUrls(StringBuffer inputBuf, Pattern titleUrlPattern,
+											   Map<Long, Long> binderIdMap) {
+		StringBuffer outputBuf = inputBuf;
+		Matcher matcher = titleUrlPattern.matcher(inputBuf.toString());
+		int loopDetector;
+		if (matcher.find()) {
+            loopDetector = 0;
+            outputBuf = new StringBuffer();
+            do {
+                if (loopDetector++ > 2000) {
+                    logger.error("Error processing markup [10]: " + inputBuf.toString());
+                    break;
+                }
+                if (matcher.groupCount() < 2) continue;
+                String link = matcher.group();
+
+                String s_binderId = "";
+                Matcher fieldMatcher = titleUrlBinderPattern.matcher(link);
+                if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_binderId = fieldMatcher.group(1).trim();
+                if (!s_binderId.equals("")) {
+                    Long sourceBinderId = Long.valueOf(s_binderId);
+                    if (binderIdMap.containsKey(sourceBinderId) &&
+                            !binderIdMap.get(sourceBinderId).toString().equals(s_binderId)) {
+                        link = link.replaceFirst("binderId=" + s_binderId + " ",
+                                "binderId=" + binderIdMap.get(sourceBinderId).toString() + " ");
+                    }
+                }
+                String s_zoneUUID = "";
+                fieldMatcher = titleUrlZoneUUIDPattern.matcher(link);
+                if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1)
+                    s_zoneUUID = fieldMatcher.group(1).trim();
+                if (!s_zoneUUID.equals("") && s_zoneUUID.equals(ExportHelper.getZoneInfo().getId().toString())) {
+                    link = link.replaceFirst("zoneUUID=" + s_zoneUUID, "");
+                }
+                matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(link.toString()));
+            } while (matcher.find());
+            matcher.appendTail(outputBuf);
+        }
+		return outputBuf;
+	}
+
+	public static String fixupAllV2Urls(String input) {
+		StringBuffer output = new StringBuffer(input);
+		output = fixupV2Urls(output, v2AttachmentUrlPattern);
+		output = fixupV2Urls(output, v2TitleUrlPattern);
+		output = fixupV2Urls(output, v2VibeFunctionPattern);
+		return output.toString();
+	}
+
+	public static StringBuffer fixupV2Urls(StringBuffer inputBuf, Pattern pattern) {
+		StringBuffer outputBuf = inputBuf;
+		Matcher matcher = pattern.matcher(inputBuf);
+		if (matcher.find()) {
+			outputBuf = new StringBuffer();
+			do {
+				if (matcher.groupCount() < 2) continue;
+
+				String expr = "cid:" + matcher.group();
+				matcher.appendReplacement(outputBuf, expr);
+			} while (matcher.find());
+			matcher.appendTail(outputBuf);
+		}
+		return outputBuf;
 	}
 
 	/**

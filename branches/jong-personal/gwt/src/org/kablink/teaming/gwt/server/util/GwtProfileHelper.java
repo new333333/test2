@@ -564,7 +564,7 @@ public class GwtProfileHelper {
 					if(text != null){
 						//added a length of one to skip over a return characters that are in somehow in the value of the attribute
 						if(text.length() > 1){
-							pAttr.setValue(text);
+							pAttr.setHtmlValue(text);
 						}
 					}
 				}

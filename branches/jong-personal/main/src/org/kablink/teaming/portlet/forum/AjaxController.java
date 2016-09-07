@@ -74,6 +74,7 @@ import org.apache.commons.httpclient.HttpsURL;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.DateTools;
 
 import org.dom4j.Document;
@@ -1391,14 +1392,25 @@ public class AjaxController  extends SAbstractControllerRetry {
 		if (binder instanceof TemplateBinder) model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_TEMPLATE);
 		UserProperties userProperties;
 		Map columns = null;
+		String columnSort = null;
 		if (binderId == null) {
 			userProperties = getProfileModule().getUserProperties(null);
 			columns = (Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_RESULTS_FOLDER_COLUMNS);
+			columnSort = (String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMN_SORT_ORDER);
 		} else {
 			userProperties = getProfileModule().getUserProperties(null, binderId);
-			if (!(binder instanceof TemplateBinder)) columns = (Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS);
-			if (columns == null || columns.isEmpty()) 
+			if (!(binder instanceof TemplateBinder)) {
+				columns = (Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS);
+				columnSort = (String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMN_SORT_ORDER);
+			}
+			if (columns == null || columns.isEmpty()) {
 				columns = (Map) binder.getProperty(ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS);
+				List<String> columnSortList = (List<String>) binder.getProperty(ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER_LIST);
+				if (columnSortList!=null) {
+					columnSort = StringUtils.join(columnSortList, "|");
+				}
+			}
+
 			Map entryDefs = DefinitionHelper.getEntryDefsAsMap(binder);
 			Map entryElements = new HashMap();
 			Iterator itDefs = entryDefs.entrySet().iterator();
@@ -1412,6 +1424,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA_MAP, entryElements);
 		}
 		model.put(WebKeys.FOLDER_COLUMNS, columns);
+		model.put(WebKeys.FOLDER_COLUMN_SORT_ORDER, columnSort);
 		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		model.put(WebKeys.FOLDER_TYPE, op2);
 		

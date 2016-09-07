@@ -139,16 +139,24 @@ public abstract class ViewBase extends ResizeComposite
 				width = parent.getOffsetWidth();
 				height = parent.getOffsetHeight() + GwtConstants.BINDER_VIEW_ADJUST;
 			}
-//			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). New size: (" + width + "," + height + ")");
+			//GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). New size: (" + width + "," + height + ")");
 			if (width!=getOffsetWidth()) {
-				setWidth(Math.max(width,0) + "px");
+				setWidth(Math.max(width, getMinimumViewHeight()) + "px");
 			}
 			if (height!=getOffsetHeight()) {
-				setHeight(Math.max(height,0) + "px");
+				setHeight(Math.max(height, getMinimumViewHeight()) + "px");
 			}
 		}
 	}
-	
+
+	public int getMinimumViewHeight() {
+		return 0;
+	}
+
+	protected int getMinimumViewWidth() {
+		return 0;
+	}
+
 	/**
 	 * Called by classes that extend this base class so that it can
 	 * inform the world that its view is ready to go.

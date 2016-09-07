@@ -1113,7 +1113,7 @@
 /* general styles to override the GWT standard.css file */
 
 a, a:visited, a:hover {
-	color: #036f9f !important;
+	color: #036f9f;
 	}
 	
 /* Style used for the AdminActionControl. */
@@ -1881,7 +1881,6 @@ body, table td, select
 	padding-top: 12px;
 	padding-left: 12px;
 	padding-bottom: 12px;
-	width: 350px;
 }
 
 .loginDlg_confirmationImg
@@ -3399,7 +3398,7 @@ body, table td, select
 }
 
 .mfteamingDlgBox .loginDlg_extUserSelfRegHint{
-	width:100% !important;
+	width:90% !important;
 	margin:16px !important;
 }
 
@@ -6754,5 +6753,25 @@ td.datePickerMonth {
 	.vibe-uploadSiteBranding-overwriteHint {font-size: 11px !important; color: #555555; padding-bottom: 10px; width: 500px;}
 	.vibe-uploadSiteBranding-uploadPanel   {}
 /* End:  Upload site branding composite styles. */
+
+/* Fix for Bug 991123 */
+.listWidgetContentPanel_dark .landingPageWidgetMainPanel,
+.listWidgetContentPanel .landingPageWidgetMainPanel{
+	margin: 0em;
+	overflow:hidden;
+}
+
+.listWidgetContentPanel_dark .landingPageWidgetMainPanel span, .listWidgetContentPanel_dark .landingPageWidgetMainPanel a,
+.listWidgetContentPanel .landingPageWidgetMainPanel span, .listWidgetContentPanel .landingPageWidgetMainPanel a{
+	padding-left:0em;
+	font-size:14px !important;
+}
+/* End of Fix for Bug 991123 */
+
+/* Fix for Bug 992470 */
+.customJspWidgetHtmlWithJavaScriptPanel table{
+	float:none !important;
+}
+/* End of Fix for Bug 992470 */
 	
 /* End Of File */
