@@ -180,7 +180,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/chemistry-opencmis-client-impl.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/chemistry-opencmis-commons-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/chemistry-opencmis-commons-impl.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/owasp-java-html-sanitizer-r239.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-io-1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/groovy-all-1.8.9.jar"/>
@@ -213,5 +212,8 @@
 	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc-portlet-4.3.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/websocket-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-websocket-4.3.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/owasp-java-html-sanitizer.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/guava-19.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jsoup.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
