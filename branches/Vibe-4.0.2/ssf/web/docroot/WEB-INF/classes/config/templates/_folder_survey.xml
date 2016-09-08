@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="5" internalId="402883b90cc53079010cc539bf260010">
+  <attribute name="templateTitle" type="string"><![CDATA[__template_folder_survey]]></attribute>
+  <attribute name="templateDescription" type="description"><![CDATA[__template_folder_survey_description]]></attribute>
+  <attribute name="title" type="string"><![CDATA[__template_folder_survey]]></attribute>
+  <attribute name="description" type="description"><![CDATA[]]></attribute>
+  <attribute name="iconName" type="string">/icons/folder_blue_survey.png</attribute>
+  <attribute name="name" type="string">_folder_survey</attribute>
+  <property name="library">false</property>
+  <property name="uniqueTitle">false</property>
+  <property name="inheritFunctionMembership">true</property>
+  <property name="inheritDefinitions">false</property>
+  <property name="inheritTeamMembers">true</property>
+  <definition name="_surveyFolder" databaseId="402883c1129b1f8101129b28bc620005"/>
+  <definition name="_surveyEntry" databaseId="402883c1129b1f8101129b28bbe50004"/>
+</template>

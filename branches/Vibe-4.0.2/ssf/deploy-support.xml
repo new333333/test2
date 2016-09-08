@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+
+<project name="deploy-support">
+
+	<target name="deploy-init">
+		<echo message="##### DEPLOY-SUPPORT #####" />
+		<propertycopy name="app.server.dir" from="app.server.${portal.type}.${app.server.type}.dir" />
+		<propertycopy name="app.server.server.dir" from="app.server.${portal.type}.${app.server.type}.server.dir" />
+		<propertycopy name="app.server.common.lib.dir" from="app.server.${portal.type}.${app.server.type}.common.lib.dir" />
+		<propertycopy name="app.server.shared.lib.dir" from="app.server.${portal.type}.${app.server.type}.shared.lib.dir" />
+		<propertycopy name="app.server.lib.dir" from="app.server.${portal.type}.${app.server.type}.lib.dir" />
+		<propertycopy name="app.server.deploy.dir" from="app.server.${portal.type}.${app.server.type}.deploy.dir" />
+		<propertycopy name="app.server.ssf.dir" from="app.server.${portal.type}.${app.server.type}.ssf.dir" />
+		<propertycopy name="app.server.ssfs.dir" from="app.server.${portal.type}.${app.server.type}.ssfs.dir" />
+	</target>
+	
+	<target name="deploy-jar" depends="deploy-init">
+		<!--<property name="deploy.lib.dir" value="${app.server.ssf.dir}/WEB-INF/lib" />-->
+		<property name="deploy.lib.dir" value="${app.server.shared.lib.dir}" />
+		<copy file="${deploy-support.jar.file}" todir="${deploy.lib.dir}" />
+	</target>
+	
+	<target name="deploy-war" depends="deploy-init">
+		<property name="deploy.war.dir" value="${app.server.deploy.dir}" />
+		<property name="deploy-support.war.dir" value="."/>
+		
+		<if>
+			<or>
+				<equals arg1="${app.server.type}" arg2="jetty" />
+				<equals arg1="${app.server.type}" arg2="tomcat" />
+
+			</or>
+			<then>
+				<delete dir="${deploy.war.dir}/${deploy-support.war.name}" includeemptydirs="true"/>
+				<!--<copy file="${deploy-support.war.name}.war" todir="${deploy.war.dir}" />-->
+				<unwar src="${deploy-support.war.dir}/${deploy-support.war.name}.war" dest="${deploy.war.dir}/${deploy-support.war.name}"/>
+			</then>
+			<elseif>
+				<or>
+					<equals arg1="${app.server.type}" arg2="jboss-jetty" />
+					<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
+				</or>
+				<then>
+					<delete dir="${deploy.war.dir}/${deploy-support.war.name}.war" includeemptydirs="true"/>
+					<unwar src="${deploy-support.war.dir}/${deploy-support.war.name}.war" dest="${deploy.war.dir}/${deploy-support.war.name}.war"/>
+				</then>
+			</elseif>
+		</if>
+	</target>
+	
+	<target name="deploy-jar-into-portal" depends="deploy-init">
+		<property name="deploy.lib.dir" value="${app.server.lib.dir}" />
+		<mkdir dir="${deploy.lib.dir}"/>
+		<copy file="${deploy-support.jar.file}" todir="${deploy.lib.dir}" />
+	</target>
+	
+	<target name="deploy-jar-into-common" depends="deploy-init">
+		<property name="deploy.lib.dir" value="${app.server.common.lib.dir}" />
+		<mkdir dir="${deploy.lib.dir}"/>
+		<copy file="${deploy-support.jar.file}" todir="${deploy.lib.dir}" />
+	</target>
+	
+	<target name="deploy-jar-into-shared" depends="deploy-init">
+		<property name="deploy.lib.dir" value="${app.server.shared.lib.dir}" />
+		<mkdir dir="${deploy.lib.dir}"/>
+		<copy file="${deploy-support.jar.file}" todir="${deploy.lib.dir}" />
+	</target>
+	
+	<target name="deploy-applet" depends="deploy-init">		
+		<copy file="${deploy-support.jar.file}" todir="${app.server.ssf.dir}/${deploy-support.applet.deploy.dir}" />
+	</target>
+
+</project>

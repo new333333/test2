@@ -1,0 +1,675 @@
+<?xml version="1.0"?>
+
+<project name="web" basedir="." default="war">
+	<import file="../build-common.xml" />
+	
+	<property name="war.file" value="ssf-web.war" />
+		
+	<propertycopy name="app.server.dir" from="app.server.${portal.type}.${app.server.type}.dir" />
+	<propertycopy name="app.server.ssf.dir" from="app.server.${portal.type}.${app.server.type}.ssf.dir" />
+	<property name="jsp.artifacts.dir" value="${basedir}/${jspclasses.dir}/${app.server.type}" />
+	<property name="generic.web.xml" value="web.xml"/>
+	<property name="liferay.portal.web.xml" value="liferay-portal.web.xml"/>
+	<property name="jboss.portal.web.xml" value="jboss-portal.web.xml"/>
+	<property name="generic.jboss-web.xml" value="jboss-web.xml"/>
+	<property name="liferay.portal.jboss-web.xml" value="liferay-portal.jboss-web.xml"/>
+	<property name="jboss.portal.jboss-web.xml" value="jboss-portal.jboss-web.xml"/>
+	
+	<target name="clean">
+		<delete dir="temp"/>
+		<delete dir="${jspclasses.dir}" />
+		<delete file="${war.file}" failonerror="false" />
+		<delete>
+			<fileset dir="${web.dir}/WEB-INF"
+				includes="web.xml,*.web.xml,jboss-web.xml,*.jboss-web.xml">
+			</fileset>
+		</delete>
+	</target>
+
+	<target name="make-jboss-web.xml">
+		<!-- Generate jboss-web.xml for Liferay portal -->
+		<delete file="${web.dir}/WEB-INF/${liferay.portal.jboss-web.xml}" />
+		<copy file="${web.dir}/WEB-INF/jboss-web.xml.tmpl" tofile="${web.dir}/WEB-INF/${liferay.portal.jboss-web.xml}" />
+		<replace 
+			file="${web.dir}/WEB-INF/${liferay.portal.jboss-web.xml}" 
+			propertyFile="replace.properties">
+			<replacefilter 
+				token="@@SECURITY_DOMAIN@@"
+				value=""/>
+		</replace>
+
+		<!-- Generate jboss-web.xml for JBoss portal -->
+		<delete file="${web.dir}/WEB-INF/${jboss.portal.jboss-web.xml}" />
+		<copy file="${web.dir}/WEB-INF/jboss-web.xml.tmpl" tofile="${web.dir}/WEB-INF/${jboss.portal.jboss-web.xml}" />
+		<replace 
+			file="${web.dir}/WEB-INF/${jboss.portal.jboss-web.xml}" 
+			propertyFile="replace.properties">
+			<replacefilter 
+				token="@@SECURITY_DOMAIN@@"
+				property="jbossportal.jbosstomcat.jbossweb.security.domain"/>
+		</replace>
+	
+		<!-- Generate generic jboss-web.xml -->
+		<delete file="${web.dir}/WEB-INF/${generic.jboss-web.xml}" />
+		<copy file="${web.dir}/WEB-INF/jboss-web.xml.tmpl" tofile="${web.dir}/WEB-INF/${generic.jboss-web.xml}" />
+		<replace 
+			file="${web.dir}/WEB-INF/${generic.jboss-web.xml}" 
+			propertyFile="replace.properties">
+			<replacefilter 
+				token="@@SECURITY_DOMAIN@@"
+				value="&lt;!-- If running under JBoss Portal, uncomment the following --&gt;${line.separator}&lt;!--${line.separator}@@SECURITY_DOMAIN@@${line.separator}--&gt;${line.separator}"/>
+			<replacefilter 
+				token="@@SECURITY_DOMAIN@@"
+				property="jbossportal.jbosstomcat.jbossweb.security.domain"/>
+		</replace>
+	</target>
+	
+	<target name="make-web.xml">
+		<!-- Generate web.xml for Liferay portal -->
+		<delete file="${web.dir}/WEB-INF/${liferay.portal.web.xml}" />
+		<copy file="${web.dir}/WEB-INF/web.xml.tmpl" tofile="${web.dir}/WEB-INF/${liferay.portal.web.xml}" />
+		<replace 
+			file="${web.dir}/WEB-INF/${liferay.portal.web.xml}" 
+			value=""
+			propertyFile="replace.properties">
+			<replacefilter 
+				token="@@LOGIN_FILTER@@"
+				property="liferayportal.*.web.loginfilter"/>
+			<replacefilter 
+				token="@@TAGLIB_PORTLET@@"/>
+			<replacefilter 
+				token="@@SECURITY@@"/>
+		</replace>
+
+		<!-- Generate web.xml for JBoss portal -->
+		<delete file="${web.dir}/WEB-INF/${jboss.portal.web.xml}" />
+		<copy file="${web.dir}/WEB-INF/web.xml.tmpl" tofile="${web.dir}/WEB-INF/${jboss.portal.web.xml}" />
+		<replace 
+			file="${web.dir}/WEB-INF/${jboss.portal.web.xml}" 
+			value=""
+			propertyFile="replace.properties">
+			<replacefilter 
+				token="@@LOGIN_FILTER@@"/>
+			<replacefilter 
+				token="@@TAGLIB_PORTLET@@"
+				property="jbossportal.jbosstomcat.web.taglib.portlet"/>
+			<replacefilter 
+				token="@@SECURITY@@"
+				property="jbossportal.jbosstomcat.web.security"/>
+		</replace>
+	
+		<!-- Generate generic web.xml -->
+		<delete file="${web.dir}/WEB-INF/${generic.web.xml}" />
+		<copy file="${web.dir}/WEB-INF/web.xml.tmpl" tofile="${web.dir}/WEB-INF/${generic.web.xml}" />
+		<replace 
+			file="${web.dir}/WEB-INF/${generic.web.xml}" 
+			value=""
+			propertyFile="replace.properties">
+			<replacefilter 
+				token="@@LOGIN_FILTER@@"
+				property="standalone.*.web.loginfilter"/>
+			<replacefilter 
+				token="@@TAGLIB_PORTLET@@"
+				property="standalone.*.web.taglib.portlet"/>			
+			<replacefilter 
+				token="@@SECURITY@@"
+				property="standalone.*.web.security"/>			
+		</replace>
+	</target>
+		
+	<target name="make-all-generated-files" depends="make-jboss-web.xml,make-web.xml,make-strings.xml,make-portlet.xml,make-portlet-properties">
+	</target>
+	
+	<target name="war" depends="make-all-generated-files">
+		<war
+			basedir="${web.dir}"
+			destfile="${war.file}"
+			excludes="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml,WEB-INF/xslt/*.tmpl,css/**,js/**,images/**,themes/**"
+			webxml="${web.dir}/WEB-INF/${generic.web.xml}"
+		>
+			<!-- No longer necessary
+			<manifest>
+				<attribute name="Class-Path" value="kablink-teaming-main.jar ${classpath.manifest.ss} ${classpath.manifest.3rd}" />
+			</manifest>-->
+		</war>
+		
+		<!-- Adding the release info must be done before adding the static files to make the static directory setting correct -->
+		<antcall target="add-release-info"/>
+		<antcall target="add-static-files"/>
+		<antcall target="add-messages-files"/>
+	</target>
+
+	<target name="add-static-files">
+  		<property name="web.static.path" value="static/${new.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
+		<delete dir="temp"/>
+	
+		<copy todir="temp/${web.static.path}/css" overwrite="true">
+			<fileset dir="${web.dir}/css" />
+		</copy>
+		<copy todir="temp/${web.static.path}/js" overwrite="true">
+			<fileset dir="${web.dir}/js">
+				<include name="**/*.*"             />
+				<exclude name="**/dojo.changes/**" />
+				<exclude name="**/dojo_1.4.0/**"   />
+			</fileset>
+		</copy>
+		<copy todir="temp/${web.static.path}/images" overwrite="true">
+			<fileset dir="${web.dir}/images" />
+		</copy>
+		<copy todir="temp/${web.static.path}/themes" overwrite="true">
+			<fileset dir="${web.dir}/themes" />
+		</copy>
+		
+		<copy todir="temp/html" overwrite="true" file="${web.dir}/images/pics/mast_head_novell_graphic.png"/>
+
+		<war
+			basedir="temp"
+			destfile="${war.file}"
+			update="true"/>
+
+		<antcall target="add-dojo-changes"/>
+		<antcall target="add-tinymce-changes"/>
+		<antcall target="add-image-themes"/>
+
+		<war
+			basedir="temp"
+			destfile="${war.file}"
+			update="true"/>
+
+	</target>
+
+	<target name="add-dojo-changes">
+  		<property name="web.static.path" value="static/${new.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
+		<delete dir="temp"/>
+		
+		<copy todir="temp/${web.static.path}/js/dojo" overwrite="true">
+			<fileset dir="${web.dir}/js/dojo.changes" />
+		</copy>
+		
+		<war
+			basedir="temp"
+			destfile="${war.file}"
+			update="true"/>
+	</target>
+	
+	<target name="add-tinymce-changes">
+  		<property name="web.static.path" value="static/${new.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
+		<delete dir="temp"/>
+		
+		<copy todir="temp/${web.static.path}/js/tiny_mce_3_5_8/tiny_mce" overwrite="true">
+			<fileset dir="${web.dir}/js/tiny_mce_3_5_8/teaming_changes" />
+		</copy>
+		
+		<war
+			basedir="temp"
+			destfile="${war.file}"
+			update="true"/>
+	</target>
+	
+	<target name="add-image-themes">
+  		<property name="web.static.path" value="static/${new.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
+		<delete dir="temp"/>
+	
+		<copy todir="temp/${web.static.path}/i/icib" overwrite="true">
+			<fileset dir="${web.dir}/images" />
+		</copy>
+		<copy todir="temp/${web.static.path}/i/iccg" overwrite="true">
+			<fileset dir="${web.dir}/images" />
+		</copy>
+		<copy todir="temp/${web.static.path}/i/iccg" overwrite="true">
+			<fileset dir="${web.dir}/themes/iccg" />
+		</copy>
+		<copy todir="temp/${web.static.path}/i/icwg" overwrite="true">
+			<fileset dir="${web.dir}/images" />
+		</copy>
+		<copy todir="temp/${web.static.path}/i/icwg" overwrite="true">
+			<fileset dir="${web.dir}/themes/icwg" />
+		</copy>
+
+		<war
+			basedir="temp"
+			destfile="${war.file}"
+			update="true"/>
+
+	</target>
+
+	<target name="add-messages-files">
+		<delete dir="temp"/>
+	
+		<copy 
+			preservelastmodified="true"
+	        file="${web.dir}/WEB-INF/messages/messages.properties"
+			tofile="temp/WEB-INF/messages/messages_en.properties"/>
+		<copy 
+			preservelastmodified="true"
+			file="${web.dir}/WEB-INF/messages/help-messages.properties"
+			tofile="temp/WEB-INF/messages/help-messages_en.properties"/>
+	
+		<war
+			basedir="temp"
+			destfile="${war.file}"
+			update="true"/>
+
+	</target>
+
+	<target name="add-release-info">
+  		<property name="web.static.path" value="static/${new.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
+		<tstamp>
+	    	<format property="build.timestamp" pattern="MMMM dd, yyyy" />
+	    </tstamp>
+		<if>
+			<not>
+				<isset property="doing-release-build" />
+			</not>
+			<then>
+	    		<if>
+	    			<available file="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties"/>
+	    			<then>
+						<replaceregexp file="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties"
+                         	match="release.static.dir=(.*)"
+                         	replace="release.static.dir=${new.static.dir}"
+                         	byline="true"/>
+            		</then>
+        		</if>
+        	</then>
+        </if>
+		<echo>********* static file directory changed *********</echo>
+		<echo>The static files will now be put in "${web.static.path}"</echo>
+	
+		<delete dir="temp"/>
+	
+		<copy
+			preservelastmodified="true"
+			file="${web.dir}/WEB-INF/classes/config/ssf.properties"
+			tofile="temp/WEB-INF/classes/config/ssf.properties"/>
+	
+		<replace file="temp/WEB-INF/classes/config/ssf.properties">
+			<replacefilter
+				token="release.build.date="
+				value="release.build.date=${build.timestamp}"/>
+			<replacefilter
+				token="release.static.dir="
+				value="release.static.dir=${new.static.dir}"/>
+		</replace>
+
+		<war
+			basedir="temp"
+			destfile="${war.file}"
+			update="true"/>
+
+	</target>
+	
+	<target name="deploy-log4j">
+		<copy todir="${app.server.dir}/conf" overwrite="true">
+			<fileset dir="${project.dir}/conf">
+				<include name="log4j.properties"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="deploy-light">
+		<copy todir="${app.server.ssf.dir}" overwrite="true">
+			<fileset dir="${web.dir}">
+				<include name="WEB-INF/context/applicationContext.xml,WEB-INF/context/additionalContext.xml,WEB-INF/context/security.xml" />
+				<exclude name="js/**" />
+				<exclude name="css/**" />
+				<exclude name="images/**" />
+				<exclude name="themes/**" />
+				<exclude name="i/**" />
+			</fileset>
+		</copy>
+		<copy todir="${app.server.ssf.dir}">
+			<fileset dir="${web.dir}">
+				<exclude name="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml,WEB-INF/xslt/*.tmpl" />
+				<exclude name="js/**" />
+				<exclude name="css/**" />
+				<exclude name="images/**" />
+				<exclude name="themes/**" />
+				<exclude name="i/**" />
+			</fileset>
+		</copy>
+		<antcall target="deploy-static-files" />
+	</target>
+	
+	<target name="deploy-static-files">
+  		<property name="web.static.path" value="static/${web.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
+		<if>
+			<not>
+				<isset property="doing-release-build" />
+			</not>
+			<then>
+				<replaceregexp file="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties"
+                         match="release.static.dir=(.*)"
+                         replace="release.static.dir=${web.static.dir}"
+                         byline="true"/>
+        	</then>
+        </if>
+		<antcall target="deploy-css-only" />
+		<antcall target="deploy-js-only" />
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/images">
+			<fileset dir="${web.dir}/images"/>
+		</copy>
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/themes">
+			<fileset dir="${web.dir}/themes"/>
+		</copy>
+		<antcall target="deploy-image-themes" />
+	</target>
+	
+	<target name="deploy-jsp-only">
+		<copy todir="${app.server.ssf.dir}/WEB-INF/jsp">
+			<fileset dir="${web.dir}/WEB-INF/jsp"
+				includes="**/*.jsp"
+			/>
+		</copy>
+	</target>
+	
+	<target name="deploy-css-only">
+  		<property name="web.static.path" value="static/${web.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/css">
+			<fileset dir="${web.dir}/css"/>
+		</copy>
+	</target>
+	
+	<target name="deploy-js-only">
+  		<property name="web.static.path" value="static/${web.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/js">
+			<fileset dir="${web.dir}/js">
+				<include name="**/*.*"             />
+				<exclude name="**/dojo.changes/**" />
+				<exclude name="**/dojo_1.4.0/**"   />
+			</fileset>
+		</copy>
+		<antcall target="deploy-dojo-changes" />
+		<antcall target="deploy-tinymce-changes" />
+	</target>
+	
+	<target name="deploy-dojo-changes">
+  		<property name="web.static.path" value="static/${web.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/js/dojo" overwrite="true">
+			<fileset dir="${web.dir}/js/dojo.changes">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="deploy-tinymce-changes">
+  		<property name="web.static.path" value="static/${web.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/js/tiny_mce_3_5_8/tiny_mce" overwrite="true">
+			<fileset dir="${web.dir}/js/tiny_mce_3_5_8/teaming_changes">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="deploy-jsp-and-js">
+		<antcall target="deploy-jsp-only" />
+		<antcall target="deploy-js-only" />
+	</target>
+
+	<target name="deploy-messages-only">
+		<copy todir="${app.server.ssf.dir}/WEB-INF/messages">
+			<fileset dir="${web.dir}/WEB-INF/messages"
+				includes="**/*.properties"
+			/>
+		</copy>
+		<copy
+			preservelastmodified="true"
+			file="${web.dir}/WEB-INF/messages/messages.properties"
+			tofile="${app.server.ssf.dir}/WEB-INF/messages/messages_en.properties"/>
+		<copy
+			preservelastmodified="true"
+			file="${web.dir}/WEB-INF/messages/help-messages.properties"
+			tofile="${app.server.ssf.dir}/WEB-INF/messages/help-messages_en.properties"/>
+	</target>
+	
+	<target name="deploy" depends="make-all-generated-files,deploy-light,deploy-messages-only">
+	</target>
+	
+	<target name="precompile-jsp">
+		<if>
+			<equals arg1="${app.server.type}" arg2="tomcat" />
+			<then>
+				<antcall target="precompile-jsp-tomcat" />
+			</then>
+			<elseif>
+				<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
+				<then>
+					<antcall target="precompile-jsp-jboss-tomcat" />
+				</then>
+			</elseif>
+		</if>
+	</target>
+	
+	<!-- We are not using this target that defines a task for JspC compiler
+		 (as opposed to executing the underlying class directly). For whatever 
+		 reason, this runs twice as slow as the other comparable approach. -->
+	<!--
+	<target name="jspc" depends="init">
+		<property name="jsp.artifacts.dir" value="${basedir}/${jspclasses.dir}/${app.server.type}" />
+		
+		<delete dir="${jsp.artifacts.dir}" />
+
+		<path id="jspc.classpath">        
+			<pathelement location="${env.JAVA_HOME}/jre/lib/rt.jar" />
+			<pathelement location="${env.JAVA_HOME}/lib/tools.jar" />
+			<pathelement location="${app.server.dir}/common/lib/commons-el.jar" />
+			<pathelement location="${app.server.dir}/common/lib/jasper-compiler.jar" />
+			<pathelement location="${app.server.dir}/common/lib/jasper-runtime.jar" />
+	        <fileset dir="${app.server.dir}/common/lib">
+	            <include name="**/*.jar"/>
+	        </fileset>
+	        <fileset dir="${app.server.dir}/common/endorsed">
+	            <include name="**/*.jar"/>
+	        </fileset>        
+	    </path>
+		
+		<taskdef classname="org.apache.jasper.JspC" name="jasper2" > 
+			<classpath refid="jspc.classpath"/>
+		</taskdef> 
+
+		<jasper2 
+			validateXml="false" 
+		    uriroot="${app.server.ssf.dir}"
+		    outputDir="${jsp.artifacts.dir}"
+			verbose="9"
+		/> 	
+	</target>
+	-->
+	
+	<target name="precompile-jsp-init-tomcat">
+		<path id="jspc.classpath">        
+			<pathelement location="${env.JAVA_HOME}/jre/lib/rt.jar" />
+			<pathelement location="${env.JAVA_HOME}/lib/tools.jar" />
+			<pathelement location="${app.server.dir}/common/lib/commons-el.jar" />
+			<pathelement location="${app.server.dir}/common/lib/jasper-compiler.jar" />
+			<pathelement location="${app.server.dir}/common/lib/jasper-runtime.jar" />
+	        <fileset dir="${app.server.dir}/common/lib">
+	            <include name="**/*.jar"/>
+	        </fileset>
+	        <fileset dir="${app.server.dir}/common/endorsed">
+	            <include name="**/*.jar"/>
+	        </fileset>        
+	    </path>		
+	</target>
+	
+	<target name="jsp-to-java-tomcat" depends="precompile-jsp-init-tomcat">
+		<java 	classname="org.apache.jasper.JspC"
+				fork="true"
+				newenvironment="true"
+		>
+			<classpath refid="jspc.classpath" />
+			<arg line="-d ${jsp.artifacts.dir} -webapp ${app.server.ssf.dir}" />
+		</java>	 
+	</target>
+	
+	<target name="remove-dependent-java-tomcat" depends="precompile-jsp-init-tomcat">
+		<delete>
+			<fileset dir="${jsp.artifacts.dir}">
+		    	<include name="**/calendar_005fview_005fday_jsp.java"/>
+		    	<include name="**/calendar_005fview_005fmonth_jsp.java"/>
+			    <include name="**/calendar_005fview_005fweek_jsp.java"/>
+		    	<include name="**/calendar_005fnav_005fbar_jsp.java"/>
+		    	<include name="**/calendar_005fview_jsp.java"/>
+		    	<include name="**/collection_005fview_jsp.java"/>
+		    	<include name="**/file_005flibrary_jsp.java"/>
+		    	<include name="**/folder_005flist_005ffolders_jsp.java"/>
+		    	<include name="**/folder_005fview_jsp.java"/>
+		    	<include name="**/view_005fprofile_005fdata_005felement_jsp.java"/>
+		    	<include name="**/view_005fiframe_jsp.java"/>
+		    	<include name="**/view_005fpopup_jsp.java"/>
+		    	<include name="**/view_005fvertical_jsp.java"/>
+		    	<include name="**/view_005fhorizontal_jsp.java"/>
+		    	<include name="**/view_005fforum_005fuser_005ffilters_jsp*.java"/>
+		    	<include name="**/view_005fforum_005fhistory_005fbar_jsp*.java"/>
+		    	<include name="**/view_005fentry_jsp.java"/>
+		    	<include name="**/view_005feventtester_jsp*.java"/>
+		    	<include name="**/view_005ftimepicker_jsp.java"/>
+				<include name="**/view_005fentry_005fdata_005fuser_005flist_jsp.java"/>
+				<include name="**/view_005fentry_005fdata_005flist_jsp.java"/>
+		    	<include name="**/view_005fentry_005fdata_005ftitle_*.java"/>
+			</fileset>
+		</delete>
+	</target>
+	
+	<target name="java-to-class-tomcat" depends="precompile-jsp-init-tomcat">
+	    <javac srcdir="${jsp.artifacts.dir}"
+	           destdir="${jsp.artifacts.dir}"
+	           debug="true"
+	           optimize="false"
+	           source="1.6">
+	            <classpath>
+	                <path refid="jspc.classpath"/>
+	    	        <fileset dir="${app.server.ssf.dir}/WEB-INF/lib">
+	    	            <include name="**/*.jar"/>
+	    	        </fileset>
+	    	        <fileset dir="${app.server.dir}/common/lib/ext">
+	    	            <include name="**/*.jar"/>
+	    	        </fileset>
+	            </classpath>           
+	    </javac>  		
+	</target>
+	
+	<target name="copy-artifacts-to-tomcat" depends="precompile-jsp-init-tomcat">
+		<delete dir="${app.server.dir}/work/Catalina/localhost/ssf" />
+		
+		<mkdir dir="${app.server.dir}/work/Catalina/localhost/ssf" />
+		
+		<copy todir="${app.server.dir}/work/Catalina/localhost/ssf">
+			<fileset dir="${jsp.artifacts.dir}">
+				<exclude name="**/*.jspc_error" />
+			</fileset>
+		</copy>
+		
+	</target>
+	
+	<target name="precompile-jsp-tomcat" depends="precompile-jsp-init-tomcat">
+		<delete dir="${jsp.artifacts.dir}" />
+
+		<antcall target="jsp-to-java-tomcat" />
+		
+		<antcall target="remove-dependent-java-tomcat" />
+		
+		<antcall target="java-to-class-tomcat" />
+		
+		<antcall target="copy-artifacts-to-tomcat" />
+	</target>
+
+	<target name="deploy-image-themes">
+  		<property name="web.static.path" value="static/${web.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/i/icib" overwrite="true">
+			<fileset dir="${web.dir}/images" />
+		</copy>
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/i/iccg" overwrite="true">
+			<fileset dir="${web.dir}/images" />
+		</copy>
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/i/iccg" overwrite="true">
+			<fileset dir="${web.dir}/themes/iccg" />
+		</copy>
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/i/icwg" overwrite="true">
+			<fileset dir="${web.dir}/images" />
+		</copy>
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/i/icwg" overwrite="true">
+			<fileset dir="${web.dir}/themes/icwg" />
+		</copy>
+	</target>
+	
+
+	<target name="make-strings.xml">
+		<!-- not needed with replacement of velocity
+					<java 	classname="org.kablink.teaming.tools.strings.GenerateStringsXml"
+					fork="true"
+					newenvironment="true"
+					failonerror="true"
+			>
+				<classpath refid="project.classpath" />
+				<arg value="${web.dir}/WEB-INF" />
+			</java>	 
+-->
+	</target>
+	<target name="make-portlet.xml">
+				<java 	classname="org.kablink.teaming.tools.portlet.GeneratePortletXml"
+						fork="true"
+						newenvironment="true"
+						failonerror="true"
+				>
+					<classpath refid="project.classpath" />
+					<arg value="${web.dir}/WEB-INF" />
+				</java>	 
+			</target>
+	
+	<target name="make-portlet-properties">
+					<mkdir dir="${web.dir}/WEB-INF/classes/content"/>
+					<java 	classname="org.kablink.teaming.tools.portletproperties.GeneratePortletProperties"
+							fork="true"
+							newenvironment="true"
+							failonerror="true"
+					>
+						<classpath refid="project.classpath" />
+						<arg value="${web.dir}/WEB-INF" />
+					</java>	 
+					<native2ascii encoding="UTF-8" 
+						     	  src="${web.dir}/WEB-INF/classes/content"
+						 	      dest="${web.dir}/WEB-INF/classes/content" 
+							      includes="*.native" ext=".properties" />
+				</target>
+
+
+	<target name="import-deployed-files" description="Import customizations from existing Kablink server.">
+		<propertycopy name="app.server.dir" from="app.server.${portal.type}.${app.server.type}.dir" />
+		<echo>Importing deployed files from ${app.server.dir} to ${project.dir}</echo>
+		<copy todir="${project.dir}/web/docroot/WEB-INF/classes/config">
+			<fileset dir="${app.server.dir}/webapps/ssf/WEB-INF/classes/config">
+				<include name="ssf-ext.properties"/>
+				<include name="zone-ext.cfg.xml"/>
+				<include name="hibernate-ext.cfg.xml"/>
+			</fileset>
+		</copy>
+		<copy todir="${project.dir}/web/docroot/WEB-INF/context">
+			<fileset dir="${app.server.dir}/webapps/ssf/WEB-INF/context">
+				<include name="applicationContext-ext.xml"/>
+			</fileset>
+		</copy>
+		<copy todir="${project.dir}/web/docroot/WEB-INF/messages">
+			<fileset dir="${app.server.dir}/webapps/ssf/WEB-INF/messages">
+				<include name="messages-ext.properties"/>
+			</fileset>
+		</copy>
+		<copy todir="${project.dir}/web/docroot/WEB-INF/jsp/custom_jsps">
+			<fileset dir="${app.server.dir}/webapps/ssf/WEB-INF/jsp/custom_jsps">
+				<include name="**/*.jsp"/>
+				<exclude name="samples/**"/>
+			</fileset>
+		</copy>
+	</target>
+</project>

@@ -1,0 +1,186 @@
+When adding entries to this file, please visit the Filr/Vibe credits
+report (the code lives in credits.jsp) and make SURE your additions
+are covered.
+
+The credits report can be seen from Administration Console, System,
+Reports dialog and then selecting "Credits" from the drop down.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  
+Activation 1.1.1 (from Sun)
+addressing 1.0 (WS-Addressing implementation; required by WSS4J)
+Ant 1.6.2
+Ant Contrib 0.6
+Antlr 2.7.6 (needed by Hibernate)
+aopalliance 1.0 (needed and included by Spring)
+Apache HttpClient 4.3.6 (not to be confused with Apache Commons HttpClient) (used by openid4java, sharepoint driver)
+Apache HttpCore 4.3.3 (Used by HttpClient)
+Apache HttpMime 4.3.6 (Used in conjunction with HttpClient)
+ASM 3.1.0 (from spring distribution, needed by cglib and jersey)
+Asm-attrs 1.5.3 (from spring distribution, needed by cglib)
+Axis 1.4 (removed log4j.properties)
+backport-concurrent.jar 2.1 Concurrent(Backport)
+bcprov-jdk15on.jar 1.52 (BouncyCastle library; required by WSS4J)
+bsh 2.0b2
+cglib 2.2.0(from Hibernate distribution, needed by Hibernate)
+Colt CERN Colt Library 1.2
+Commons Beanutils 1.7 (from spring distribution)
+Commons Codec 1.6 (required by WSS4J, used by HttpClient)
+Commons Collections 3.2.2
+Commons Compress 1.8.1
+Commons Digester 1.8
+Commons Discovery 0.2
+Commons DBCP 1.2.2
+Commons Fileupload 1.2.2 (from spring distribution)
+Commons HttpClient 3.1 (from spring distribution)
+Commons io 1.3.1 (from spring distribution)
+Commons Lang 2.4
+Commons Net 3.3 (for SendMail test program; used by telemetry service)
+Commons Logging 1.1.3 (from Apache HttpClient 4.3.5 distribution)
+Commons Transaction 1.1.1pre1
+Commons XMLIO 0.1pre (for ssfs)
+Concurrent Library 1.3.4
+CyberNeko HTML Parser 1.9.9 (nekohtml.jar - needed by openid4java)
+DbUnit 2.1
+JSR-330: Dependency Injection for Java (javax.inject.jar, Apache License 2.0, used by OpenID4Java)
+dojo 1.9.0 (Dojo Toolkit:  DoJo + Dijit + DojoX)
+dom4j 1.6.1
+draggable-plugin 1.0.4 (Draggable Plugin for gQuery)
+EasyMock 1.2 (Java 1.3)
+Ehcache 2.6.7 (needed by Hibernate)
+enunciate-core-annotations 2.2.0 (Used to generate REST documentation)
+ezmorph 1.0.1
+firebug-lite 1.2
+groovy 1.8.5
+Guice 3.0 (used by openid4java)
+gQuery 1.4.2 (jQuery port to GWT)
+gwt 2.7.0 (Google Web Toolkit)
+gwt-cal 0.9.4 (GWT Calendar widget)
+gwt-crypto 2.3.0-20110518.123759-2 (Crypto module for the Google Web Toolkit)
+gwt-dnd 3.3.1 (GWT drag-and-drop support)
+gwt-log 3.3.1 (GWT logging facility)
+gwt-tour 0.1 (GWT "Tour" facility)
+Hibernate 3.6.0.Final
+hibernate memcached 1.2.2 (Apache License 2.0; http://code.google.com/p/hibernate-memcached)
+ical4j 1.0.3
+icu4j 4.0.1 (needed by jasypt.jar)
+Jackrabbit API 1.4
+Jackrabbit JCR Commons 1.4.2
+Jackrabbit Core 1.4.5
+Jackrabbit SPI 1.4
+Jackrabbit SPI Commons 1.4
+Jackson 1.9.2 (high-performance JSON processor needed by Jersey; This includes core-asl, jaxrs, mapper-asl, and xc)
+Jackson-databind 2.7.0 (Used to generate REST documentation).
+Jakarta Taglibs Standard 1.1
+Jasypt 1.7
+JavaMail 1.5.2 (Oracle's reference implementation)
+java_uno.jar (from OpenOffice 2.0)
+java_uno_accessbridge.jar (from OpenOffice 2.0)
+javassist 3.12.0.GA (from Hibernate distribution, needed by Hibernate)
+javaxt-core 1.5.18 (MIT license, http://www.javaxt.com)
+JAXB implementation 2.1.12 (An implementation of JAXB 2.1 specification needed by Jersey)
+Jaxen 1.1-beta-7
+JAXRPC 1.1
+JBoss App Server 4.2.1.GA jbosssx.jar
+JBoss Common 1.2.0.GA
+JBoss Portal 2.6.1.GA portal-identity-lib.jar
+JBPM 3.1.4 (not using/shipping jbpm-identity;added sequence name patch to *.hbm.xml files http://jira.jboss.com/jira/browse/JBPM-982)
+JCR 1.0
+JDOM 1.0
+Jersey 1.12 (JAX-RS 1.1 JSR311 reference implementation; This includes client, core, json, server, servlet, apache client, and spring libraries)
+Jettison 1.1 (A JSON Streaming API for XML (StAX) implementation needed by Jersey)
+joda-time 2.3
+JPA 2.0 1.0.0.Final (from Hibernate distribution, needed by Hibernate)
+jQuery 1.2.6 (Javascript library)
+jQuery UI Tabs 1.5.2 (Javascript library)
+Json-lib 1.1 for jdk15
+JSoup HTML Parser 1.9.2
+JSR 311 (JAX-RS) API 1.1.1 (from Jersey distribution)
+JSTL 1.0.5H
+JSTL Implementation (from Apache) 1.0.6
+JTA 1.0.1b
+JTDS 1.3.1 (SQL Server JDBC Driver) - 1.3.* requires JDK7 as minimum
+JTidy r938
+juh.jar (from OpenOffice 2.0)
+jurt.jar (from OpenOffice 2.0)
+jut.jar (from OpenOffice 2.0)
+JUnit 4.10
+juniversalchardet  1.0.3
+Jung 1.7.6 visualization library
+kaptcha 2.3 (Used to generate the image used with text verification)
+lib-gwt-file.jar 0.3.6 (GWT W3C File APIs)
+Liferay portal-client.jar 4.3.0
+Liferay portal-impl.jar 4.3.0
+Liferay portal-kernel.jar 4.3.0
+Liferay portal-service.jar 4.3.0
+Liferay util-java.jar 4.3.0 (needed by util-taglib)
+Liquibase 2.0.5
+Liquibase Hibernate integration 2.0.0
+Liquibase MS SQL Server Extensions 1.2.0
+Liquibase Oracle Extensions 1.2.0
+Log4j 1.2.15 (from spring distribution)
+Log4j Extras 1.1 (apache-log4j-extras-1.1.jar, https://logging.apache.org/log4j/extras/)
+log4jdbc4 1.2 (https://code.google.com/p/log4jdbc)
+Lucene 3.4.0
+Lucene contrib analyzers 3.4.0 (previous Lucene snowball library is removed because it is contained in this new library)
+Lucene contrib queries 3.4.0
+Milton 1.7.3 snapshot build (DRF:20150114 - plus SAXParser security fix; JK:20150910 - plus fix for bug #944988 and #944991)
+Mime Type Detection Utility 2.1.3 (mime-util-2.1.3.jar, http://sourceforge.net/projects/mime-util/files/mime-util) (used by Milton)
+MINA (Apache) mina-core.jar 1.1.6
+MINA (Apache) mina-filter-ssl.jar 1.1.6
+MINA (Apache) mina-integration-jmx.jar 1.1.3
+md5crypt.jar 1.0
+Mockito 1.9.5
+MySQL Connector/J 5.1.32 (mysql-connector-java-5.1.32-bin.jar)
+opencmis 0.8.0 (implementation of cmis standard for accessing content management systems)
+    This set of libraries is used in the Sharepoint resource driver for accessing the sharepoint
+    document libraries as Netfolders.OpenID4Java 0.9.6
+Oracle Database 12c Release 1 (12.1.0.1) JDBC Driver for use with JDK 7 (ojdbc7.jar)
+opensaml 1.0.1 (SAML implementation; used by WSS4J)
+oro 2.0.8 (needed by velocity)
+OWASP Java HTML Sanitizer 20160827.1
+POI 2.5-final (for ssfs)
+Portals Bridges 1.0
+Portlet API 2.0 (2.0 refers to specification version, not library version, so we keep in in the file name)
+Quartz 1.8.6 (all)
+RabbitMQ Java client library 3.1.5 (dual-licensed under the MPL and the GPL v2.) NOTE: Spring AMQP/Rabbit requires this library.
+ridl.jar (from OpenOffice 2.0)
+SAAJ 1.2 DO NOT UPGRADE (V1.2 used the ASL1.1, newer versions are from glassfish project which uses cppl and gpl2.0)
+Saxpath 1.0 (for ssfs)
+Servlet 3.0/JSP 2.2
+Simple Logging Facade for Java (SLF4J) api 1.7.7
+Simple Logging Facade for Java (SLF4J) log4j12 1.7.7
+Slide jaas 2.2pre1
+Slide Kernel 2.2pre1
+Slide WCK 1.0
+Slide WebDAV client library 2.1
+Slide Roles 2.2-pre1 (for ssfs)
+Slide Stores 2.2-pre1 (for ssfs)
+Springframework 3.2.9.RELEASE 
+Spring Security 3.2.5.RELEASE
+Spring LDAP 1.3.2.RELEASE
+Spring AMQP 1.3.6.RELEASE (spring-amqp & spring-rabbit)
+Spring Retry 1.1.3 (used in conjunction with Spring AMQP/Rabbit)
+spy memcached 2.10.3 (MIT License; http://code.google.com/p/spymemcached)
+Struts 1.2.9 (removed META-INF/MANIFEST.MF) - Copied from Liferay 4.1.2
+SubEthaSMTP subethasmtp.jar 3.1.7
+StrongTls (for TLS support in SubEthaSMTP)
+swfobject 2.1 (Javascript library)
+tcllib 1.11.1 (for installer)
+tika-core 1.8
+tika-parsers 1.8
+TestNG 6.8
+Tomcat 7.0.64 (Also includes catalina.jar and tomcat-dbcp.jar)
+Trove 3.0.1
+unoil.jar (from OpenOffice 2.0)
+Velocity 1.5
+Velocity-tools-view 1.4
+WSDL4J 1.5.1
+WSS4J 1.5.3
+Xalan 2.7.0 (XPath and XSLT implementation; used by WSS4J and others; also includes serializer)
+Xerces 2.7.1
+xmemcached 1.4.3 (Apache License 2.0)
+xml-apis.jar (from OpenOffice)
+xmlrpc 2.0.1
+xmlsec 1.4.6 (required by WSS4j)
+util-taglib.jar, util-bridges.jar - copied from Liferay 4.3, can be removed after we eliminate references to taglibs from jsps

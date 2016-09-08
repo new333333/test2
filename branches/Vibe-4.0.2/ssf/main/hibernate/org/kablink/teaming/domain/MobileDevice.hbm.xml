@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class table="SS_MobileDevice" dynamic-update="true" lazy="false" dynamic-insert="false" name="org.kablink.teaming.domain.MobileDevice">
+    <composite-id >
+      <key-property name="userId"/>
+      <key-property name="deviceId" length="128"/>
+    </composite-id>
+    <property name="zoneId" access="field"/>  
+    <property name="description" length="255"/>
+    <property name="userTitle" access="field" length="255"/>
+    <property name="lastLogin"/>
+    <property name="lastWipe"/>
+    <property name="wipeScheduled"/>
+  </class>
+</hibernate-mapping>
