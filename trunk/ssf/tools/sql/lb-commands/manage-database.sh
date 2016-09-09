@@ -7,6 +7,7 @@ echo "db types:"
 echo "   mysql           MySQL"
 echo "   oracle          Oracle"
 echo "   sqlserver       MS SQL Server"
+echo "   postgresql      PostgreSQL"
 echo ""
 echo "standard commands (used for updating database):"
 echo "   updateDatabase  Update database to current version by applying un-run change"
@@ -45,7 +46,7 @@ echo ""
 echo "Note: Additional parameters are read in from [db type]-liquibase.properties file."
 }
 
-CLASSPATH=./lib/kablink-teaming-liquibase.jar:./lib/mysql-connector.jar:./lib/ojdbc7.jar:./lib/jtds.jar
+CLASSPATH=./lib/kablink-teaming-liquibase.jar:./lib/mysql-connector.jar:./lib/ojdbc7.jar:./lib/jtds.jar:./lib/postgresql-jre7.jar
 
 # Set default log level. Valid values are debug, info, warning, severe, off.
 LOG_LEVEL=info
@@ -59,7 +60,7 @@ if [ "$1" == "" ] || [ "$2" == "" ]; then
   exit 1
 fi
 
-if [ "$1" != "mysql" ] && [ "$1" != "oracle" ] && [ "$1" != "sqlserver" ]; then
+if [ "$1" != "mysql" ] && [ "$1" != "oracle" ] && [ "$1" != "sqlserver" ] && [ "$1" != "postgresql" ]; then
   echo "Errors:"
   echo "   Invalid database type"
   displayUsage
