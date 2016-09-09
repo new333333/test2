@@ -10,10 +10,10 @@
     </id>
     <property name="zoneId" access="field"/>
     <component name="owner" class="org.kablink.teaming.domain.AnyOwner">
-      <many-to-one name="folderEntry" index="ownerFolderEntry"/>
-      <many-to-one name="principal" index="ownerPrincipal"/>
-      <many-to-one name="binder" index="ownerBinder"/>
-      <any name="entity" id-type="java.lang.Long" meta-type="string" index="entityOwner">
+      <many-to-one name="folderEntry" index="ownerFolderEntry_wfresponse"/>
+      <many-to-one name="principal" index="ownerPrincipal_wfresponse"/>
+      <many-to-one name="binder" index="ownerBinder_wfresponse"/>
+      <any name="entity" id-type="java.lang.Long" meta-type="string" index="entityOwner_wfresponse">
         <meta-value class="org.kablink.teaming.domain.FolderEntry" value="folderEntry"/>
         <meta-value class="org.kablink.teaming.domain.User" value="user"/>
         <meta-value class="org.kablink.teaming.domain.Group" value="group"/>
@@ -27,7 +27,7 @@
       <property name="ownerType" update="false" insert="false"/>
       <property name="ownerId" update="false" insert="false"/>
       <property name="owningBinderKey" length="255"/>
-      <property name="owningBinderId" index="owningBinder"/>
+      <property name="owningBinderId" index="owningBinder_wfresponse"/>
     </component>
     <property name="name" length="64"/>
     <property name="response" length="2000"/>

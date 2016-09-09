@@ -43,7 +43,7 @@
     </map>
     <property name="name" length="128"/>
     <property name="foreignName" length="255" />
-    <property name="typelessDN" length="255" />
+    <property name="typelessDN" length="255" index="typelessDN_principal"/>
     <property name="ldapGuid" length="128" index="ldapGuid_principal"/>
     <property name="objectSid" length="128" index="objectSid_principal"/>
     <property name="samAccountName" length="128"/>
