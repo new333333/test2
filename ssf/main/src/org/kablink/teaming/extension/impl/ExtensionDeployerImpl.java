@@ -105,7 +105,7 @@ import org.springframework.util.FileCopyUtils;
  * @author Nathan Jensen
  */
 @SuppressWarnings({"unchecked", "unused"})
-public class ExtensionDeployerImpl extends CommonDependencyInjection implements ExtensionDeployer {
+public class ExtensionDeployerImpl extends CommonDependencyInjection implements ExtensionDeployer, Runnable {
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	private String infPrefix = "WEB-INF";
@@ -1046,6 +1046,14 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		}
 		
 		return extInfo;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Runnable#run()
+	 */
+	@Override
+	public void run() {
+		this.check();
 	}
 	
 }

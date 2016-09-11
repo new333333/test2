@@ -273,7 +273,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 					ksTail = (File.separator + ksTail); 
 				}
 				ksTail = (File.separator + ".." + File.separator + ".." + ksTail);
-				ksPath = SpringContextUtil.getServletContext().getRealPath(ksTail);
+				ksPath = new File(SpringContextUtil.getServletContext().getRealPath(""), ksTail).getAbsolutePath();
 			}
 			InputStream keyStoreIS = new FileInputStream(ksPath);
 			char[] keyktorePass = getKeystorePass().toCharArray();

@@ -43,6 +43,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContext;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
@@ -237,41 +239,48 @@ public class RunAsyncManager implements InitializingBean, DisposableBean {
 	}
 		
 	private <V> Future<V> _execute(final RunAsyncCallback<V> action, final TaskType taskType, final RequestContext parentRequestContext) throws RejectedExecutionException {
+		final ZoneContext parentZoneContext = ZoneContextHolder.getZoneContext();
 		Callable<V> task = new Callable<V>() {
 			public V call() throws Exception {
-				boolean hadSession = SessionUtil.sessionActive();
+				ZoneContextHolder.setZoneContext(parentZoneContext);
 				try {
-					if (!hadSession)
-						SessionUtil.sessionStartup();	
+					boolean hadSession = SessionUtil.sessionActive();
 					try {
-						// Copy parent/calling thread's request context
-						RequestContextHolder.setRequestContext(parentRequestContext);
-						if(logger.isDebugEnabled()) {
-							if(parentRequestContext != null)
-								logger.debug("Inherit parent's request context " + parentRequestContext.toString());
-							else
-								logger.debug("No request context to inherit from parent");
+						if (!hadSession)
+							SessionUtil.sessionStartup();	
+						try {
+							// Copy parent/calling thread's request context
+							RequestContextHolder.setRequestContext(parentRequestContext);
+							if(logger.isDebugEnabled()) {
+								if(parentRequestContext != null)
+									logger.debug("Inherit parent's request context " + parentRequestContext.toString());
+								else
+									logger.debug("No request context to inherit from parent");
+							}
+							if(logger.isDebugEnabled())
+								logger.debug("Executing " + action.toString());
+							V result = action.doAsynchronously();
+							
+							if(logger.isDebugEnabled()) {
+								if(result != null)
+									logger.debug("Action completed successfully with a return value of type " + result.getClass().getName());
+								else
+									logger.debug("Action completed successfully with no return value");
+							}
+							return result;
 						}
-						if(logger.isDebugEnabled())
-							logger.debug("Executing " + action.toString());
-						V result = action.doAsynchronously();
-						
-						if(logger.isDebugEnabled()) {
-							if(result != null)
-								logger.debug("Action completed successfully with a return value of type " + result.getClass().getName());
-							else
-								logger.debug("Action completed successfully with no return value");
+						finally {
+							RequestContextHolder.clear();
 						}
-						return result;
 					}
 					finally {
-						RequestContextHolder.clear();
-					}
+						if (!hadSession) 
+							SessionUtil.sessionStop();
+					}			
 				}
 				finally {
-					if (!hadSession) 
-						SessionUtil.sessionStop();
-				}				
+					ZoneContextHolder.clear();
+				}
 			}
 		};
 		

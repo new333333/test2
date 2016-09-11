@@ -59,6 +59,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -181,7 +182,7 @@ public class ExternalUserUtil {
 					ExternalUserRespondingToInvitationException exc = new ExternalUserRespondingToInvitationException(user, (openidProvider==null)? null:openidProvider.getName(), url);
 					// Unfortunately, the spring security framework won't store this exception into the session even though
 					// it correctly catches it and triggers redirect to the login page. So we must put it in ourselves.
-					session.setAttribute( AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY, exc);
+					session.setAttribute( WebAttributes.AUTHENTICATION_EXCEPTION, exc);
 					// Store in the session the original access url so that we can redirect the user to correct entity
 					// after successful authentication with OpenID, in the case the user chooses to authenticate via 
 					// OpenID rather than going through the self-provisioning steps.
@@ -207,7 +208,7 @@ public class ExternalUserUtil {
 					ExternalUserRespondingToVerificationException exc = new ExternalUserRespondingToVerificationException(user, url);
 					// Unfortunately, the spring security framework won't store this exception into the session even though
 					// it correctly catches it and triggers redirect to the login page. So we must put it in ourselves.
-					session.setAttribute( AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY, exc);
+					session.setAttribute( WebAttributes.AUTHENTICATION_EXCEPTION, exc);
 					// Store in the session the original access url so that we can redirect the user to correct entity
 					// after successful authentication with OpenID, in the case the user chooses to authenticate via 
 					// OpenID rather than going through the self-provisioning steps.
@@ -268,7 +269,7 @@ public class ExternalUserUtil {
 					
 					// Unfortunately, the spring security framework won't store this exception into the session even though
 					// it correctly catches it and triggers redirect to the login page. So we must put it in ourselves.
-					session.setAttribute( AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY, exc );
+					session.setAttribute( WebAttributes.AUTHENTICATION_EXCEPTION, exc );
 
 					// Store in the session the original access url so that we can redirect the user to correct entity
 					// after successful authentication with OpenID, in the case the user chooses to authenticate via 
@@ -289,7 +290,7 @@ public class ExternalUserUtil {
 
 					// Unfortunately, the spring security framework won't store this exception into the session even though
 					// it correctly catches it and triggers redirect to the login page. So we must put it in ourselves.
-					session.setAttribute( AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY, exc );
+					session.setAttribute( WebAttributes.AUTHENTICATION_EXCEPTION, exc );
 					
 					// Store in the session the original access url so that we can redirect the user to correct entity
 					// after successful authentication with OpenID, in the case the user chooses to authenticate via 

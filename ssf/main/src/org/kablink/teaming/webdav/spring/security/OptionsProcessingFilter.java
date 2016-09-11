@@ -32,8 +32,15 @@
  */
 package org.kablink.teaming.webdav.spring.security;
 
+import java.io.IOException;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
 /**
@@ -44,11 +51,26 @@ public class OptionsProcessingFilter extends AnonymousAuthenticationFilter {
 
 	private static final String OPTIONS_METHOD = "OPTIONS";
 	
-	public OptionsProcessingFilter() {
-		super();
+	public OptionsProcessingFilter(String key, String principalName, String authorityName) {
+		super(key, principalName, AuthorityUtils.createAuthorityList(authorityName));
 	}
 	
+	/*
+	 * Spring 4 removed the deprecated abstract method applyAnonymousForThisRequest
+	 * from its AnonymousAuthenticationFilter class. Therefore, we need to implement
+	 * the same effect by overriding the doFilter() method as in this.
+	 */
 	@Override
+	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
+			throws IOException, ServletException {
+	    if (applyAnonymousForThisRequest((HttpServletRequest) req)) {
+	    	super.doFilter(req, res, chain);
+	    }
+	    else {
+	    	chain.doFilter(req, res);
+	    }
+	}
+
     protected boolean applyAnonymousForThisRequest(HttpServletRequest request) {
         return request.getMethod().equalsIgnoreCase(OPTIONS_METHOD);
     }

@@ -38,25 +38,29 @@ import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.runasync.RunAsyncCallback;
 import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
-
+import org.quartz.impl.JobDetailImpl;
+import org.quartz.impl.triggers.SimpleTriggerImpl;
+import static org.quartz.JobKey.*;
+import static org.quartz.TriggerKey.*;
 
 public abstract class SimpleTriggerJob extends SSStatefulJob {
 	
 	public void schedule(SimpleJobDescription job) {
 		Scheduler scheduler = getScheduler();		
 		try {
-			JobDetail jobDetail=scheduler.getJobDetail(job.getJobName(), job.getJobGroup());
+			JobDetailImpl jobDetail = (JobDetailImpl) scheduler.getJobDetail(jobKey(job.getJobName(), job.getJobGroup()));
 			if (jobDetail == null) {
-				jobDetail = new JobDetail(job.getJobName(), job.getJobGroup(), 
-						Class.forName(this.getClass().getName()),false, job.getDurability(), false);
+				jobDetail = new JobDetailImpl(job.getJobName(), job.getJobGroup(), 
+						(Class<? extends Job>) Class.forName(this.getClass().getName()), job.getDurability(), false);
 				jobDetail.setDescription(job.getJobDescription());
 				jobDetail.setJobDataMap(job.getData());
-				jobDetail.addJobListener(getDefaultCleanupListener());
+				//jobDetail.addJobListener(getDefaultCleanupListener());
 				scheduler.addJob(jobDetail, true);
 			} else {
 		 		//update data if necessary
@@ -65,21 +69,21 @@ public abstract class SimpleTriggerJob extends SSStatefulJob {
 		 			scheduler.addJob(jobDetail, true);
 		 		}
 			}
-			SimpleTrigger trigger = (SimpleTrigger)scheduler.getTrigger(job.getTriggerName(), job.getTriggerGroup());
+			SimpleTriggerImpl trigger = (SimpleTriggerImpl)scheduler.getTrigger(triggerKey(job.getTriggerName(), job.getTriggerGroup()));
 			//	see if job exists
 			if (trigger == null) {
-				trigger = new SimpleTrigger(job.getJobName(), job.getJobGroup(), job.getTriggerName(), job.getTriggerGroup(), job.getStartDate(), job.getEndDate(), 
+				trigger = new SimpleTriggerImpl(job.getJobName(), job.getJobGroup(), job.getTriggerName(), job.getTriggerGroup(), job.getStartDate(), job.getEndDate(), 
 						job.getRepeatCount(),  job.getRepeatSeconds()*1000);
 				trigger.setMisfireInstruction(job.getMisfireInstruction());
 				trigger.setDescription(job.getTriggerDescription());
-				trigger.setVolatility(false);
+				//trigger.setVolatility(false);
 				trigger.setPriority(job.getPriority());
 				scheduler.scheduleJob(trigger);				
 		
 			} else {
 				if (trigger.getRepeatInterval() != job.getRepeatSeconds()*1000) {
 					trigger.setRepeatInterval(job.getRepeatSeconds()*1000);
-					scheduler.rescheduleJob(job.getJobName(), job.getJobGroup(), trigger);
+					scheduler.rescheduleJob(triggerKey(job.getJobName(), job.getJobGroup()), trigger);
 				}
 			} 
 		} catch (SchedulerException se) {			

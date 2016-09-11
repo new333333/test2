@@ -55,6 +55,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
 /**
@@ -452,6 +453,23 @@ public class AttributesAndParamsOnlyServletRequest implements HttpServletRequest
 	}
 
 	public void logout() throws ServletException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public long getContentLengthLong() {
+		// TODO Auto-generated method stub
+		return -1L;
+	}
+
+	@Override
+	public String changeSessionId() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public <T extends HttpUpgradeHandler> T upgrade(Class<T> httpUpgradeHandlerClass)
+			throws IOException, ServletException {
 		throw new UnsupportedOperationException();
 	}
 }

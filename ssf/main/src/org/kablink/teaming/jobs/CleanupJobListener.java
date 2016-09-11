@@ -41,8 +41,7 @@ import org.quartz.JobListener;
 import org.quartz.Scheduler;
 import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import static org.quartz.TriggerKey.*;
 
 /**
  * This listener handles post-processing of jobs. 
@@ -73,7 +72,7 @@ public class CleanupJobListener implements JobListener {
 	 */
 	public void jobToBeExecuted(JobExecutionContext ctx) {
 		if (logger.isDebugEnabled())
-			logger.debug("Starting job " + ctx.getJobDetail().getFullName());
+			logger.debug("Starting job " + ctx.getJobDetail().getKey());
 
 	}
 
@@ -98,24 +97,24 @@ public class CleanupJobListener implements JobListener {
 		try {
 			if (exc == null) {
 				if (DeleteJob.equals(result)) {
-					logger.info("Removing job " + job.getFullName());
-					scheduler.deleteJob(job.getName(),job.getGroup());
+					logger.info("Removing job " + job.getKey());
+					scheduler.deleteJob(job.getKey());
 				} else if (UnscheduleJob.equals(result)) {
-					logger.info("Unscheduling job " + job.getFullName());
-					scheduler.unscheduleJob(job.getName(), job.getGroup());
+					logger.info("Unscheduling job " + job.getKey());
+					scheduler.unscheduleJob(triggerKey(job.getKey().getName(), job.getKey().getGroup()));
 				} else {
 					if (logger.isDebugEnabled())
-							logger.debug("Completed job " + job.getFullName());
+							logger.debug("Completed job " + job.getKey());
 				}
 			} else {
 				if (DeleteJobOnError.equals(result)) {
-					logger.error("Removing job " + job.getFullName() + " after error " + exc.getCause());
-					scheduler.deleteJob(job.getName(),job.getGroup());
+					logger.error("Removing job " + job.getKey() + " after error " + exc.getCause());
+					scheduler.deleteJob(job.getKey());
 				} else if (UnscheduleJobOnError.equals(result)) {
-					logger.error("Unscheduling job " + job.getFullName() + " after error " + exc.getCause());
-					scheduler.unscheduleJob(job.getName(), job.getGroup());
+					logger.error("Unscheduling job " + job.getKey() + " after error " + exc.getCause());
+					scheduler.unscheduleJob(triggerKey(job.getKey().getName(), job.getKey().getGroup()));
 				} else {
-					logger.error("Error running job " + job.getFullName() + " " + exc.getCause());
+					logger.error("Error running job " + job.getKey() + " " + exc.getCause());
 					
 				}
 			}
