@@ -668,6 +668,10 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	@Override
 	public LicenseStats getLicenseHighWaterMark(final Calendar startDate, final Calendar endDate)
 	{
+		// 09/09/2016 JK PostgreSQL database doesn't support max(boolean) clause.
+		// For that reason, we're splitting the original query into two where the
+		// second query is used to see if any of the rows falling within the range
+		// has the boolean flag "guestAccessEnabled" turned on.
 		List marks = (List) getHibernateTemplate().execute(new HibernateCallback() {
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
@@ -681,9 +685,26 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 							.add(Projections.max("internalUserCount"))
 							.add(Projections.max("externalUserCount"))
 							.add(Projections.max("openIdUserCount"))
-							.add(Projections.max("otherExtUserCount"))
-							.add(Projections.max("guestAccessEnabled")))
+							.add(Projections.max("otherExtUserCount")))
 							.list();
+				} 
+				catch (Exception ex) {
+				}
+				
+				return result;
+			}});
+		List marks2 = (List) getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException {
+				List result = null;
+				try {
+					result = session.createCriteria(LicenseStats.class)
+					.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
+					.add(Restrictions.ge("snapshotDate", startDate.getTime()))
+					.add(Restrictions.lt("snapshotDate", endDate.getTime()))
+					.add(Restrictions.eq("guestAccessEnabled", Boolean.TRUE))
+					.setMaxResults(1)
+					.list();
 				} 
 				catch (Exception ex) {
 				}
@@ -702,10 +723,11 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				Long otherExtCount = (Long) cols[3];
 				if (otherExtCount == null) otherExtCount = 0L;
 				stats.setOtherExtUserCount(otherExtCount.longValue());
-				Boolean guestAccessEnabled = (Boolean) cols[4];
-				if (guestAccessEnabled == null) guestAccessEnabled = Boolean.FALSE;
-				stats.setGuestAccessEnabled(guestAccessEnabled);
 			}
+			Boolean guestAccessEnabled = Boolean.FALSE;
+			if(marks2 != null && marks2.size() > 0)
+				guestAccessEnabled = Boolean.TRUE;
+			stats.setGuestAccessEnabled(guestAccessEnabled);			
 		} catch(Exception e) {
 			// Ignore problems at startup that cause cols[] to have nulls
 		}

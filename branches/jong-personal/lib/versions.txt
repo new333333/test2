@@ -143,6 +143,7 @@ OWASP Java HTML Sanitizer 20160827.1
 POI 2.5-final (for ssfs)
 Portals Bridges 1.0
 Portlet API 2.0 (2.0 refers to specification version, not library version, so we keep in in the file name)
+PostgreSQL JDBC Driver 9.4.1210 (postgresql-9.4.1210.jre7.jar renamed to postgresql-jre7.jar; JDBC 4.1 compliant)
 Quartz 2.2.3 (all)
 RabbitMQ Java client library 3.1.5 (dual-licensed under the MPL and the GPL v2.) NOTE: Spring AMQP/Rabbit requires this library.
 ridl.jar (from OpenOffice 2.0)

@@ -32,7 +32,7 @@
 	<div class="email-block">  
 		<div class="email-share">$esc.html(${ssConfirmNotify})</div>  
 		<div class="email-url"><a href="$ssEntityPermalinkurl">$esc.html(${ssSignin})</a></div>
-		<div class="email-logo">Novell<span style="font-size: 8px;">&reg;</span>$esc.html(${ssProduct})</div>
+		<div class="email-logo">Micro Focus<span style="font-size: 8px;">&reg;</span>$esc.html(${ssProduct})</div>
 	</div>
 
 #else
