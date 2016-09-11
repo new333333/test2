@@ -31,3 +31,11 @@ The schema changes for Filr Axion (2.0) and Vibe 4.0.1 releases.
 7. *-changelog-filrproton.xml - 
 
 The schema changes for Filr Proton (only partial up to source code split!) and Vibe 4.0.2 releases.
+
+8. *-changelog-quartz-1.8-to-2.2.xml -
+
+The schema changes for quartz upgrade from 1.8 to 2.2. Aligned with Vibe 4.0.3 release.
+
+9. *-changelog-vibe4.0.3.xml -
+
+The schema changes for Vibe 4.0.3 release

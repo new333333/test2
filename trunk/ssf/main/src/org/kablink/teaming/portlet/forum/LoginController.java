@@ -83,6 +83,7 @@ import org.kablink.util.Validator;
 import org.kablink.util.api.ApiErrorCode;
 
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -216,7 +217,7 @@ public class LoginController  extends SAbstractControllerRetry {
 		
 		// Look in the http session for an authentication exception
         HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
-    	sessionObj = session.getAttribute( AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY );
+    	sessionObj = session.getAttribute( WebAttributes.AUTHENTICATION_EXCEPTION );
     	if ( sessionObj != null )
     	{
     		if ( sessionObj instanceof ExternalUserRespondingToInvitationException )
@@ -391,7 +392,7 @@ public class LoginController  extends SAbstractControllerRetry {
         		}
     		}
 
-    		session.removeAttribute( AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY );
+    		session.removeAttribute( WebAttributes.AUTHENTICATION_EXCEPTION );
     	}
     	else
     	{

@@ -45,7 +45,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/axis-ant.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-collections.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-httpclient.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-lang.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-logging.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/concurrent.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dom4j.jar"/>
@@ -53,9 +52,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/jdom.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jta.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/log4j.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/quartz.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/trove.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/velocity.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/hibernate3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaxen.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/cglib.jar"/>
@@ -121,7 +118,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/commons-fileupload.jar"/>
 	<classpathentry kind="lib" path="lib/commons-compress.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jbpm.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-security-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/catalina.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/kaptcha.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jsp-api.jar"/>
@@ -160,11 +156,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/slf4j-log4j12.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/milton-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/milton-servlet.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/groovy-all.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-security-config.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-security-ldap.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-security-openid.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-security-web.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackson-jaxrs.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackson-mapper-asl.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackson-xc.jar"/>
@@ -175,40 +166,54 @@
 	<classpathentry kind="lib" path="tools/gwt/validation-api-1.0.0.GA.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/openid4java.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/tomcat-jdbc.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-aop.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-aspects.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-beans.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-context-support.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-context.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-core.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-expression.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-instrument-tomcat.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-instrument.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-jdbc.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-ldap-core.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-orm.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-oxm.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-test.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-tx.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-web.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc-portlet.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/httpclient.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/httpcore.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-amqp.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-rabbit.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/rabbitmq-client.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-retry.jar"/>
 	<classpathentry kind="lib" path="lib/tika-core.jar"/>
 	<classpathentry kind="lib" path="lib/tika-parsers.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bcprov-jdk15on.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/httpmime.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/enunciate-core-annotations.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-io.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/chemistry-opencmis-client-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/chemistry-opencmis-client-bindings.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/chemistry-opencmis-client-impl.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/chemistry-opencmis-commons-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/chemistry-opencmis-commons-impl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-io-1.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/groovy-all-1.8.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/quartz-2.2.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/velocity-1.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-amqp-1.6.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-aop-4.3.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-aspects-4.3.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-beans-4.3.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-context-4.3.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-context-support-4.3.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-core-4.3.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-expression-4.3.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-instrument-4.3.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-instrument-tomcat-4.3.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-jdbc-4.3.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-ldap-core-2.1.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-orm-4.3.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-oxm-4.3.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-rabbit-1.6.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-retry-1.1.2.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-security-config-4.1.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-security-core-4.1.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-security-ldap-4.1.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-security-openid-4.1.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-security-web-4.1.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-tx-4.3.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-web-4.3.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc-4.3.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc-portlet-4.3.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/websocket-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-websocket-4.3.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/owasp-java-html-sanitizer.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/guava-19.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jsoup.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

@@ -44,8 +44,8 @@ import javax.naming.RefAddr;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.naming.ResourceRef;
-import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
-import org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory;
+import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
+import org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory;
 import org.kablink.util.encrypt.ExtendedPBEStringEncryptor;
 import org.kablink.util.encrypt.PropertyEncrypt;
 

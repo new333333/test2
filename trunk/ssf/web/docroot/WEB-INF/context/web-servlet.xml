@@ -3,34 +3,34 @@
     xmlns:aop="http://www.springframework.org/schema/aop"
     xmlns:security="http://www.springframework.org/schema/security"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-    http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
-    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-4.3.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.1.xsd">
 
 	<!-- Handler mapping implementation that maps from URLs to request handler beans -->
 	<bean id="defaultHandlerMapping" parent="simpleUrlHandlerMappingTemplate">
 		<property name="urlMap">
 			<map>
-				<entry key="/viewFile"><ref local="viewFile"/></entry>
-				<entry key="/viewFile/*"><ref local="viewFile"/></entry>
-				<entry key="/viewiCal"><ref local="viewiCal"/></entry>				
-				<entry key="/viewCss"><ref local="viewCss"/></entry>				
-				<entry key="/viewCss/**/*"><ref local="viewCss"/></entry>
-				<entry key="/viewDefinitionXml"><ref local="viewDefinitionXml"/></entry>				
-				<entry key="/viewFragment"><ref local="viewFragment"/></entry>
-				<entry key="/reportDownload"><ref local="reportDownload"/></entry>
-				<entry key="/definitionDownload"><ref local="definitionDownload"/></entry>
-				<entry key="/templateDownload"><ref local="templateDownload"/></entry>
-				<entry key="/errorHandler"><ref local="errorHandler"/></entry>
-				<entry key="/__readFile"><ref local="readFile"/></entry>
-				<entry key="/__readFile/**/*"><ref local="readFile"/></entry>
-				<entry key="/readFile"><ref local="readFile"/></entry>
-				<entry key="/readFile/**/*"><ref local="readFile"/></entry>
-				<entry key="/readScaledFile/**/*"><ref local="readScaledFile"/></entry>
-				<entry key="/readThumbnail/**/*"><ref local="readThumbnail"/></entry>
-				<entry key="/portalLogin"><ref local="portalLogin"/></entry>
-				<entry key="/portalLogout"><ref local="portalLogin"/></entry>
+				<entry key="/viewFile"><ref bean="viewFile"/></entry>
+				<entry key="/viewFile/*"><ref bean="viewFile"/></entry>
+				<entry key="/viewiCal"><ref bean="viewiCal"/></entry>				
+				<entry key="/viewCss"><ref bean="viewCss"/></entry>				
+				<entry key="/viewCss/**/*"><ref bean="viewCss"/></entry>
+				<entry key="/viewDefinitionXml"><ref bean="viewDefinitionXml"/></entry>				
+				<entry key="/viewFragment"><ref bean="viewFragment"/></entry>
+				<entry key="/reportDownload"><ref bean="reportDownload"/></entry>
+				<entry key="/definitionDownload"><ref bean="definitionDownload"/></entry>
+				<entry key="/templateDownload"><ref bean="templateDownload"/></entry>
+				<entry key="/errorHandler"><ref bean="errorHandler"/></entry>
+				<entry key="/__readFile"><ref bean="readFile"/></entry>
+				<entry key="/__readFile/**/*"><ref bean="readFile"/></entry>
+				<entry key="/readFile"><ref bean="readFile"/></entry>
+				<entry key="/readFile/**/*"><ref bean="readFile"/></entry>
+				<entry key="/readScaledFile/**/*"><ref bean="readScaledFile"/></entry>
+				<entry key="/readThumbnail/**/*"><ref bean="readThumbnail"/></entry>
+				<entry key="/portalLogin"><ref bean="portalLogin"/></entry>
+				<entry key="/portalLogout"><ref bean="portalLogin"/></entry>
 			</map>
 		</property>
 	</bean>

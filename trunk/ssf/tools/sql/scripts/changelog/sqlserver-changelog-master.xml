@@ -6,4 +6,6 @@
     <include file="scripts/changelog/sqlserver-changelog-filr1.1.1.xml" />
     <include file="scripts/changelog/sqlserver-changelog-filraxion.xml" />
     <include file="scripts/changelog/sqlserver-changelog-filrproton.xml" />
+    <include file="scripts/changelog/sqlserver-changelog-quartz-1.8-to-2.2.xml" />
+    <include file="scripts/changelog/sqlserver-changelog-vibe4.0.3.xml" />
 </databaseChangeLog> 

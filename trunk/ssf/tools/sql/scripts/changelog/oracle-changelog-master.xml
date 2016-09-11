@@ -6,4 +6,6 @@
     <include file="scripts/changelog/oracle-changelog-filr1.1.1.xml" />
     <include file="scripts/changelog/oracle-changelog-filraxion.xml" />
     <include file="scripts/changelog/oracle-changelog-filrproton.xml" />
+    <include file="scripts/changelog/oracle-changelog-quartz-1.8-to-2.2.xml" />
+    <include file="scripts/changelog/oracle-changelog-vibe4.0.3.xml" />
 </databaseChangeLog> 

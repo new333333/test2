@@ -57,10 +57,11 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.StatefulJob;
-
+import static org.quartz.TriggerKey.*;
 
 /**
  * @author Janet McCann
@@ -95,7 +96,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 		try {  
 	           	//zone required
            	if (!jobDataMap.containsKey(ZONEID)) {			
-           		deleteJobOnError(context, new SchedulerException(context.getJobDetail().getFullName() + " : zoneId missing from jobData"));
+           		deleteJobOnError(context, new SchedulerException(context.getJobDetail().getKey() + " : zoneId missing from jobData"));
            	}
            	zoneId = jobDataMap.getLong(ZONEID);
            	if(zoneId != null && zoneId.longValue() == 0L) {
@@ -223,7 +224,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 			logger.debug("Unschedule job '" + jobName + "' of group '" + jobGroup + "'");
 		Scheduler scheduler = getScheduler();		
 		try {
-			scheduler.unscheduleJob(jobName, jobGroup);
+			scheduler.unscheduleJob(triggerKey(jobName, jobGroup));
 		} catch (SchedulerException se) {			
 			logger.error("Failed to unschedule job '" + jobName + "' of group '" + jobGroup + "'" + se);
 		}
@@ -242,7 +243,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 			logger.debug("Delete job '" + jobName + "' of group '" + jobGroup + "'");
 		Scheduler scheduler = getScheduler();
 		try {
-			scheduler.deleteJob(jobName, jobGroup);
+			scheduler.deleteJob(new JobKey(jobName, jobGroup));
 			return true;
 		} catch (SchedulerException se) {
 			logger.error("Failed to delete job '" + jobName + "' of group '" + jobGroup + "'" + se);

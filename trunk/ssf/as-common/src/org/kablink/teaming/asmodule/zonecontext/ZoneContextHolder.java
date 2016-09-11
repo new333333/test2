@@ -39,68 +39,67 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 public class ZoneContextHolder {
-	
-    private static final ThreadLocal<String> SERVER_NAME = new ThreadLocal<String>();
-    private static final ThreadLocal<Integer> SERVER_PORT = new ThreadLocal<Integer>();
-    private static final ThreadLocal<Boolean> IS_SECURE = new ThreadLocal<Boolean>();
-    private static final ThreadLocal<String> CLIENT_ADDR = new ThreadLocal<String>();
-    private static final ThreadLocal<String> WEBAPP_NAME = new ThreadLocal<String>();
-    private static final ThreadLocal<Boolean> USE_RUNTIME_CONTEXT = new ThreadLocal<Boolean>();
-    private static final ThreadLocal<HttpServletRequest> HTTP_SERVLET_REQUEST = new ThreadLocal<HttpServletRequest>();
-    // Used by application to set arbitrary properties. The properties can be set any time during the life cycle
-    // of the request, and cleared at the very end of the request.
-    private static final ThreadLocal<Map<Object,Object>> PROPERTIES = new ThreadLocal<Map<Object,Object>>();
+    
+    private static final ThreadLocal<ZoneContext> ZONE_CONTEXT = new ThreadLocal<ZoneContext>();
 
+    public static ZoneContext getZoneContext() {
+    	return getZoneContext(false);
+    }
+    
+    public static void setZoneContext(ZoneContext context) {
+    	ZONE_CONTEXT.set(context);
+    }
+    
     public static void setServerName(String serverName) {
-    	SERVER_NAME.set(serverName.toLowerCase());
+    	getZoneContext(true).setServerName(serverName.toLowerCase());
     }
     
     public static String getServerName() {
-    	return SERVER_NAME.get();
+    	return (ZONE_CONTEXT.get() == null)? null : ZONE_CONTEXT.get().getServerName();
     }
     
     public static void setServerPort(Integer serverPort) {
-    	SERVER_PORT.set(serverPort);
+    	getZoneContext(true).setServerPort(serverPort);
     }
     
     public static Integer getServerPort() {
-    	return SERVER_PORT.get();
+    	return (ZONE_CONTEXT.get() == null)? null : ZONE_CONTEXT.get().getServerPort();
     }
     
     public static void setSecure(Boolean secure) {
-    	IS_SECURE.set(secure);
+    	getZoneContext(true).setSecure(secure);
     }
     
     public static Boolean isSecure() {
-    	return IS_SECURE.get();
+    	return (ZONE_CONTEXT.get() == null)? null : ZONE_CONTEXT.get().getSecure();
     }
     
     public static void setClientAddr(String clientAddr) {
-    	CLIENT_ADDR.set(clientAddr);
+    	getZoneContext(true).setClientAddr(clientAddr);
     }
     
     public static String getClientAddr() {
-    	return CLIENT_ADDR.get();
+    	return (ZONE_CONTEXT.get() == null)? null : ZONE_CONTEXT.get().getClientAddr();
     }
     
     public static void setWebappName(String webappName) {
-    	WEBAPP_NAME.set(webappName.toLowerCase());
+    	getZoneContext(true).setWebappName(webappName);
     }
     
     public static String getWebappName() {
-    	return WEBAPP_NAME.get();
+    	return (ZONE_CONTEXT.get() == null)? null : ZONE_CONTEXT.get().getWebappName();
     }
     
     public static void setUseRuntimeContext(Boolean useRuntimeContext) {
-    	USE_RUNTIME_CONTEXT.set(useRuntimeContext);
+    	getZoneContext(true).setUseRuntimeContext(useRuntimeContext);
     }
     
     public static Boolean getUseRuntimeContext() {
-    	return USE_RUNTIME_CONTEXT.get();
+    	return (ZONE_CONTEXT.get() == null)? null : ZONE_CONTEXT.get().getUseRuntimeContext();
     }
     
     public static Object getProperty(Object key) {
-    	Map<Object,Object> properties = PROPERTIES.get();
+    	Map<Object,Object> properties = ZONE_CONTEXT.get().getProperties();
     	if(properties == null)
     		return null;
     	else
@@ -108,20 +107,20 @@ public class ZoneContextHolder {
     }
     
     public static void setProperty(Object key, Object value) {
-    	Map<Object,Object> properties = PROPERTIES.get();
+    	Map<Object,Object> properties = getZoneContext(true).getProperties();
     	if(properties == null) {
     		properties = new HashMap<Object,Object>();
-    		PROPERTIES.set(properties);
+    		getZoneContext(false).setProperties(properties);
     	}
     	properties.put(key, value);
     }
     
     public static HttpServletRequest getHttpServletRequest() {
-    	return HTTP_SERVLET_REQUEST.get();
+    	return (ZONE_CONTEXT.get() == null)? null : ZONE_CONTEXT.get().getHttpServletRequest();
     }
     
     public static void setHttpServletRequest(HttpServletRequest httpServletRequest) {
-    	HTTP_SERVLET_REQUEST.set(httpServletRequest);
+    	getZoneContext(true).setHttpServletRequest(httpServletRequest);
     }
     
     public static HttpSession getHttpSession() {
@@ -132,15 +131,16 @@ public class ZoneContextHolder {
     }
     
     public static void clear() {
-    	SERVER_NAME.set(null);
-    	SERVER_PORT.set(null);
-    	IS_SECURE.set(null);
-    	CLIENT_ADDR.set(null);
-    	WEBAPP_NAME.set(null);
-    	USE_RUNTIME_CONTEXT.set(null);
-    	HTTP_SERVLET_REQUEST.set(null);
-    	Map<Object,Object> properties = PROPERTIES.get();
-    	if(properties != null)
-    		properties.clear();
+    	setZoneContext(null);
     }
+    
+    private static ZoneContext getZoneContext(boolean create) {
+    	ZoneContext zc = ZONE_CONTEXT.get();
+    	if(zc == null && create) {
+    		zc = new ZoneContext();
+    		setZoneContext(zc);
+    	}
+    	return zc;
+    }
+
 }

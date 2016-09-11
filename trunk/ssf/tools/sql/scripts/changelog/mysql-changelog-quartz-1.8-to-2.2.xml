@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+	<!-- Drop tables that are no longer used -->
+	
+    <changeSet author="jong" context="schema" failOnError="true" id="1-1">
+   	    <sql>drop table SSQRTZ_JOB_LISTENERS;</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="1-2">
+   	    <sql>drop table SSQRTZ_TRIGGER_LISTENERS;</sql>
+    </changeSet>
+
+	<!--  Drop columns that are no longer used -->
+	
+    <changeSet author="jong" context="schema" failOnError="true" id="2-1">
+   	    <sql>alter table SSQRTZ_JOB_DETAILS drop column IS_VOLATILE;</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="2-2">
+   	    <sql>alter table SSQRTZ_TRIGGERS drop column IS_VOLATILE;</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="2-3">
+   	    <sql>alter table SSQRTZ_FIRED_TRIGGERS drop column IS_VOLATILE;</sql>
+    </changeSet>
+
+	<!-- Add new columns that replace the 'IS_STATEFUL' column -->
+	
+    <changeSet author="jong" context="schema" failOnError="true" id="3-1">
+   	    <sql>alter table SSQRTZ_JOB_DETAILS add column IS_NONCONCURRENT VARCHAR(1);</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="3-2">
+   	    <sql>alter table SSQRTZ_JOB_DETAILS add column IS_UPDATE_DATA VARCHAR(1);</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="3-3">
+   	    <sql>update SSQRTZ_JOB_DETAILS set IS_NONCONCURRENT = IS_STATEFUL;</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="3-4">
+   	    <sql>update SSQRTZ_JOB_DETAILS set IS_UPDATE_DATA = IS_STATEFUL;</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="3-5">
+   	    <sql>alter table SSQRTZ_JOB_DETAILS drop column IS_STATEFUL;</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="3-6">
+   	    <sql>alter table SSQRTZ_FIRED_TRIGGERS add column IS_NONCONCURRENT VARCHAR(1);</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="3-8">
+   	    <sql>update SSQRTZ_FIRED_TRIGGERS set IS_NONCONCURRENT = IS_STATEFUL;</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="3-10">
+   	    <sql>alter table SSQRTZ_FIRED_TRIGGERS drop column IS_STATEFUL;</sql>
+    </changeSet>
+
+	<!-- Add new 'SCHED_NAME' column to all tables -->
+	
+    <changeSet author="jong" context="schema" failOnError="true" id="4-1">
+   	    <sql>alter table SSQRTZ_BLOB_TRIGGERS add column SCHED_NAME VARCHAR(60) not null DEFAULT 'Sitescape';</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="4-2">
+   	    <sql>alter table SSQRTZ_CALENDARS add column SCHED_NAME VARCHAR(60) not null DEFAULT 'Sitescape';</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="4-3">
+   	    <sql>alter table SSQRTZ_CRON_TRIGGERS add column SCHED_NAME VARCHAR(60) not null DEFAULT 'Sitescape';</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="4-4">
+   	    <sql>alter table SSQRTZ_FIRED_TRIGGERS add column SCHED_NAME VARCHAR(60) not null DEFAULT 'Sitescape';</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="4-5">
+   	    <sql>alter table SSQRTZ_JOB_DETAILS add column SCHED_NAME VARCHAR(60) not null DEFAULT 'Sitescape';</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="4-6">
+   	    <sql>alter table SSQRTZ_LOCKS add column SCHED_NAME VARCHAR(60) not null DEFAULT 'Sitescape';</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="4-7">
+   	    <sql>alter table SSQRTZ_PAUSED_TRIGGER_GRPS add column SCHED_NAME VARCHAR(60) not null DEFAULT 'Sitescape';</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="4-8">
+   	    <sql>alter table SSQRTZ_SCHEDULER_STATE add column SCHED_NAME VARCHAR(60) not null DEFAULT 'Sitescape';</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="4-9">
+   	    <sql>alter table SSQRTZ_SIMPLE_TRIGGERS add column SCHED_NAME VARCHAR(60) not null DEFAULT 'Sitescape';</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="4-10">
+   	    <sql>alter table SSQRTZ_TRIGGERS add column SCHED_NAME VARCHAR(60) not null DEFAULT 'Sitescape';</sql>
+    </changeSet>
+
+	<!-- Drop all foreign key constraints, so that we can define new ones -->
+
+    <changeSet author="jong" context="schema" failOnError="true" id="5-1">
+   	    <sql>alter table SSQRTZ_TRIGGERS drop foreign key FK_SSQRTZ_TRIGGERS_SSQRTZ_JOB_DETAILS;</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="5-2">
+   	    <sql>alter table SSQRTZ_BLOB_TRIGGERS drop foreign key FK_SSQRTZ_BLOB_TRIGGERS_SSQRTZ_TRIGGERS;</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="5-3">
+   	    <sql>alter table SSQRTZ_CRON_TRIGGERS drop foreign key FK_SSQRTZ_CRON_TRIGGERS_SSQRTZ_TRIGGERS;</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="5-4">
+   	    <sql>alter table SSQRTZ_SIMPLE_TRIGGERS drop foreign key FK_SSQRTZ_SIMPLE_TRIGGERS_SSQRTZ_TRIGGERS;</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="5-5">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="FK_SSQRTZ_TRIGGERS_SSQRTZ_JOB_DETAILS"/>
+        </preConditions>
+        <dropIndex indexName="FK_SSQRTZ_TRIGGERS_SSQRTZ_JOB_DETAILS" tableName="SSQRTZ_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="5-6">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="FK_SSQRTZ_BLOB_TRIGGERS_SSQRTZ_TRIGGERS"/>
+        </preConditions>
+        <dropIndex indexName="FK_SSQRTZ_BLOB_TRIGGERS_SSQRTZ_TRIGGERS" tableName="SSQRTZ_BLOB_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="5-7">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="FK_SSQRTZ_CRON_TRIGGERS_SSQRTZ_TRIGGERS"/>
+        </preConditions>
+        <dropIndex indexName="FK_SSQRTZ_CRON_TRIGGERS_SSQRTZ_TRIGGERS" tableName="SSQRTZ_CRON_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="5-8">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="FK_SSQRTZ_SIMPLE_TRIGGERS_SSQRTZ_TRIGGERS"/>
+        </preConditions>
+        <dropIndex indexName="FK_SSQRTZ_SIMPLE_TRIGGERS_SSQRTZ_TRIGGERS" tableName="SSQRTZ_SIMPLE_TRIGGERS"/>        
+    </changeSet>
+
+	<!-- Drop all primary key constraints, so that we can define new ones -->
+
+    <changeSet author="jong" context="schema" failOnError="true" id="6-1">
+   	    <sql>alter table SSQRTZ_BLOB_TRIGGERS drop primary key;</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="6-2">
+   	    <sql>alter table SSQRTZ_SIMPLE_TRIGGERS drop primary key;</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="6-3">
+   	    <sql>alter table SSQRTZ_CRON_TRIGGERS drop primary key;</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="6-4">
+   	    <sql>alter table SSQRTZ_JOB_DETAILS drop primary key;</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="6-5">
+   	    <sql>alter table SSQRTZ_TRIGGERS drop primary key;</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="6-6">
+   	    <sql>alter table SSQRTZ_FIRED_TRIGGERS drop primary key;</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="6-7">
+   	    <sql>alter table SSQRTZ_CALENDARS drop primary key;</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="6-8">
+   	    <sql>alter table SSQRTZ_LOCKS drop primary key;</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="6-9">
+   	    <sql>alter table SSQRTZ_PAUSED_TRIGGER_GRPS drop primary key;</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="6-10">
+   	    <sql>alter table SSQRTZ_SCHEDULER_STATE drop primary key;</sql>
+    </changeSet>
+
+	<!-- Add all primary key constraints, based on new columns -->
+	
+    <changeSet author="jong" context="schema" failOnError="true" id="7-1">
+   	    <sql>alter table SSQRTZ_JOB_DETAILS add primary key (SCHED_NAME, JOB_NAME, JOB_GROUP);</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="7-2">
+   	    <sql>alter table SSQRTZ_TRIGGERS add primary key (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP);</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="7-3">
+   	    <sql>alter table SSQRTZ_BLOB_TRIGGERS add primary key (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP);</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="7-4">
+   	    <sql>alter table SSQRTZ_CRON_TRIGGERS add primary key (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP);</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="7-5">
+   	    <sql>alter table SSQRTZ_SIMPLE_TRIGGERS add primary key (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP);</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="7-6">
+   	    <sql>alter table SSQRTZ_FIRED_TRIGGERS add primary key (SCHED_NAME, ENTRY_ID);</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="7-7">
+   	    <sql>alter table SSQRTZ_CALENDARS add primary key (SCHED_NAME, CALENDAR_NAME);</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="7-8">
+   	    <sql>alter table SSQRTZ_LOCKS add primary key (SCHED_NAME, LOCK_NAME);</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="7-9">
+   	    <sql>alter table SSQRTZ_PAUSED_TRIGGER_GRPS add primary key (SCHED_NAME, TRIGGER_GROUP);</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="7-10">
+   	    <sql>alter table SSQRTZ_SCHEDULER_STATE add primary key (SCHED_NAME, INSTANCE_NAME);</sql>
+    </changeSet>
+
+    <!-- Add all foreign key constraints, based on new columns -->
+
+    <changeSet author="jong" context="schema" failOnError="true" id="8-1">
+   	    <sql>alter table SSQRTZ_TRIGGERS add constraint FK_SSQRTZ_TRIGGERS_SSQRTZ_JOB_DETAILS foreign key (SCHED_NAME, JOB_NAME, JOB_GROUP) references SSQRTZ_JOB_DETAILS(SCHED_NAME, JOB_NAME, JOB_GROUP);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="8-2">
+   	    <sql>alter table SSQRTZ_BLOB_TRIGGERS add constraint FK_SSQRTZ_BLOB_TRIGGERS_SSQRTZ_TRIGGERS foreign key (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP) references SSQRTZ_TRIGGERS(SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="8-3">
+   	    <sql>alter table SSQRTZ_CRON_TRIGGERS add constraint FK_SSQRTZ_CRON_TRIGGERS_SSQRTZ_TRIGGERS foreign key (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP) references SSQRTZ_TRIGGERS(SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="8-4">
+   	    <sql>alter table SSQRTZ_SIMPLE_TRIGGERS add constraint FK_SSQRTZ_SIMPLE_TRIGGERS_SSQRTZ_TRIGGERS foreign key (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP) references SSQRTZ_TRIGGERS(SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP);</sql>
+    </changeSet>	
+    
+    <!-- Create new SSQRTZ_SIMPROP_TRIGGERS table -->
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="9-1">
+   	    <sql>
+CREATE TABLE SSQRTZ_SIMPROP_TRIGGERS
+  (          
+    SCHED_NAME VARCHAR(60) NOT NULL,
+    TRIGGER_NAME VARCHAR(100) NOT NULL,
+    TRIGGER_GROUP VARCHAR(100) NOT NULL,
+    STR_PROP_1 VARCHAR(255) NULL,
+    STR_PROP_2 VARCHAR(255) NULL,
+    STR_PROP_3 VARCHAR(255) NULL,
+    INT_PROP_1 INT NULL,
+    INT_PROP_2 INT NULL,
+    LONG_PROP_1 BIGINT NULL,
+    LONG_PROP_2 BIGINT NULL,
+    DEC_PROP_1 NUMERIC(13,4) NULL,
+    DEC_PROP_2 NUMERIC(13,4) NULL,
+    BOOL_PROP_1 VARCHAR(1) NULL,
+    BOOL_PROP_2 VARCHAR(1) NULL,
+    PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP),
+    CONSTRAINT FK_SSQRTZ_SIMPROP_TRIGGERS_SSQRTZ_TRIGGERS FOREIGN KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP) 
+    REFERENCES SSQRTZ_TRIGGERS(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP))
+ENGINE=InnoDB;
+   	    </sql>
+    </changeSet>	
+    
+    <!-- Create indexes for faster queries -->
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="10-1">
+   	    <sql>CREATE INDEX IDX_QRTZ_J_REQ_RECOVERY ON SSQRTZ_JOB_DETAILS(SCHED_NAME,REQUESTS_RECOVERY);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="10-2">
+   	    <sql>CREATE INDEX IDX_QRTZ_J_GRP ON SSQRTZ_JOB_DETAILS(SCHED_NAME,JOB_GROUP);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="10-3">
+   	    <sql>CREATE INDEX IDX_QRTZ_T_J ON SSQRTZ_TRIGGERS(SCHED_NAME,JOB_NAME,JOB_GROUP);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="10-4">
+   	    <sql>CREATE INDEX IDX_QRTZ_T_JG ON SSQRTZ_TRIGGERS(SCHED_NAME,JOB_GROUP);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="10-5">
+   	    <sql>CREATE INDEX IDX_QRTZ_T_C ON SSQRTZ_TRIGGERS(SCHED_NAME,CALENDAR_NAME);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="10-6">
+   	    <sql>CREATE INDEX IDX_QRTZ_T_G ON SSQRTZ_TRIGGERS(SCHED_NAME,TRIGGER_GROUP);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="10-7">
+   	    <sql>CREATE INDEX IDX_QRTZ_T_STATE ON SSQRTZ_TRIGGERS(SCHED_NAME,TRIGGER_STATE);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="10-8">
+   	    <sql>CREATE INDEX IDX_QRTZ_T_N_STATE ON SSQRTZ_TRIGGERS(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP,TRIGGER_STATE);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="10-9">
+   	    <sql>CREATE INDEX IDX_QRTZ_T_N_G_STATE ON SSQRTZ_TRIGGERS(SCHED_NAME,TRIGGER_GROUP,TRIGGER_STATE);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="10-10">
+   	    <sql>CREATE INDEX IDX_QRTZ_T_NEXT_FIRE_TIME ON SSQRTZ_TRIGGERS(SCHED_NAME,NEXT_FIRE_TIME);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="10-11">
+   	    <sql>CREATE INDEX IDX_QRTZ_T_NFT_ST ON SSQRTZ_TRIGGERS(SCHED_NAME,TRIGGER_STATE,NEXT_FIRE_TIME);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="10-12">
+   	    <sql>CREATE INDEX IDX_QRTZ_T_NFT_MISFIRE ON SSQRTZ_TRIGGERS(SCHED_NAME,MISFIRE_INSTR,NEXT_FIRE_TIME);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="10-13">
+   	    <sql>CREATE INDEX IDX_QRTZ_T_NFT_ST_MISFIRE ON SSQRTZ_TRIGGERS(SCHED_NAME,MISFIRE_INSTR,NEXT_FIRE_TIME,TRIGGER_STATE);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="10-14">
+   	    <sql>CREATE INDEX IDX_QRTZ_T_NFT_ST_MISFIRE_GRP ON SSQRTZ_TRIGGERS(SCHED_NAME,MISFIRE_INSTR,NEXT_FIRE_TIME,TRIGGER_GROUP,TRIGGER_STATE);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="10-15">
+   	    <sql>CREATE INDEX IDX_QRTZ_FT_TRIG_INST_NAME ON SSQRTZ_FIRED_TRIGGERS(SCHED_NAME,INSTANCE_NAME);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="10-16">
+   	    <sql>CREATE INDEX IDX_QRTZ_FT_INST_JOB_REQ_RCVRY ON SSQRTZ_FIRED_TRIGGERS(SCHED_NAME,INSTANCE_NAME,REQUESTS_RECOVERY);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="10-17">
+   	    <sql>CREATE INDEX IDX_QRTZ_FT_J_G ON SSQRTZ_FIRED_TRIGGERS(SCHED_NAME,JOB_NAME,JOB_GROUP);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="10-18">
+   	    <sql>CREATE INDEX IDX_QRTZ_FT_JG ON SSQRTZ_FIRED_TRIGGERS(SCHED_NAME,JOB_GROUP);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="10-19">
+   	    <sql>CREATE INDEX IDX_QRTZ_FT_T_G ON SSQRTZ_FIRED_TRIGGERS(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP);</sql>
+    </changeSet>	
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="10-20">
+   	    <sql>CREATE INDEX IDX_QRTZ_FT_TG ON SSQRTZ_FIRED_TRIGGERS(SCHED_NAME,TRIGGER_GROUP);</sql>
+    </changeSet>	
+
+	<!-- Add new 'SCHED_TIME' column to 'SSQRTZ_FIRED_TRIGGERS' table -->
+	
+    <changeSet author="jong" context="schema" failOnError="true" id="11-1">
+   	    <sql>alter table SSQRTZ_FIRED_TRIGGERS add column SCHED_TIME BIGINT(13) not null;</sql>
+    </changeSet>
+
+</databaseChangeLog>
