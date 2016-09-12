@@ -107,7 +107,13 @@ public abstract class SimpleTriggerJob extends SSStatefulJob {
 		protected Long zoneId;
 		protected String jobName, jobGroup, jobDescription;
 		int seconds;
-		boolean durability = false;
+		// 09/12/2016 JK - Quartz 2.x throws SchedulerException("Jobs added with no trigger must be durable.")
+		// exception when attempting to save a job with durability set to false when there's no
+		// associated trigger in the database. However, if you try to create a trigger before 
+		// creating associated job, it throws an error saying that associated job isn't found. 
+		// So, basically, you're stuck, and the only option seems to be to create all jobs
+		// with durability set to true whether you want it or not. So, here we go.
+		boolean durability = true;
 		int priority = 5;
 		SimpleJobDescription(Long zoneId) {
 			this.zoneId = zoneId;
