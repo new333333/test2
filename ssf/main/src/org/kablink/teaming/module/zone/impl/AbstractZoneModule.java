@@ -1389,7 +1389,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			ScheduleInfo pruneSchedInfo = getAdminModule().getLogTablePurgeSchedule();
 			getAdminModule().setLogTablePurgeSchedule(pruneSchedInfo);
 			
-			setupInitialOpenIDProviderList();
+			// No longer supports OpenID
+			//setupInitialOpenIDProviderList();
 
     		return top;
  	}
