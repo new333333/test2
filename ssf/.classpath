@@ -116,23 +116,23 @@
 	<classpathentry exported="true" kind="lib" path="lib/subethasmtp.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-net.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-fileupload.jar"/>
-	<classpathentry kind="lib" path="lib/commons-compress.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-compress.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jbpm.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/catalina.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/kaptcha.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jsp-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/servlet-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/md5crypt.jar"/>
-	<classpathentry kind="lib" path="tools/gwt/gwt-servlet-deps.jar"/>
-	<classpathentry kind="lib" path="lib/gwt-cal.jar"/>
-	<classpathentry kind="lib" path="lib/gwt-crypto.jar"/>
-	<classpathentry kind="lib" path="tools/gwt/gwt-dnd.jar"/>
-	<classpathentry kind="lib" path="tools/gwt/gwt-log.jar"/>
-	<classpathentry kind="lib" path="lib/gwtquery.jar"/>
-	<classpathentry kind="lib" path="lib/draggable-plugin.jar"/>
-	<classpathentry kind="lib" path="lib/lib-gwt-file.jar"/>
-	<classpathentry kind="lib" path="lib/gwt-tour.jar"/>
-	<classpathentry kind="lib" path="lib/tomcat-dbcp.jar"/>
+	<classpathentry exported="true" kind="lib" path="tools/gwt/gwt-servlet-deps.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gwt-cal.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gwt-crypto.jar"/>
+	<classpathentry exported="true" kind="lib" path="tools/gwt/gwt-dnd.jar"/>
+	<classpathentry exported="true" kind="lib" path="tools/gwt/gwt-log.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gwtquery.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/draggable-plugin.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/lib-gwt-file.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gwt-tour.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/tomcat-dbcp.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javaxt-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/lucene-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jtidy.jar"/>
@@ -160,18 +160,18 @@
 	<classpathentry exported="true" kind="lib" path="lib/jackson-mapper-asl.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackson-xc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/lucene-queries.jar"/>
-	<classpathentry kind="lib" path="tools/gwt/gwt-user.jar"/>
-	<classpathentry kind="lib" path="tools/gwt/gwt-dev.jar"/>
-	<classpathentry kind="lib" path="tools/gwt/validation-api-1.0.0.GA-sources.jar"/>
-	<classpathentry kind="lib" path="tools/gwt/validation-api-1.0.0.GA.jar"/>
+	<classpathentry exported="true" kind="lib" path="tools/gwt/gwt-user.jar"/>
+	<classpathentry exported="true" kind="lib" path="tools/gwt/gwt-dev.jar"/>
+	<classpathentry exported="true" kind="lib" path="tools/gwt/validation-api-1.0.0.GA-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="tools/gwt/validation-api-1.0.0.GA.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/openid4java.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/tomcat-jdbc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-test.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/httpclient.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/httpcore.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/rabbitmq-client.jar"/>
-	<classpathentry kind="lib" path="lib/tika-core.jar"/>
-	<classpathentry kind="lib" path="lib/tika-parsers.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/tika-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/tika-parsers.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bcprov-jdk15on.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/httpmime.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/enunciate-core-annotations.jar"/>
