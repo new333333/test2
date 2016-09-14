@@ -71,7 +71,6 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 	protected FolderDaoImpl fdi;
 	private static String zoneName ="testZone";
 	
-	@Override
 	protected String[] getConfigLocations() {
 		return new String[] {"/com/sitescape/team/module/folder/impl/applicationContext-workflowTransition.xml"};
 	}

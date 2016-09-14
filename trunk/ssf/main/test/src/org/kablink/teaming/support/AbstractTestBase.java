@@ -32,9 +32,9 @@
  */
 package org.kablink.teaming.support;
 
+import org.junit.Assert;
 import org.kablink.teaming.dao.impl.CoreDaoImpl;
 import org.kablink.teaming.dao.impl.ProfileDaoImpl;
-import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Group;
@@ -43,9 +43,10 @@ import org.kablink.teaming.domain.NoWorkspaceByTheNameException;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 
-public abstract class AbstractTestBase extends AbstractTransactionalDataSourceSpringContextTests {
+public abstract class AbstractTestBase extends AbstractTransactionalJUnit4SpringContextTests {
 	protected CoreDaoImpl cdi;
 	protected ProfileDaoImpl pdi;
 	protected static String adminGroup = "administrators";
@@ -136,7 +137,7 @@ public abstract class AbstractTestBase extends AbstractTransactionalDataSourceSp
 			cdi.flush();
 			
 			top = cdi.findTopWorkspace(name);
-			assertEquals(top.getName(), name);
+			Assert.assertEquals(top.getName(), name);
 		}
 		return top;
 		

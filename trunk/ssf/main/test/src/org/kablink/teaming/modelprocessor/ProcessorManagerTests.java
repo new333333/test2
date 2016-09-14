@@ -32,8 +32,9 @@
  */
 package org.kablink.teaming.modelprocessor;
 
+import org.junit.Assert;
 import org.kablink.teaming.modelprocessor.ProcessorManager;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 
 /**
@@ -41,7 +42,7 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * 
  * @author Jong Kim
  */
-public class ProcessorManagerTests extends AbstractDependencyInjectionSpringContextTests {
+public class ProcessorManagerTests extends AbstractJUnit4SpringContextTests {
 
 	protected ProcessorManager procMgr;
 	
@@ -57,22 +58,22 @@ public class ProcessorManagerTests extends AbstractDependencyInjectionSpringCont
 		TestModel testModel = new TestModel();
 		
 		TestProcessor1 processor1 = (TestProcessor1) procMgr.getProcessor(testModel, TestProcessor1.PROCESSOR_KEY);
-		assertNotNull(processor1);
-		assertEquals(processor1.getClass(), MyTestProcessor1.class);
+		Assert.assertNotNull(processor1);
+		Assert.assertEquals(processor1.getClass(), MyTestProcessor1.class);
 		
 		Object internalBean = applicationContext.getBean("myTestProcessor1");
-		assertNotNull(internalBean);
-		
-		assertEquals(processor1, internalBean);
+		Assert.assertNotNull(internalBean);
+
+		Assert.assertEquals(processor1, internalBean);
 		
 		TestProcessor2 processor2 = (TestProcessor2) procMgr.getProcessor(testModel, TestProcessor2.PROCESSOR_KEY);
-		assertNotNull(processor2);
-		assertEquals(processor2.getClass(), MyTestProcessor2.class);
-		assertEquals(processor2.getGreeting(), "Hello");
+		Assert.assertNotNull(processor2);
+		Assert.assertEquals(processor2.getClass(), MyTestProcessor2.class);
+		Assert.assertEquals(processor2.getGreeting(), "Hello");
 		
 		TestProcessor3 processor3 = (TestProcessor3) procMgr.getProcessor(testModel, TestProcessor3.PROCESSOR_KEY);
-		assertNotNull(processor3);
-		assertEquals(processor3.getClass(), MyTestProcessor3.class);
+		Assert.assertNotNull(processor3);
+		Assert.assertEquals(processor3.getClass(), MyTestProcessor3.class);
 	}
 	
 	public class TestModel {}

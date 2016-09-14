@@ -42,7 +42,6 @@ import org.hibernate.LazyInitializationException;
 import org.kablink.teaming.dao.impl.CoreDaoImpl;
 import org.kablink.teaming.dao.impl.ProfileDaoImpl;
 import org.kablink.teaming.support.AbstractTestBase;
-import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.domain.Attachment;
@@ -65,6 +64,8 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
 
+import org.junit.Assert;
+
 /**
  * Integration unit tests for data access layer. 
  * 
@@ -80,7 +81,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 	public void testFindUserByName() {
 		createZone(zoneName);
 		User user = pdi.findUserByName(adminUser, zoneName);
-		assertNotNull(user);
+		Assert.assertNotNull(user);
 	}
 	
 	public void testFindUserByNameNoUserByTheNameException() {
@@ -88,29 +89,29 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		// Test three slightly different cases:
 		// Test the situation where zone exists but username does not. 
 		try {
-			pdi.findUserByName("nonExistingUser", zoneName);			
-			fail("Should throw NoUserByTheNameException");
+			pdi.findUserByName("nonExistingUser", zoneName);
+			Assert.fail("Should throw NoUserByTheNameException");
 		}
 		catch(NoUserByTheNameException e) {
-			assertTrue(true); // Ok
+			Assert.assertTrue(true); // Ok
 		}
 		
 		// Test the situation where username exists but zone doesn't.
 		try {
-			pdi.findUserByName(adminUser, "nonExistingZone");			
-			fail("Should throw NoUserByTheNameException");
+			pdi.findUserByName(adminUser, "nonExistingZone");
+			Assert.fail("Should throw NoUserByTheNameException");
 		}
 		catch(NoWorkspaceByTheNameException e) {
-			assertTrue(true); // Ok
+			Assert.assertTrue(true); // Ok
 		}
 		
 		// Test the situation where neither exists.
 		try {
-			pdi.findUserByName("nonExistingUser", "nonExistingZone");			
-			fail("Should throw NoUserByTheNameException");
+			pdi.findUserByName("nonExistingUser", "nonExistingZone");
+			Assert.fail("Should throw NoUserByTheNameException");
 		}
 		catch(NoWorkspaceByTheNameException e) {
-			assertTrue(true); // Ok
+			Assert.assertTrue(true); // Ok
 		}
 	}
 	
@@ -121,13 +122,13 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		User user =	pdi.findUserByName(adminUser, zoneName);	
 		cdi.evict(user);
 		user = pdi.loadUser(user.getId(), top.getId());
-		assertNotNull(user);
+		Assert.assertNotNull(user);
 		
 		// phase2: Test lazy loading, by ending the transation (it rolls back).
 		// Here we expect LazyInitializationException from Hibernate because
 		// the session is already closed. If we had open-session-in-view
 		// setup, lazy loading would have worked. But that is not the case here.
-		endTransaction();
+		//super.endTransaction();
 		try {
 			Map customAttrs = user.getCustomAttributes();
 			for(Iterator i = customAttrs.entrySet().iterator(); i.hasNext();) {
@@ -136,10 +137,10 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 				Object val = ent.getValue();
 			}
 			// If you're still here, something's wrong.
-			fail("Should throw LazyInitializationException");
+			Assert.fail("Should throw LazyInitializationException");
 		}
 		catch(LazyInitializationException e) {
-			assertTrue(true); // As expected
+			Assert.assertTrue(true); // As expected
 		}
 	}
 	
@@ -155,8 +156,8 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		cdi.save(newGroup);
 		
 		long newCount = cdi.countObjects(Group.class, null, top.getZoneId());
-		
-		assertEquals(count + 1, newCount);
+
+		Assert.assertEquals(count + 1, newCount);
 	}
 	/**
 	 * Create a user with some custom attributes
@@ -170,20 +171,20 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		long count = cdi.countObjects(User.class, filter, top.getZoneId());
 		User user = createBaseUser(top, userName);
 		long newCount = cdi.countObjects(User.class, filter, top.getZoneId());
-		assertEquals(count + 1, newCount);
+		Assert.assertEquals(count + 1, newCount);
 
 		FilterControls fc = new FilterControls("owner.principal", user);
 		//make sure attributes are there
 		if (cdi.countObjects(CustomAttribute.class, fc, top.getZoneId()) != 3)
-			fail("Custom attributes missing");
+			Assert.fail("Custom attributes missing");
 		if (cdi.countObjects(Attachment.class, fc, top.getZoneId()) != 1)
-			fail("Attachments missing");
+			Assert.fail("Attachments missing");
 		if (cdi.countObjects(Event.class, fc, top.getZoneId()) != 0)
-			fail("Events missing");
+			Assert.fail("Events missing");
 		if (cdi.countObjects(WorkflowState.class, fc, top.getZoneId()) != 0)
-			fail("WorkflowStates missing");
+			Assert.fail("WorkflowStates missing");
 		if (cdi.countObjects(Membership.class, new FilterControls("userId", user.getId()), top.getZoneId()) != 1)
-			fail("Membership not added for user " + user.getName());
+			Assert.fail("Membership not added for user " + user.getName());
 	}
 	/**
 	 * test loadUsers,countUsers,loadGroups,countGroups with null filter
@@ -194,11 +195,11 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		Workspace top = createZone("testZone");
 		long count = cdi.countObjects(User.class, null, top.getZoneId());
 		List users = pdi.loadUsers(new FilterControls(), top.getZoneId());
-		assertEquals(count,users.size());
+		Assert.assertEquals(count, users.size());
 
 		count = cdi.countObjects(Group.class, null, top.getZoneId());
 		List groups = pdi.loadGroups(new FilterControls(), top.getZoneId());
-		assertEquals(count,groups.size());
+		Assert.assertEquals(count, groups.size());
 		List ids = new ArrayList();
 		for (int i=0; i<users.size(); ++i) {
 			User u = (User)users.get(i);
@@ -214,13 +215,13 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		
 		List prins = pdi.loadUserPrincipals(ids, top.getZoneId(), true);
 		if (prins.size() != (users.size() + groups.size())) {
-			fail("Principals don't add up " + prins.size());
+			Assert.fail("Principals don't add up " + prins.size());
 		}
 		for (int i=0; i<prins.size(); ++i) {
 			Principal p = (Principal)prins.get(i);
 			if (!p.getClass().equals(User.class) && 
 					!p.getClass().equals(Group.class))
-				fail("Got a proxy back");
+				Assert.fail("Got a proxy back");
 		}
 		
 	}
@@ -237,7 +238,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		cdi.clear();
 		try {
 			pdi.loadUser(user1.getId(), top.getZoneId());
-			fail("Disabled user loaded with loadUserOnlyIfEnabled");
+			Assert.fail("Disabled user loaded with loadUserOnlyIfEnabled");
 		} catch (NoUserByTheIdException nu) {}
 		//load all users
 		List users = pdi.loadUsers(new FilterControls(), top.getZoneId());
@@ -249,7 +250,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		}
 		users = pdi.loadUsers(ids, top.getZoneId());
 		if (users.contains(user1))
-			fail("Disabled user loaded with loadEnabledUsers");
+			Assert.fail("Disabled user loaded with loadEnabledUsers");
 
 	}
 		
@@ -340,22 +341,22 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		fi.setName("dummy.txt");
 		att.setFileItem(fi);
 		cdi.save(att);
-		assertNotNull(att.getId());
+		Assert.assertNotNull(att.getId());
 		user.addCustomAttribute("aFile", att);
 		cdi.save(user);
-		assertNotNull(user.getId());
+		Assert.assertNotNull(user.getId());
 		//add user to a group
 		Group group = (Group)pdi.loadGroups(new FilterControls("name", adminGroup), top.getZoneId()).get(0);
 		group.addMember(user);
 		try {
 			user = pdi.findUserByName(name, top.getName());			
 		} catch (NoUserByTheNameException e) {
-			fail("New user test not found");
+			Assert.fail("New user test not found");
 		}
-		assertNotNull(user.getCustomAttribute("aString"));
-		assertNotNull(user.getCustomAttribute("aFile"));
+		Assert.assertNotNull(user.getCustomAttribute("aString"));
+		Assert.assertNotNull(user.getCustomAttribute("aFile"));
 		Set sVal = (Set)user.getCustomAttribute("aList").getValue();
-		assertEquals(sVal.toArray(vals), vals);
+		Assert.assertEquals(sVal.toArray(vals), vals);
 		return user;
 		
 	}
@@ -413,17 +414,17 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 	private void checkDeleted(Principal p) {
 		FilterControls fc = new FilterControls("owner.principal", p);
 		if (cdi.countObjects(CustomAttribute.class, fc, p.getZoneId()) != 0)
-			fail("Custom attributes not deleted from user " + p.getName());
+			Assert.fail("Custom attributes not deleted from user " + p.getName());
 		if (cdi.countObjects(Attachment.class, fc, p.getZoneId()) != 0)
-			fail("Attachments not deleted from user " + p.getName());
+			Assert.fail("Attachments not deleted from user " + p.getName());
 		if (cdi.countObjects(Event.class, fc, p.getZoneId()) != 0)
-			fail("Events not deleted from user " + p.getName());
+			Assert.fail("Events not deleted from user " + p.getName());
 		if (cdi.countObjects(WorkflowState.class, fc, p.getZoneId()) != 0)
-			fail("WorkflowStates not deleted from user " + p.getName());
+			Assert.fail("WorkflowStates not deleted from user " + p.getName());
 		if (cdi.countObjects(UserProperties.class, new FilterControls("id.principalId", p.getId()), p.getZoneId()) != 0)
-			fail("User properties were not deleted for user " + p.getName());
+			Assert.fail("User properties were not deleted for user " + p.getName());
 		if (cdi.countObjects(SeenMap.class, new FilterControls("principalId", p.getId()), p.getZoneId()) != 0)
-			fail("Seen map was not deleted for user " + p.getName());
+			Assert.fail("Seen map was not deleted for user " + p.getName());
 		
 	}
 }

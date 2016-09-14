@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.LazyInitializationException;
+import org.junit.Assert;
 import org.kablink.teaming.support.AbstractTestBase;
 
 import org.kablink.teaming.dao.util.FilterControls;
@@ -76,50 +77,50 @@ public class FolderDaoImplTests extends AbstractTestBase {
 	public void testAddFolder() {
 		Workspace top = createZone(zoneName);
 		Folder folder = createFolder(top, "testFolder");
-		assertNull(folder.getTopFolder());
-		assertNull(folder.getParentFolder());
-		assertEquals(folder.getParentBinder(), top);
-		assertEquals(folder.getBinderKey().getLevel(), 2);
-		assertEquals(folder.getBinderKey().getSortKey(), top.getBinderKey().getSortKey() + "00004");
+		Assert.assertNull(folder.getTopFolder());
+		Assert.assertNull(folder.getParentFolder());
+		Assert.assertEquals(folder.getParentBinder(), top);
+		Assert.assertEquals(folder.getBinderKey().getLevel(), 2);
+		Assert.assertEquals(folder.getBinderKey().getSortKey(), top.getBinderKey().getSortKey() + "00004");
 	}
 	public void testAddSubFolder() {
 		Workspace top = createZone(zoneName);
 		Folder folder = createFolder(top, "testFolder");
  		Folder sub = createFolder(folder, "subFolder1");
-		assertEquals(sub.getTopFolder(), folder);
-		assertEquals(sub.getParentFolder(), folder);
-		assertEquals(sub.getBinderKey().getLevel(), 3);
-		assertEquals(folder.getBinderKey().getSortKey() + "00001", sub.getBinderKey().getSortKey());
+		Assert.assertEquals(sub.getTopFolder(), folder);
+		Assert.assertEquals(sub.getParentFolder(), folder);
+		Assert.assertEquals(sub.getBinderKey().getLevel(), 3);
+		Assert.assertEquals(folder.getBinderKey().getSortKey() + "00001", sub.getBinderKey().getSortKey());
 		//add another
 		sub = createFolder(folder, "subFolder2");
-		assertEquals(sub.getTopFolder(), folder);
-		assertEquals(sub.getParentFolder(), folder);
-		assertEquals(sub.getBinderKey().getLevel(), 3);
-		assertEquals(folder.getBinderKey().getSortKey() + "00002", sub.getBinderKey().getSortKey());
+		Assert.assertEquals(sub.getTopFolder(), folder);
+		Assert.assertEquals(sub.getParentFolder(), folder);
+		Assert.assertEquals(sub.getBinderKey().getLevel(), 3);
+		Assert.assertEquals(folder.getBinderKey().getSortKey() + "00002", sub.getBinderKey().getSortKey());
 
 		Folder sub2 = createFolder(sub, "subFolder2.1");
-		assertEquals(sub2.getTopFolder(), folder);
-		assertEquals(sub2.getParentFolder(), sub);
-		assertEquals(sub2.getBinderKey().getLevel(), 4);
-		assertEquals(sub.getBinderKey().getSortKey() + "00001", sub2.getBinderKey().getSortKey());
-		assertEquals(folder.getBinderKey().getSortKey() + "0000200001", sub2.getBinderKey().getSortKey());
+		Assert.assertEquals(sub2.getTopFolder(), folder);
+		Assert.assertEquals(sub2.getParentFolder(), sub);
+		Assert.assertEquals(sub2.getBinderKey().getLevel(), 4);
+		Assert.assertEquals(sub.getBinderKey().getSortKey() + "00001", sub2.getBinderKey().getSortKey());
+		Assert.assertEquals(folder.getBinderKey().getSortKey() + "0000200001", sub2.getBinderKey().getSortKey());
 
 		sub2 = createFolder(sub, "subFolder2.2");
-		assertEquals(sub2.getTopFolder(), folder);
-		assertEquals(sub2.getParentFolder(), sub);
-		assertEquals(sub2.getBinderKey().getLevel(), 4);
-		assertEquals(sub.getBinderKey().getSortKey() + "00002", sub2.getBinderKey().getSortKey());
-		assertEquals(folder.getBinderKey().getSortKey() + "0000200002", sub2.getBinderKey().getSortKey());
+		Assert.assertEquals(sub2.getTopFolder(), folder);
+		Assert.assertEquals(sub2.getParentFolder(), sub);
+		Assert.assertEquals(sub2.getBinderKey().getLevel(), 4);
+		Assert.assertEquals(sub.getBinderKey().getSortKey() + "00002", sub2.getBinderKey().getSortKey());
+		Assert.assertEquals(folder.getBinderKey().getSortKey() + "0000200002", sub2.getBinderKey().getSortKey());
 		FilterControls fc = new FilterControls("topFolder", folder);
-		assertEquals(cdi.countObjects(Folder.class, fc, top.getZoneId()), 4);
+		Assert.assertEquals(cdi.countObjects(Folder.class, fc, top.getZoneId()), 4);
 	}
 	public void testFindFolderById() {
 		Workspace top = createZone(zoneName);
 		Folder folder = createFolder(top, "testFolder");
 		cdi.clear();
 		Folder f = fdi.loadFolder(folder.getId(), top.getZoneId());
-		assertEquals(f, folder);
-		assertEquals(f.getName(),"testFolder"); 
+		Assert.assertEquals(f, folder);
+		Assert.assertEquals(f.getName(),"testFolder"); 
 	}
 	
 	public void testFindFolderNoFolderByTheIdException() {
@@ -132,28 +133,28 @@ public class FolderDaoImplTests extends AbstractTestBase {
 		// Test the situation where zone exists but folder does not. 
 		try {
 			fdi.loadFolder(Long.valueOf(-1), top.getZoneId());			
-			fail("Should throw NoFolderByTheIdException");
+			Assert.fail("Should throw NoFolderByTheIdException");
 		}
 		catch(NoFolderByTheIdException e) {
-			assertTrue(true); // Ok
+			Assert.assertTrue(true); // Ok
 		}
 		
 		// Test the situation where folder exists but zone doesn't.
 		try {
 			fdi.loadFolder(folder.getId(), Long.valueOf(-1));			
-			fail("Should throw NoFolderByTheIdException");
+			Assert.fail("Should throw NoFolderByTheIdException");
 		}
 		catch(NoFolderByTheIdException e) {
-			assertTrue(true); // Ok
+			Assert.assertTrue(true); // Ok
 		}
 		
 		// Test the situation where folder and zone don't exist
 		try {
 			fdi.loadFolder(Long.valueOf(-1), Long.valueOf(-1));			
-			fail("Should throw NoFolderByTheIdException");
+			Assert.fail("Should throw NoFolderByTheIdException");
 		}
 		catch(NoFolderByTheIdException e) {
-			assertTrue(true); // Ok
+			Assert.assertTrue(true); // Ok
 		}
 	}
 	
@@ -167,19 +168,19 @@ public class FolderDaoImplTests extends AbstractTestBase {
 		Folder folder = createFolder(top, "testFolder");
 		int oldCount = folder.getNextEntryNumber();
  		FolderEntry entry = createBaseEntry(folder);
-		assertEquals(folder.getNextEntryNumber(), oldCount+1);
+		Assert.assertEquals(folder.getNextEntryNumber(), oldCount+1);
 
 		FilterControls fc = new FilterControls("owner.folderEntry", entry);
 		//make sure attributes are there
 		if (cdi.countObjects(CustomAttribute.class, fc, top.getZoneId()) != entry.getCustomAttributes().size())
-			fail("Custom attributes missing");
+			Assert.fail("Custom attributes missing");
 		if (cdi.countObjects(Attachment.class, fc, top.getZoneId()) != entry.getAttachments().size())
-			fail("Attachments missing");
+			Assert.fail("Attachments missing");
 		 
 		if (cdi.countObjects(Event.class, fc, top.getZoneId()) != entry.getEvents().size())
-			fail("Events missing");
+			Assert.fail("Events missing");
 		if (cdi.countObjects(WorkflowState.class, fc, top.getZoneId()) != entry.getWorkflowStates().size())
-			fail("WorkflowStates missing");
+			Assert.fail("WorkflowStates missing");
 	}
 	
 	public void testLoadFolderEntryAndLazyLoading() {
@@ -195,7 +196,7 @@ public class FolderDaoImplTests extends AbstractTestBase {
 		// Here we expect LazyInitializationException from Hibernate because
 		// the session is already closed. If we had open-session-in-view
 		// setup, lazy loading would have worked. But that is not the case here.
-		endTransaction();
+		//endTransaction();
 		try {
 			Map customAttrs = partial.getCustomAttributes();
 			for(Iterator i = customAttrs.entrySet().iterator(); i.hasNext();) {
@@ -205,10 +206,10 @@ public class FolderDaoImplTests extends AbstractTestBase {
 				System.out.println(val);
 			}
 			// If you're still here, something's wrong. 
-			fail("Should throw LazyInitializationException");
+			Assert.fail("Should throw LazyInitializationException");
 		}
 		catch (LazyInitializationException e) {
-			assertTrue(true); // As expected
+			Assert.assertTrue(true); // As expected
 		}
 	}
 	
@@ -280,19 +281,19 @@ public class FolderDaoImplTests extends AbstractTestBase {
 		folder.setName(name);
 		folder.setZoneId(top.getZoneId());
 		cdi.save(folder);
-		assertNotNull(folder.getId());
+		Assert.assertNotNull(folder.getId());
 		top.addFolder(folder);
 		folder.addCustomAttribute("aString", "I am a string");
 		String vals[] = new String[] {"red", "white", "blue"};
 		folder.addCustomAttribute("aList", vals);
 		Event event = new Event();
 		cdi.save(event);
-		assertNotNull(event.getId());
+		Assert.assertNotNull(event.getId());
 		folder.addCustomAttribute("anEvent", event);
-		assertNotNull(folder.getCustomAttribute("aString"));
-		assertNotNull(folder.getCustomAttribute("anEvent"));
+		Assert.assertNotNull(folder.getCustomAttribute("aString"));
+		Assert.assertNotNull(folder.getCustomAttribute("anEvent"));
 		Set sVal = (Set)folder.getCustomAttribute("aList").getValue();
-		assertEquals(sVal.toArray(vals), vals);
+		Assert.assertEquals(sVal.toArray(vals), vals);
 		return folder;
 		
 	}
@@ -306,14 +307,14 @@ public class FolderDaoImplTests extends AbstractTestBase {
 		entry.addCustomAttribute("aList", vals);
 		Event event = new Event();
 		cdi.save(event);
-		assertNotNull(event.getId());
+		Assert.assertNotNull(event.getId());
 		entry.addCustomAttribute("anEvent", event);
 		cdi.save(entry);
-		assertNotNull(entry.getId());
-		assertNotNull(entry.getCustomAttribute("aString"));
-		assertNotNull(entry.getCustomAttribute("anEvent"));
+		Assert.assertNotNull(entry.getId());
+		Assert.assertNotNull(entry.getCustomAttribute("aString"));
+		Assert.assertNotNull(entry.getCustomAttribute("anEvent"));
 		Set sVal = (Set)entry.getCustomAttribute("aList").getValue();
-		assertEquals(sVal.toArray(vals), vals);
+		Assert.assertEquals(sVal.toArray(vals), vals);
 		return entry;
 		
 	}
@@ -335,14 +336,14 @@ public class FolderDaoImplTests extends AbstractTestBase {
 			event.setCreation(stamp); //needed for setValue ordering
 			cdi.save(event);
 			eVals.add(event);
-			assertNotNull(event.getId());
+			Assert.assertNotNull(event.getId());
 		}
 		entry.addCustomAttribute("anEventList", eVals);
 		cdi.save(entry);
-		assertNotNull(entry.getId());
-		assertNotNull(entry.getCustomAttribute("aString"));
-		assertEquals(entry.getCustomAttribute("anEventList").getValueSet(), eVals);
-		assertEquals(entry.getCustomAttribute("aDateList").getValueSet(), dVals);
+		Assert.assertNotNull(entry.getId());
+		Assert.assertNotNull(entry.getCustomAttribute("aString"));
+		Assert.assertEquals(entry.getCustomAttribute("anEventList").getValueSet(), eVals);
+		Assert.assertEquals(entry.getCustomAttribute("aDateList").getValueSet(), dVals);
 		return entry;
 		
 	}
@@ -373,13 +374,13 @@ public class FolderDaoImplTests extends AbstractTestBase {
 		Long zoneId = e.getParentFolder().getZoneId();
 		FilterControls fc = new FilterControls("owner.folderEntry", e);
 		if (cdi.countObjects(CustomAttribute.class, fc, zoneId) != 0)
-			fail("Custom attributes not deleted from entry " + e.getId());
+			Assert.fail("Custom attributes not deleted from entry " + e.getId());
 		if (cdi.countObjects(Attachment.class, fc, zoneId) != 0)
-			fail("Attachments not deleted from entry " + e.getId());
+			Assert.fail("Attachments not deleted from entry " + e.getId());
 		if (cdi.countObjects(Event.class, fc, zoneId) != 0)
-			fail("Events not deleted from entry " + e.getId());
+			Assert.fail("Events not deleted from entry " + e.getId());
 		if (cdi.countObjects(WorkflowState.class, fc, zoneId) != 0)
-			fail("WorkflowStates not deleted from entry " + e.getId());
+			Assert.fail("WorkflowStates not deleted from entry " + e.getId());
 		
 	}
 }
