@@ -63,11 +63,18 @@ public abstract class SimpleTriggerJob extends SSStatefulJob {
 				//jobDetail.addJobListener(getDefaultCleanupListener());
 				scheduler.addJob(jobDetail, true);
 			} else {
+				boolean changed = false;
 		 		//update data if necessary
 		 		if (!jobDetail.getJobDataMap().equals(job.getData())) {
 			 		jobDetail.setJobDataMap(job.getData());	 			
-		 			scheduler.addJob(jobDetail, true);
+			 		changed = true;
 		 		}
+		 		if (!jobDetail.isDurable()) {
+			 		jobDetail.setDurability(true); // Required for Quartz 2.x.
+			 		changed = true;
+		 		}
+		 		if(changed)
+		 			scheduler.addJob(jobDetail, true);
 			}
 			SimpleTriggerImpl trigger = (SimpleTriggerImpl)scheduler.getTrigger(triggerKey(job.getTriggerName(), job.getTriggerGroup()));
 			//	see if job exists
@@ -128,11 +135,11 @@ public abstract class SimpleTriggerJob extends SSStatefulJob {
 		}
 		public SimpleJobDescription(Long zoneId, String jobName, String jobGroup, String jobDescription, int seconds, boolean durability) {
 			this(zoneId, jobName, jobGroup, jobDescription, seconds);
-			this.durability = durability;
+			//this.durability = durability;
 		}
 		public SimpleJobDescription(Long zoneId, String jobName, String jobGroup, String jobDescription, int seconds, boolean durability, int priority) {
 			this(zoneId, jobName, jobGroup, jobDescription, seconds);
-			this.durability = durability;
+			//this.durability = durability;
 			this.priority = priority;
 		}
 		protected String getJobName() {
