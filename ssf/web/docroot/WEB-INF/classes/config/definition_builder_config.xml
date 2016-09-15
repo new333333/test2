@@ -804,6 +804,9 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_title_description.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" />
 		</jsps>
+		<folderViews>
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewDescription" />
+		</folderViews>
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderDescription"/>
 	</item>
 
@@ -2529,6 +2532,9 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_title_description.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" />
 		</jsps>
+		<folderViews>
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewDescription" />
+		</folderViews>
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderDescription"/>
 	</item>
 
