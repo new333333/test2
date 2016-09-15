@@ -1870,6 +1870,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
 		   binder.setDescription(source.getDescription());
            binder.setIconName(source.getIconName());
+           binder.setProperty(ObjectKeys.BINDER_PROPERTY_RENDER_JSP_VIEW, source.getProperty(ObjectKeys.BINDER_PROPERTY_RENDER_JSP_VIEW));
        } catch (Exception e) {
     	   throw new InternalException("Error copying '" + source + "' into '" + destination + "' with title '" + title + "'", e);
        }
