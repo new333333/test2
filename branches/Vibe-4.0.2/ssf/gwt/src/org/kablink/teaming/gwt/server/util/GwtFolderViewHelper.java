@@ -88,9 +88,9 @@ public class GwtFolderViewHelper {
     private static List<BinderViewDefBase> toBinderViewList(List<Node> viewItems, BinderViewContainer parent) throws GwtTeamingException {
         List<BinderViewDefBase> layoutItems = new ArrayList<BinderViewDefBase>(viewItems.size());
         for (Node viewItem : viewItems) {
-            BinderViewDefBase layoutItem = factoryBinderViewItem((Element) viewItem, parent);
+            List<BinderViewDefBase> layoutItem = factoryBinderViewItem((Element) viewItem, parent);
             if (layoutItem!=null) {
-                layoutItems.add(layoutItem);
+                layoutItems.addAll(layoutItem);
             }
         }
         return layoutItems;
@@ -101,8 +101,10 @@ public class GwtFolderViewHelper {
         return toBinderViewList(viewItems, parent);
     }
 
-    public static BinderViewDefBase factoryBinderViewItem(Element viewItem, BinderViewContainer parent) throws GwtTeamingException {
+    public static List<BinderViewDefBase> factoryBinderViewItem(Element viewItem, BinderViewContainer parent) throws GwtTeamingException {
         BinderViewDefBase binderView = null;
+        List<BinderViewDefBase> additionalEntries = null;
+
         String name = viewItem.attributeValue("name");
         if (!binderViewsToSkip.contains(name)) {
             boolean skip = false;
@@ -173,6 +175,8 @@ public class GwtFolderViewHelper {
                         } else {
                             skip = true;
                         }
+                    } else if (binderView instanceof BinderViewBreadCrumb) {
+                        additionalEntries = factoryBinderViewChildren(viewItem, parent);
                     }
                 }
             }
@@ -186,7 +190,15 @@ public class GwtFolderViewHelper {
                 }
             }
         }
-        return binderView;
+        if (binderView!=null) {
+            List<BinderViewDefBase> retList =  new ArrayList<BinderViewDefBase>();
+            retList.add(binderView);
+            if (additionalEntries!=null) {
+                retList.addAll(additionalEntries);
+            }
+            return retList;
+        }
+        return null;
     }
 
     public static boolean hasCustomView(AllModulesInjected ami, Binder binder, boolean trash) {
