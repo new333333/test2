@@ -239,12 +239,12 @@ public class AddFolderController extends SAbstractController {
 				response.setRenderParameter(WebKeys.NAMESPACE, namespace);
 			}
 			else {
-				/*if (isShortForm) {
+				if (isShortForm) {
 					setupReloadBinder(response, newId);
 				} else {
 					setupReloadOpener(response, newId);
-				}*/
-				setupReloadBinder(response, newId);
+				}
+				//setupReloadBinder(response, newId);
 			}
 			
 		} else if (formData.containsKey("addBtn") && WebHelper.isMethodPost(request)) {
