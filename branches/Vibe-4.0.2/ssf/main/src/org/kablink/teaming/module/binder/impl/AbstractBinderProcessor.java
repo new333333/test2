@@ -1866,7 +1866,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		    binder.setWorkflowAssociations(source.getWorkflowAssociations());
 		    binder.setDefinitionsInherited(source.isDefinitionsInherited());
 		    binder.setFunctionMembershipInherited(source.isFunctionMembershipInherited()); // The actual ACL will be copied later on.
-		    binder.setTeamMembershipInherited(source.isTeamMembershipInherited());		    		
+		    binder.setTeamMembershipInherited(source.isTeamMembershipInherited());
+
+		   binder.setDescription(source.getDescription());
+           binder.setIconName(source.getIconName());
        } catch (Exception e) {
     	   throw new InternalException("Error copying '" + source + "' into '" + destination + "' with title '" + title + "'", e);
        }
