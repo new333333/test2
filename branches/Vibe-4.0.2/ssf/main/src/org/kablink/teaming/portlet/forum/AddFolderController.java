@@ -239,20 +239,18 @@ public class AddFolderController extends SAbstractController {
 				response.setRenderParameter(WebKeys.NAMESPACE, namespace);
 			}
 			else {
-				else {
-					if (isShortForm) {
-						setupReloadBinder(response, newId);
-					} else {
-						if(operation.equals("add_team_workspace")){
-							response.setRenderParameter(WebKeys.URL_BINDER_ID, newId.toString());		
-							response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-							response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
-						}
-						else{
-							setupReloadOpener(response, newId);
-						}
+				if (isShortForm) {
+					setupReloadBinder(response, newId);
+				} else {
+					if(operation.equals("add_team_workspace")){
+						response.setRenderParameter(WebKeys.URL_BINDER_ID, newId.toString());		
+						response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+						response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 					}
-				}
+					else{
+						setupReloadOpener(response, newId);
+					}
+				}				
 			}			
 		} else if (formData.containsKey("addBtn") && WebHelper.isMethodPost(request)) {
 			//This is the short form
