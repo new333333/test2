@@ -33,6 +33,7 @@
  */
 %>
 <%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 
 <% // The main workspace view  %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
@@ -220,7 +221,7 @@ if (typeof ss_workarea_showId == "undefined")
 								<c:if test="${!empty ss_reloadUrl}">
 									<div style="text-align: right; ">
 									  <input type="button" onClick="window.top.ss_gotoContentUrl('${ss_reloadUrl}');return false;"
-									    value='<ssf:nlt tag="__return_to" />&nbsp;<ssf:nlt tag="__workspace_view" />' >
+													 value='<%= StringEscapeUtils.escapeXml(NLT.get("__return_to").concat(" ").concat(NLT.get("__workspace_view"))) %>' >
 									</div>
 								</c:if>
 
@@ -229,7 +230,7 @@ if (typeof ss_workarea_showId == "undefined")
 								<c:if test="${!empty ss_reloadUrl && ssTeamMembersCount > 10}">
 									<div style="text-align: right; ">
 									  <input type="button" onClick="window.top.ss_gotoContentUrl('${ss_reloadUrl}');return false;"
-									    value='<ssf:nlt tag="__return_to" />&nbsp;<ssf:nlt tag="__workspace_view" />' >
+													 value='<%= StringEscapeUtils.escapeXml(NLT.get("__return_to").concat(" ").concat(NLT.get("__workspace_view"))) %>' >
 									</div>
 								</c:if>
 								
