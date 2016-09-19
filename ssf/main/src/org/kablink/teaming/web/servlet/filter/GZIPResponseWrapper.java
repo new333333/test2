@@ -99,4 +99,7 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
   }
 
   public void setContentLength(int length) {}
+
+  @Override
+  public void setContentLengthLong(long len) {}
 }
