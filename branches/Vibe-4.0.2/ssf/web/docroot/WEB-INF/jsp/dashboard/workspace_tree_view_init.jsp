@@ -43,9 +43,15 @@ function ${treeName}_showId(id, obj, action) {
 	//Build a url to go to
 	var url = "<ssf:url action="ssActionPlaceHolder" actionUrl="false" ><ssf:param 
 			name="binderId" value="ssBinderIdPlaceHolder"/></ssf:url>"
+	var url = "<ssf:url crawlable="true" adapter="true" portletName="ss_forum"
+																					action="ssActionPlaceHolder"
+																					binderId="ssBinderIdPlaceHolder">
+	<%--<ssf:param name="entityType" value="${mashupBinder.entityType}"/>--%>
+	<ssf:param name="seen_by_gwt" value="1" />
+	</ssf:url>"
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
-	self.location.href = url;
+	window.top.ss_setContentLocation(url);
 </c:if>
 	return false;
 }
