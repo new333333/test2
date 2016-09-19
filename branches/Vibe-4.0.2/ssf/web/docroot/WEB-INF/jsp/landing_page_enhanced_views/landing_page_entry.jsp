@@ -92,13 +92,6 @@
 			<c:out value="${mashupEntry.title}"/>
 		</ssf:titleLink>
 
-      <a href="<ssf:url crawlable="true" 
-		  	    adapter="true" portletName="ss_forum"    
-		        action="view_permalink" 
-		        binderId="${mashupEntry.parentFolder.id}"
-		        entryId="${mashupEntry.id}"
-		      ><ssf:param name="entityType" value="folderEntry"/>
-		      </ssf:url>"><span class="ss_size_20px ss_bold">${mashupEntry.title}</span></a>
     </div>
 	<div class="ss_mashup_entry_content ss_smallprint">
 	  <span><ssf:showUser user="${mashupEntry.modification.principal}"/><span>
