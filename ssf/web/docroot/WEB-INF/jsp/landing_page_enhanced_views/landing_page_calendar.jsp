@@ -93,11 +93,15 @@
       <c:if test="${!empty mashup_attributes['showTitle']}">
 	<div class="ss_mashup_folder_header_view">
 	  <c:if test="${ssConfigJspStyle != 'mobile'}">
-		<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
-		  action="view_permalink" 
-		  binderId="${mashupBinder.id}">
-		  <ssf:param name="entityType" value="${mashupBinder.entityType}"/>
-		  </ssf:url>"><span>${mashupBinder.title}</span></a>
+			<c:set var="anchorPermalink"><ssf:url crawlable="true" adapter="true" portletName="ss_forum"
+																						action="view_permalink"
+																						binderId="${mashupBinder.id}">
+				<ssf:param name="entityType" value="${mashupBinder.entityType}"/>
+				<ssf:param name="seen_by_gwt" value="1" />
+			</ssf:url></c:set>
+			<a href="${anchorPermalink}" onclick="ss_setContentLocation('${anchorPermalink}'); return false;">
+				<span>${mashupBinder.title}</span>
+			</a>
 
 		<c:if test="${!empty mashupBinder.description.text}">
 		  <div class="ss_mashup_folder_description">
