@@ -2027,7 +2027,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						l = session.createCriteria(Binder.class)
 						.addOrder(Order.asc("binderKey.sortKey"))
 						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-						.add(Restrictions.ne("type", "template"))
+						.add(Restrictions.ne("binderType", "t"))
 						.list();
 					} catch(Exception e) {
 						System.out.println("Unable to load binder information" +  e.getMessage());
