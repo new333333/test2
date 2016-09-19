@@ -79,12 +79,14 @@
 		  	<!-- Should we show the title? -->
 			<c:if test="${!empty mashup_attributes['showTitle']}">
 				<!-- Yes -->
-				<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
-				  action="view_permalink" 
-				  binderId="${mashupBinder.id}">
-				  <ssf:param name="entityType" value="${mashupBinder.entityType}"/>
-				  <ssf:param name="seen_by_gwt" value="1" />
-				  </ssf:url>"><span>${mashupBinder.title}</span>
+				<c:set var="anchorPermalink"><ssf:url crawlable="true" adapter="true" portletName="ss_forum"
+																							action="view_permalink"
+																							binderId="${mashupBinder.id}">
+					<ssf:param name="entityType" value="${mashupBinder.entityType}"/>
+					<ssf:param name="seen_by_gwt" value="1" />
+				</ssf:url></c:set>
+				<a href="${anchorPermalink}" onclick="ss_setContentLocation('${anchorPermalink}'); return false;">
+					<span>${mashupBinder.title}</span>
 				</a>
 			</c:if>
 			
