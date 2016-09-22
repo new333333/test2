@@ -34,6 +34,7 @@ package org.kablink.teaming.search;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +70,8 @@ import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.template.TemplateModule;
+import org.kablink.teaming.security.function.Function;
+import org.kablink.teaming.security.function.FunctionManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.runwith.RunWithCallback;
 import org.kablink.teaming.security.runwith.RunWithTemplate;
@@ -161,6 +164,10 @@ public class SearchUtils {
 	
 	protected static ProfileDao getProfileDao() {
 		return (ProfileDao)SpringContextUtil.getBean("profileDao");
+	}
+
+	protected static FunctionManager getFunctionManager() {
+		return (FunctionManager)SpringContextUtil.getBean("functionManager");
 	}
 
 	public static Criteria tasksForUser(Long userId, String[] groupIds, String[] teamIds, Date from, Date to)
@@ -865,6 +872,28 @@ public class SearchUtils {
 	                    },
                         new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION},
                         null);
+					
+					// 9/22/2016 JK (bug #1000260) - By default make this special "My Files Storage"
+					// folder accessible only to the owner of the personal workspace under which it
+					// was created to avoid security issue. This minimalistic approach is necessary
+					// because the initial ACLs of this system folder can't be controlled from the
+					// template associated with user personal workspaces.
+					bs.getAdminModule().setWorkAreaFunctionMembershipInherited(mfFolder, false);
+					Map<Long, Set<Long>> functionMemberships = new HashMap<Long, Set<Long>>();
+					List<Function> fns = getFunctionManager().findFunctions(mfFolder.getZoneId());
+					Long functionId = null;
+					for(Function fn:fns) {
+						if(ObjectKeys.ROLE_TITLE_BINDER_ADMIN.equals(fn.getName())) {
+							functionId = fn.getId();
+							break;
+						}
+					}
+					if(functionId != null) {
+						Set mbrs = new HashSet();
+						mbrs.add(ObjectKeys.OWNER_USER_ID);
+						functionMemberships.put(functionId, mbrs);
+						bs.getAdminModule().setWorkAreaFunctionMemberships(mfFolder, functionMemberships);
+					}
 
 					// Return the ID of the folder we created.
 					reply = mfFolderId;
