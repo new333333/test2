@@ -70,8 +70,8 @@ import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.template.TemplateModule;
-import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.FunctionManager;
+import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.runwith.RunWithCallback;
 import org.kablink.teaming.security.runwith.RunWithTemplate;
@@ -873,26 +873,25 @@ public class SearchUtils {
                         new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION},
                         null);
 					
-					// 9/22/2016 JK (bug #1000260) - By default make this special "My Files Storage"
-					// folder accessible only to the owner of the personal workspace under which it
-					// was created to avoid security issue. This minimalistic approach is necessary
-					// because the initial ACLs of this system folder can't be controlled from the
-					// template associated with user personal workspaces.
+					// 9/22/2016 JK (bug #1000260) - Instead of inheriting all ACLs from the parent
+					// binder (which is the user's personal workspace), only inherit the portion of 
+					// the ACLs pertaining to the owner and discard the rest. This way, it helps
+					// avoid the situation where other users inadvertently gain access to this 
+					// folder just because they happen to have access to this user's personal
+					// workspace (but not to any of its sub-folders). This minimalistic approach is 
+					// necessary because the initial ACLs of this system folder can't be controlled 
+					// from the template associated with the personal workspaces.
 					bs.getAdminModule().setWorkAreaFunctionMembershipInherited(mfFolder, false);
-					Map<Long, Set<Long>> functionMemberships = new HashMap<Long, Set<Long>>();
-					List<Function> fns = getFunctionManager().findFunctions(mfFolder.getZoneId());
-					Long functionId = null;
-					for(Function fn:fns) {
-						if(ObjectKeys.ROLE_TITLE_BINDER_ADMIN.equals(fn.getName())) {
-							functionId = fn.getId();
-							break;
+					Map<Long, Set<Long>> trimmedFunctionMemberships = new HashMap<Long, Set<Long>>();
+					Set<Long> ownerOnlySet = new HashSet<Long>();
+					ownerOnlySet.add(ObjectKeys.OWNER_USER_ID);
+					List<WorkAreaFunctionMembership> functionMembershipsFromPersonalWorkspace = bs.getAdminModule().getWorkAreaFunctionMemberships(mfFolder);
+					if(functionMembershipsFromPersonalWorkspace != null) {
+						for(WorkAreaFunctionMembership functionMembershipFromPersonalWorkspace:functionMembershipsFromPersonalWorkspace) {
+							if(functionMembershipFromPersonalWorkspace.getMemberIds() != null && functionMembershipFromPersonalWorkspace.getMemberIds().contains(ObjectKeys.OWNER_USER_ID))
+								trimmedFunctionMemberships.put(functionMembershipFromPersonalWorkspace.getFunctionId(), ownerOnlySet);
 						}
-					}
-					if(functionId != null) {
-						Set mbrs = new HashSet();
-						mbrs.add(ObjectKeys.OWNER_USER_ID);
-						functionMemberships.put(functionId, mbrs);
-						bs.getAdminModule().setWorkAreaFunctionMemberships(mfFolder, functionMemberships);
+						bs.getAdminModule().setWorkAreaFunctionMemberships(mfFolder, trimmedFunctionMemberships);
 					}
 
 					// Return the ID of the folder we created.
