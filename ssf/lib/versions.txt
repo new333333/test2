@@ -145,7 +145,7 @@ Portals Bridges 1.0
 Portlet API 2.0 (2.0 refers to specification version, not library version, so we keep in in the file name)
 PostgreSQL JDBC Driver 9.4.1210 (postgresql-9.4.1210.jre7.jar renamed to postgresql-jre7.jar; JDBC 4.1 compliant)
 Quartz 2.2.3 (all)
-RabbitMQ Java client library 3.1.5 (dual-licensed under the MPL and the GPL v2.) NOTE: Spring AMQP/Rabbit requires this library.
+RabbitMQ Java client library 3.6.5 (triple-licensed under the APL 2.0 and the MPL and the GPL 2.0) NOTE: Spring AMQP/Rabbit requires this library.
 ridl.jar (from OpenOffice 2.0)
 SAAJ 1.2 DO NOT UPGRADE (V1.2 used the ASL1.1, newer versions are from glassfish project which uses cppl and gpl2.0)
 Saxpath 1.0 (for ssfs)
@@ -161,7 +161,7 @@ Slide Stores 2.2-pre1 (for ssfs)
 Spring Framework 4.3.0.RELEASE (except spring-test.jar remaining at 3.2.9)
 Spring Security 4.1.0.RELEASE
 Spring LDAP 2.1.0.RELEASE
-Spring AMQP 1.6.0.RELEASE (spring-amqp & spring-rabbit)
+Spring AMQP 1.6.2.RELEASE (spring-amqp & spring-rabbit)
 Spring Retry 1.1.2 (used in conjunction with Spring AMQP/Rabbit)
 spy memcached 2.10.3 (MIT License; http://code.google.com/p/spymemcached)
 Struts 1.2.9 (removed META-INF/MANIFEST.MF) - Copied from Liferay 4.1.2
