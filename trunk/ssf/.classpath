@@ -185,7 +185,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/groovy-all-1.8.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/quartz-2.2.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/velocity-1.7.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-amqp-1.6.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-aop-4.3.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-aspects-4.3.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-beans-4.3.0.RELEASE.jar"/>
@@ -199,7 +198,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/spring-ldap-core-2.1.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-orm-4.3.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-oxm-4.3.0.RELEASE.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-rabbit-1.6.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-retry-1.1.2.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-config-4.1.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-core-4.1.0.RELEASE.jar"/>
@@ -215,5 +213,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/owasp-java-html-sanitizer.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/guava-19.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jsoup.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-amqp-1.6.2.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-rabbit-1.6.2.RELEASE.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
