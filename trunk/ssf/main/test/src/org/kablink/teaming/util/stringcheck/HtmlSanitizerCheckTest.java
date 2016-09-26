@@ -26,7 +26,7 @@ public class HtmlSanitizerCheckTest extends TestCase {
     }
 
     public void testBasic() {
-        String sanitized = sanitizer.check("<a href=\"javascript:alert(1)\">clickme</a>");
+        String sanitized = sanitizer.check("<a href=\"javascript:alert(1)\" target=\"_blank\">clickme</a>");
         sanitized = sanitizer.check("<div class=\"fak_header\" style=\"font-size: 100%; height: 33px; font-family: verdana; background-image: url(http://vignette4.wikia.nocookie.net/despicableme/images/c/ca/Bob-from-the-minions-movie.jpg/revision/latest?cb=20151224154354); color: #fff; margin-top: 5px; padding-left: 10px; margin-left: 0px; line-height: 33px; padding-right: 0px; margin-right: 0px;\">Meddelelser fra holdlederen og l�rerne</div> <br>");
         sanitized = sanitizer.check("<img class=\" ss_addimage_att \" src=\"http://localhost:8080/ssf/s/readFile/folderEntry/16/-/1461957717981/last/gedit-logo.png\" alt=\" \" />");
         sanitized = sanitizer.check("<img class=\" ss_addimage_att \" src=\"{{attachmentUrl: somename.png}}\" alt=\" \" />");
