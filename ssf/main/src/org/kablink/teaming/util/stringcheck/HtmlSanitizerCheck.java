@@ -76,6 +76,8 @@ public class HtmlSanitizerCheck implements StringCheck {
                 .allowAttributes("href")
                     .matching(A_PATTERN)
                     .onElements("a")
+                .allowAttributes("target")
+                    .onElements("a")
                 .allowAttributes("src")
                     .matching(IMG_PATTERN)
                 .onElements("img")
