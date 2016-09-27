@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.security.function;
 
+import org.kablink.teaming.NoObjectByTheNameException;
+
 import java.util.List;
 import java.util.Set;
 
@@ -81,4 +83,7 @@ public interface WorkAreaFunctionMembershipManager {
             WorkAreaOperation workAreaOperation, Set membersToLookup);   
     
     public Function getFunction(Long zoneId, Long functionId);
+    public Function findFunctionByName(Long zoneId, String name) throws NoObjectByTheNameException;
+
+
 }
