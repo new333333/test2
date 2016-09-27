@@ -1774,7 +1774,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		return function;
 	}
 
-	private void addMembership(Workspace top, Function function, WorkArea workArea, List ids) {
+	protected void addMembership(Workspace top, Function function, WorkArea workArea, List ids) {
 		WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
 		ms.setWorkAreaId(workArea.getWorkAreaId());
 		ms.setWorkAreaType(workArea.getWorkAreaType());

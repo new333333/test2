@@ -36,9 +36,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Iterator;
 
+import org.kablink.teaming.NoObjectByTheNameException;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.security.dao.SecurityDao;
 import org.kablink.teaming.security.function.ConditionalClause;
 import org.kablink.teaming.security.function.Function;
@@ -269,4 +270,21 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
     public Function getFunction(Long zoneId, Long functionId) {
     	return getSecurityDao().loadFunction(zoneId, functionId);
     }
+
+	public Function findFunctionByName(Long zoneId, String name) throws NoObjectByTheNameException {
+		// This is implemented on top of getFunctions(Long) based on the
+		// assumption that the underlying ORM effectively caches the
+		// result of the query.
+
+		List functions = getSecurityDao().findFunctions(zoneId);
+
+		for(Iterator i = functions.iterator(); i.hasNext();) {
+			Function function = (Function) i.next();
+			if(function.getName().equals(name))
+				return function;
+		}
+
+		return null;
+	}
+
 }
