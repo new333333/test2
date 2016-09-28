@@ -160,7 +160,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
     public DefaultJAXBContextResolver() throws Exception {
         this.types = new HashSet<Class>();
         addModelClasses(types);
-        this.context = new JSONJAXBContext(JSONConfiguration.natural().usePrefixesAtNaturalAttributes().build(), cTypes);
+        this.context = new JSONJAXBContext(JSONConfiguration.natural().usePrefixesAtNaturalAttributes().build(), types.toArray(new Class[0]));
     }
 
     public JAXBContext getContext(Class<?> objectType) {
