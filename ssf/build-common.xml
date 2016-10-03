@@ -118,8 +118,9 @@
 			srcdir="${source.dir}"
 			source="${javac.source}"
 			target="${javac.target}"
-			encoding="UTF-8"
-		/>
+			encoding="UTF-8">
+            <compilerarg value="-XDignore.symbol.file" />
+		</javac>
 	</target>
 
 	<target name="compile_1.4">
