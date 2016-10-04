@@ -250,9 +250,8 @@ public class AddFolderController extends SAbstractController {
 					else{
 						setupReloadOpener(response, newId);
 					}
-				}
-			}
-			
+				}				
+			}			
 		} else if (formData.containsKey("addBtn") && WebHelper.isMethodPost(request)) {
 			//This is the short form
 			String templateName = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_TEMPLATE_NAME);				

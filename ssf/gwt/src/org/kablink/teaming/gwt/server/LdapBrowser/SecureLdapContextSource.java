@@ -75,10 +75,12 @@ public class SecureLdapContextSource extends LdapContextSource {
 
 	/**
 	 * ?
+	 * 
+	 * @throws Exception
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public void afterPropertiesSet() {
+	public void afterPropertiesSet() throws Exception {
 		super.afterPropertiesSet(); // To change body of overridden methods use File | Settings | File Templates.
 		boolean anonymous = ((!(MiscUtil.hasString(m_userName))) && (!(MiscUtil.hasString(m_password))));
 		Hashtable env;

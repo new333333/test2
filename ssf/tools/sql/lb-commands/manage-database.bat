@@ -1,7 +1,7 @@
 @echo off
 if "%OS%" == "Windows_NT" setlocal
 
-set CLASSPATH=.\lib\kablink-teaming-liquibase.jar;.\lib\mysql-connector.jar;.\lib\ojdbc7.jar;.\lib\jtds.jar;.\lib\postgresql-jre7.jar
+set CLASSPATH=.\lib\kablink-teaming-liquibase.jar;.\lib\mysql-connector.jar;.\lib\ojdbc7.jar;.\lib\jtds.jar
 
 rem Set default log level. Valid values are debug, info, warning, severe, off.
 set LOG_LEVEL=info
@@ -16,7 +16,6 @@ if ""%2"" == """" goto displayUsage
 if ""%1"" == ""mysql"" goto checkCommand
 if ""%1"" == ""oracle"" goto checkCommand
 if ""%1"" == ""sqlserver"" goto checkCommand
-if ""%1"" == ""postgresql"" goto checkCommand
 echo Errors:
 echo    Invalid database type
 goto displayUsage
@@ -43,7 +42,6 @@ echo db types:
 echo    mysql           MySQL
 echo    oracle          Oracle
 echo    sqlserver       MS SQL Server
-echo    postgresql      PostgreSQL
 echo.
 echo standard commands (used for updating database):
 echo    updateDatabase  Update database to current version by applying un-run change

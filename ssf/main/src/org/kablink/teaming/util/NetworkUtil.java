@@ -49,7 +49,7 @@ public class NetworkUtil {
 	 */
 	public NetworkUtil() {}
 	
-	public static String getNodeAddress() {
+	public String getNodeAddress() {
 		return getLocalHostIPv4Address();
 	}
 	

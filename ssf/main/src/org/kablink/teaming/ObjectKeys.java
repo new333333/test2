@@ -66,13 +66,10 @@ public interface ObjectKeys {
 	public static final String DEFAULT_TEMPLATE_NAME_MINIBLOG="_folder_miniblog";
 	public static final String DEFAULT_TEMPLATE_NAME_PHOTO="_folder_photo";
 	public static final String DEFAULT_TEMPLATE_NAME_WIKI="_folder_wiki";
-	public static final String DEFAULT_TEMPLATE_NAME_DISCUSSION = "_folder";
 	public static final String DEFAULT_TEMPLATE_NAME_LIBRARY = "_folder_library";
 	public static final String DEFAULT_TEMPLATE_NAME_MIRRORED_FILE = "_folder_mirrored_file";
 	public static final String DEFAULT_TEMPLATE_NAME_FILR_NETFOLDER_FILE = "_folder_filr_netfolder";
-
-	public static final String DEFAULT_TEMPLATE_NAME_TEAM_WORKSPACE = "_workspace_team";
-
+	
 	public static final String DEFAULT_ENTRY_GUESTBOOK_NAME	= "_guestbookEntry";
 		
 	// reserved internalIds for Definitions (not necessarily databaseId cause of multi-zone support)

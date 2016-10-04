@@ -34,13 +34,13 @@ package org.kablink.teaming.security.authentication.impl;
 
 import org.easymock.MockControl;
 import org.kablink.teaming.security.authentication.impl.AuthenticationManagerImpl;
+import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
-import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 
 /**
@@ -48,7 +48,7 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
  * 
  * @author Jong Kim
  */
-public class AuthenticationManagerImplTests extends AbstractTransactionalJUnit4SpringContextTests {
+public class AuthenticationManagerImplTests extends AbstractTransactionalDataSourceSpringContextTests {
 	MockControl profileDaoControl;
 	ProfileDao profileDaoMock;
 	User user;

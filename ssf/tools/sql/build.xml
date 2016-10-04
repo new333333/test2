@@ -252,7 +252,9 @@
 		<antcall target="generate-create-tables-script-sqlserver" inheritAll="false"/>
 		<antcall target="generate-create-tables-script-mysql" inheritAll="false"/>
 		<antcall target="generate-create-tables-script-oracle" inheritAll="false"/>
-		<antcall target="generate-create-tables-script-postgresql" inheritAll="false"/>
+		<!-- Commented out:  Bugzilla 491275.
+			<antcall target="generate-create-tables-script-postgresql" inheritAll="false"/>
+		-->
 	</target>
 	
 	
@@ -272,13 +274,15 @@
 		<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
 	</target>
 	
-	<target name="generate-create-tables-script-postgresql">
-		<move file="${basedir}/database.${user.name}.properties" tofile="${basedir}/database.${user.name}.properties.moved" failonerror="false"/>
-		<echo file="${basedir}/database.${user.name}.properties">database.type=postgresql</echo>
-		<antcall target="generate-create-tables-script"/>
-		<delete file="${basedir}/database.${user.name}.properties" failonerror="false"/>
-		<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
-	</target>
+	<!-- Commented out:  Bugzilla 491275.
+		<target name="generate-create-tables-script-postgresql">
+			<move file="${basedir}/database.${user.name}.properties" tofile="${basedir}/database.${user.name}.properties.moved" failonerror="false"/>
+			<echo file="${basedir}/database.${user.name}.properties">database.type=postgresql</echo>
+			<antcall target="generate-create-tables-script"/>
+			<delete file="${basedir}/database.${user.name}.properties" failonerror="false"/>
+			<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
+		</target>
+	-->
 			
 	<target name="generate-create-tables-script-sqlserver">
 		<move file="${basedir}/database.${user.name}.properties" tofile="${basedir}/database.${user.name}.properties.moved" failonerror="false"/>
@@ -373,17 +377,10 @@
 		<antcall target="lb-apply-changelog-to-database"/>
 	</target>
 			
-	<target name="lb-apply-changelog-to-database-postgresql">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="postgresql"/>
-		<antcall target="lb-apply-changelog-to-database"/>
-	</target>
-	
 	<target name="lb-apply-changelog-to-database-all">
 		<antcall target="lb-apply-changelog-to-database-mysql" inheritAll="false"/>
 		<antcall target="lb-apply-changelog-to-database-oracle" inheritAll="false"/>
 		<antcall target="lb-apply-changelog-to-database-sqlserver" inheritAll="false"/>
-		<antcall target="lb-apply-changelog-to-database-postgresql" inheritAll="false"/>
 	</target>
 
 	<target name="lb-apply-changelog-to-sql-output" depends="init-lb-settings">
@@ -436,17 +433,10 @@
 		<antcall target="lb-apply-changelog-to-sql-output"/>
 	</target>
 			
-	<target name="lb-apply-changelog-to-sql-output-postgresql">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="postgresql"/>
-		<antcall target="lb-apply-changelog-to-sql-output"/>
-	</target>
-	
 	<target name="lb-apply-changelog-to-sql-output-all">
 		<antcall target="lb-apply-changelog-to-sql-output-mysql" inheritAll="false"/>
 		<antcall target="lb-apply-changelog-to-sql-output-oracle" inheritAll="false"/>
 		<antcall target="lb-apply-changelog-to-sql-output-sqlserver" inheritAll="false"/>
-		<antcall target="lb-apply-changelog-to-sql-output-postgresql" inheritAll="false"/>
 	</target>
 
 	<target name="lb-markasran-changelog-to-database" depends="init-lb-settings">
@@ -493,17 +483,10 @@
 		<antcall target="lb-markasran-changelog-to-database"/>
 	</target>
 			
-	<target name="lb-markasran-changelog-to-database-postgresql">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="postgresql"/>
-		<antcall target="lb-markasran-changelog-to-database"/>
-	</target>
-	
 	<target name="lb-markasran-changelog-to-database-all">
 		<antcall target="lb-markasran-changelog-to-database-mysql" inheritAll="false"/>
 		<antcall target="lb-markasran-changelog-to-database-oracle" inheritAll="false"/>
 		<antcall target="lb-markasran-changelog-to-database-sqlserver" inheritAll="false"/>
-		<antcall target="lb-markasran-changelog-to-database-postgresql" inheritAll="false"/>
 	</target>
 	
 	<target name="lb-markasran-changelog-3.3-to-database" depends="init-lb-settings">
@@ -605,17 +588,10 @@
 		<antcall target="lb-markasran-changelog-to-sql-output"/>
 	</target>
 			
-	<target name="lb-markasran-changelog-to-sql-output-postgresql">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="postgresql"/>
-		<antcall target="lb-markasran-changelog-to-sql-output"/>
-	</target>
-	
 	<target name="lb-markasran-changelog-to-sql-output-all">
 		<antcall target="lb-markasran-changelog-to-sql-output-mysql" inheritAll="false"/>
 		<antcall target="lb-markasran-changelog-to-sql-output-oracle" inheritAll="false"/>
 		<antcall target="lb-markasran-changelog-to-sql-output-sqlserver" inheritAll="false"/>
-		<antcall target="lb-markasran-changelog-to-sql-output-postgresql" inheritAll="false"/>
 	</target>
 	
 	<target name="lb-markasran-changelog-3.3-to-sql-output" depends="init-lb-settings">
@@ -718,17 +694,10 @@
 		<antcall target="lb-export-schema-to-changelog"/>
 	</target>
 	
-	<target name="lb-export-schema-to-changelog-postgresql">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="postgresql"/>
-		<antcall target="lb-export-schema-to-changelog"/>
-	</target>
-	
 	<target name="lb-export-schema-to-changelog-all">
 		<antcall target="lb-export-schema-to-changelog-mysql" inheritAll="false"/>
 		<antcall target="lb-export-schema-to-changelog-oracle" inheritAll="false"/>
 		<antcall target="lb-export-schema-to-changelog-sqlserver" inheritAll="false"/>
-		<antcall target="lb-export-schema-to-changelog-postgresql" inheritAll="false"/>
 	</target>
 	
 	<target name="lb-export-data-to-changelog" depends="init-lb-settings">
@@ -779,17 +748,10 @@
 		<antcall target="lb-export-data-to-changelog"/>
 	</target>
 	
-	<target name="lb-export-data-to-changelog-postgresql">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="postgresql"/>
-		<antcall target="lb-export-data-to-changelog"/>
-	</target>
-	
 	<target name="lb-export-data-to-changelog-all">
 		<antcall target="lb-export-data-to-changelog-mysql" inheritAll="false"/>
 		<antcall target="lb-export-data-to-changelog-oracle" inheritAll="false"/>
 		<antcall target="lb-export-data-to-changelog-sqlserver" inheritAll="false"/>
-		<antcall target="lb-export-data-to-changelog-postgresql" inheritAll="false"/>
 	</target>
 	
 	<target name="lb-generate-diff-changelog" depends="init-lb-settings">
@@ -853,17 +815,10 @@
 		<antcall target="lb-generate-diff-changelog"/>
 	</target>
 	
-	<target name="lb-generate-diff-changelog-postgresql">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="postgresql"/>
-		<antcall target="lb-generate-diff-changelog"/>
-	</target>
-	
 	<target name="lb-generate-diff-changelog-all">
 		<antcall target="lb-generate-diff-changelog-mysql" inheritAll="false"/>
 		<antcall target="lb-generate-diff-changelog-oracle" inheritAll="false"/>
 		<antcall target="lb-generate-diff-changelog-sqlserver" inheritAll="false"/>
-		<antcall target="lb-generate-diff-changelog-postgresql" inheritAll="false"/>
 	</target>	
 
 	<target name="lb-shell-script-execution-clean">
@@ -874,7 +829,7 @@
 	<target name="lb-shell-script-execution-prepare">
 		<mkdir dir="lb-commands/lib"/>
 		<copy todir="lb-commands/lib">
-			<fileset dir="${project.dir}/lib" includes="liquibase.jar,mysql-connector.jar,ojdbc7.jar,jtds.jar,postgresql-jre7.jar"/>
+			<fileset dir="${project.dir}/lib" includes="liquibase.jar,mysql-connector.jar,ojdbc7.jar,jtds.jar"/>
 		</copy>
 		<copy todir="lb-commands">
 			<fileset dir="." includes="scripts/changelog/**"/>
@@ -974,7 +929,9 @@
 		<antcall target="generate-update-tables-script-sqlserver" inheritAll="false"/>
 		<antcall target="generate-update-tables-script-mysql" inheritAll="false"/>
 		<antcall target="generate-update-tables-script-oracle" inheritAll="false"/>
-		<antcall target="generate-update-tables-script-postgresql" inheritAll="false"/>
+		<!-- Commented out:  Bugzilla 491275.
+			<antcall target="generate-update-tables-script-postgresql" inheritAll="false"/>
+		-->
 	</target>
 	
 	
@@ -994,13 +951,15 @@
 		<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
 	</target>
 	
-	<target name="generate-update-tables-script-postgresql">
-		<move file="${basedir}/database.${user.name}.properties" tofile="${basedir}/database.${user.name}.properties.moved" failonerror="false"/>
-		<echo file="${basedir}/database.${user.name}.properties">database.type=postgresql</echo>
-		<antcall target="generate-update-tables-script"/>
-		<delete file="${basedir}/database.${user.name}.properties" failonerror="false"/>
-		<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
-	</target>
+	<!-- Commented out:  Bugzilla 491275.
+		<target name="generate-update-tables-script-postgresql">
+			<move file="${basedir}/database.${user.name}.properties" tofile="${basedir}/database.${user.name}.properties.moved" failonerror="false"/>
+			<echo file="${basedir}/database.${user.name}.properties">database.type=postgresql</echo>
+			<antcall target="generate-update-tables-script"/>
+			<delete file="${basedir}/database.${user.name}.properties" failonerror="false"/>
+			<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
+		</target>
+	-->
 			
 	<target name="generate-update-tables-script-sqlserver">
 		<move file="${basedir}/database.${user.name}.properties" tofile="${basedir}/database.${user.name}.properties.moved" failonerror="false"/>

@@ -9,15 +9,15 @@
       <generator class="uuid.hex"/>
     </id>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
-    <property name="zoneId" not-null="true" index="internal_Definition,name_Definition"/>
+    <property name="zoneId" not-null="true" index="internal_Definition"/>
+    <property name="name" length="64"/>
     <property name="title" length="128"/>
     <property name="internalId" length="32" index="internal_Definition"/>
     <property name="type" index="internal_Definition"/>
     <property name="visibility"/>
 <!-- use length to force long blog in mysql -->
     <property name="encoding"  length="20000000" type="org.springframework.orm.hibernate3.support.BlobByteArrayType"/>
-	<property name="binderId" index="name_Definition"/>
-    <property name="name" length="64" index="name_Definition"/>
+	<property name="binderId"/>
     <properties name="nameKey" unique="true" update="false" insert="false">
       <property name="zoneId" update="false" insert="false"/>
       <property name="binderId" update="false" insert="false"/>

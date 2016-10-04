@@ -1389,8 +1389,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			ScheduleInfo pruneSchedInfo = getAdminModule().getLogTablePurgeSchedule();
 			getAdminModule().setLogTablePurgeSchedule(pruneSchedInfo);
 			
-			// No longer supports OpenID
-			//setupInitialOpenIDProviderList();
+			setupInitialOpenIDProviderList();
 
     		return top;
  	}
@@ -1774,7 +1773,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		return function;
 	}
 
-	protected void addMembership(Workspace top, Function function, WorkArea workArea, List ids) {
+	private void addMembership(Workspace top, Function function, WorkArea workArea, List ids) {
 		WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
 		ms.setWorkAreaId(workArea.getWorkAreaId());
 		ms.setWorkAreaType(workArea.getWorkAreaType());

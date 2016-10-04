@@ -61,7 +61,7 @@ public class DecryptedPasswordUserDetailsService implements UserDetailsService {
 			if(val == null)
 				throw new UsernameNotFoundException("Username & password authentication not allowed for LDAP users");
 			else if(val[0] == null)
-				throw new UsernameNotFoundException("User not found: " + username);
+				throw new UsernameNotFoundException("User not found: " + username, username);
 			return new DecryptedPasswordUserDetails(username, val[1]);
 		} catch (Exception e) {
 			throw new UsernameNotFoundException(username, e);

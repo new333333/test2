@@ -71,9 +71,7 @@
     <many-to-one class="org.kablink.teaming.domain.FolderEntry" name="topEntry">
     	<column name="topEntry" index="owningEntry_fEntry" />
     </many-to-one>
-    <many-to-one class="org.kablink.teaming.domain.FolderEntry" name="parentEntry">
-    	<column name="parentEntry" index="parentEntry_fEntry" />
-    </many-to-one>
+    <many-to-one class="org.kablink.teaming.domain.FolderEntry" name="parentEntry"/>
     <component name="workflowChange" access="field" class="org.kablink.teaming.domain.HistoryStamp">
       <property name="date" column="wrk_date" type="timestamp"/>
       <many-to-one class="org.kablink.teaming.domain.UserPrincipal" name="principal">

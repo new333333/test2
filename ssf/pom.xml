@@ -32,9 +32,7 @@
         <module>webdav</module>
     </modules>
     <properties>
-        <spring.version>4.3.0.RELEASE</spring.version>
-        <spring.security.version>4.1.0.RELEASE</spring.security.version>
-        <tomcat.version>8.0.33</tomcat.version>
+        <spring.version>3.2.9.RELEASE</spring.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <build>
@@ -44,8 +42,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.3</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
         </plugins>
@@ -55,12 +53,12 @@
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
-                <version>3.1.0</version>
+                <version>3.0.1</version>
             </dependency>
             <dependency>
                 <groupId>javax.servlet.jsp</groupId>
-                <artifactId>javax.servlet.jsp-api</artifactId>
-                <version>2.3.1</version>
+                <artifactId>jsp-api</artifactId>
+                <version>2.2</version>
             </dependency>
             <dependency>
                 <groupId>javax.portlet</groupId>
@@ -115,7 +113,7 @@
             <dependency>
                 <groupId>org.quartz-scheduler</groupId>
                 <artifactId>quartz</artifactId>
-                <version>2.2.3</version>
+                <version>1.8.6</version>
             </dependency>
             <dependency>
                 <groupId>org.hibernate</groupId>
@@ -204,11 +202,6 @@
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
-                <artifactId>spring-websocket</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
                 <artifactId>spring-webmvc</artifactId>
                 <version>${spring.version}</version>
             </dependency>
@@ -225,27 +218,27 @@
             <dependency>
                 <groupId>org.springframework.amqp</groupId>
                 <artifactId>spring-rabbit</artifactId>
-                <version>1.6.2.RELEASE</version>
+                <version>1.3.6.RELEASE</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-core</artifactId>
-                <version>${spring.security.version}</version>
+                <version>3.2.5.RELEASE</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-ldap</artifactId>
-                <version>${spring.security.version}</version>
+                <version>3.2.5.RELEASE</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-openid</artifactId>
-                <version>${spring.security.version}</version>
+                <version>3.2.5.RELEASE</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-web</artifactId>
-                <version>${spring.security.version}</version>
+                <version>3.2.5.RELEASE</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
@@ -275,27 +268,27 @@
             <dependency>
                 <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-core</artifactId>
-                <version>1.12</version>
+                <version>1.19</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-json</artifactId>
-                <version>1.12</version>
+                <version>1.19</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-client</artifactId>
-                <version>1.12</version>
+                <version>1.19</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-server</artifactId>
-                <version>1.12</version>
+                <version>1.19</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey.contribs</groupId>
                 <artifactId>jersey-apache-client</artifactId>
-                <version>1.12</version>
+                <version>1.19</version>
             </dependency>
             <dependency>
                 <groupId>javax.xml</groupId>
@@ -305,17 +298,17 @@
             <dependency>
                 <groupId>org.apache.tomcat</groupId>
                 <artifactId>tomcat-catalina</artifactId>
-                <version>${tomcat.version}</version>
+                <version>7.0.64</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.tomcat</groupId>
                 <artifactId>tomcat-jdbc</artifactId>
-                <version>${tomcat.version}</version>
+                <version>7.0.64</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.tomcat</groupId>
                 <artifactId>tomcat-dbcp</artifactId>
-                <version>${tomcat.version}</version>
+                <version>7.0.64</version>
             </dependency>
             <dependency>
                 <groupId>org.liquibase</groupId>

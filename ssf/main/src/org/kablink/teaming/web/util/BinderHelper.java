@@ -174,7 +174,6 @@ import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Restrictions;
 
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
@@ -740,10 +739,10 @@ public class BinderHelper {
         User user = RequestContextHolder.getRequestContext().getUser();
 		if (!WebHelper.isUserLoggedIn(request) || user.isShared()) {
 	        HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
-	    	AuthenticationException ex = (AuthenticationException) session.getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+	    	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
 	    	if(ex != null) {
 	    		model.put(WebKeys.LOGIN_ERROR, ex.getMessage());
-	    		session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+	    		session.removeAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
 
 				if ( ex instanceof TextVerificationException )
 	    		{

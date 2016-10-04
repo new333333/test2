@@ -106,9 +106,6 @@ import org.kablink.util.api.ApiErrorCode;
 import org.quartz.Scheduler;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
-import org.quartz.Trigger.TriggerState;
-
-import static org.quartz.TriggerKey.*;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
@@ -185,16 +182,16 @@ public void startScheduledJobs(Workspace zone) {
 		   
 		   Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");
 		   try {
-				Trigger trigger = scheduler.getTrigger(triggerKey(zone.getId().toString(), WorkflowTimeout.WORKFLOW_TIMER_GROUP));
+				Trigger trigger = scheduler.getTrigger(zone.getId().toString(), WorkflowTimeout.WORKFLOW_TIMER_GROUP);
 				if (trigger != null) {
 					int timesFired = 0;
-					TriggerState triggerState = scheduler.getTriggerState(triggerKey(zone.getId().toString(), WorkflowTimeout.WORKFLOW_TIMER_GROUP));
+					int triggerState = scheduler.getTriggerState(zone.getId().toString(), WorkflowTimeout.WORKFLOW_TIMER_GROUP);
 					if (trigger instanceof SimpleTrigger) {
 						timesFired = ((SimpleTrigger)trigger).getTimesTriggered();
 					}
 					Date now = new Date();
 					Date lastFire = trigger.getPreviousFireTime();
-					if (timesFired > 0 && triggerState == Trigger.TriggerState.BLOCKED && lastFire != null) {
+					if (timesFired > 0 && triggerState == Trigger.STATE_BLOCKED && lastFire != null) {
 						//This trigger may be stalled
 						Date lastFirePlus10Min = new Date();
 						int fire10Min = 10;

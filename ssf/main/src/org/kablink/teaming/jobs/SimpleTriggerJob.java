@@ -38,59 +38,48 @@ import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.runasync.RunAsyncCallback;
 import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.util.SpringContextUtil;
-import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
-import org.quartz.impl.JobDetailImpl;
-import org.quartz.impl.triggers.SimpleTriggerImpl;
-import static org.quartz.JobKey.*;
-import static org.quartz.TriggerKey.*;
+
 
 public abstract class SimpleTriggerJob extends SSStatefulJob {
 	
 	public void schedule(SimpleJobDescription job) {
 		Scheduler scheduler = getScheduler();		
 		try {
-			JobDetailImpl jobDetail = (JobDetailImpl) scheduler.getJobDetail(jobKey(job.getJobName(), job.getJobGroup()));
+			JobDetail jobDetail=scheduler.getJobDetail(job.getJobName(), job.getJobGroup());
 			if (jobDetail == null) {
-				jobDetail = new JobDetailImpl(job.getJobName(), job.getJobGroup(), 
-						(Class<? extends Job>) Class.forName(this.getClass().getName()), job.getDurability(), false);
+				jobDetail = new JobDetail(job.getJobName(), job.getJobGroup(), 
+						Class.forName(this.getClass().getName()),false, job.getDurability(), false);
 				jobDetail.setDescription(job.getJobDescription());
 				jobDetail.setJobDataMap(job.getData());
-				//jobDetail.addJobListener(getDefaultCleanupListener());
+				jobDetail.addJobListener(getDefaultCleanupListener());
 				scheduler.addJob(jobDetail, true);
 			} else {
-				boolean changed = false;
 		 		//update data if necessary
 		 		if (!jobDetail.getJobDataMap().equals(job.getData())) {
 			 		jobDetail.setJobDataMap(job.getData());	 			
-			 		changed = true;
-		 		}
-		 		if (!jobDetail.isDurable()) {
-			 		jobDetail.setDurability(true); // Required for Quartz 2.x.
-			 		changed = true;
-		 		}
-		 		if(changed)
 		 			scheduler.addJob(jobDetail, true);
+		 		}
 			}
-			SimpleTriggerImpl trigger = (SimpleTriggerImpl)scheduler.getTrigger(triggerKey(job.getTriggerName(), job.getTriggerGroup()));
+			SimpleTrigger trigger = (SimpleTrigger)scheduler.getTrigger(job.getTriggerName(), job.getTriggerGroup());
 			//	see if job exists
 			if (trigger == null) {
-				trigger = new SimpleTriggerImpl(job.getJobName(), job.getJobGroup(), job.getTriggerName(), job.getTriggerGroup(), job.getStartDate(), job.getEndDate(), 
+				trigger = new SimpleTrigger(job.getJobName(), job.getJobGroup(), job.getTriggerName(), job.getTriggerGroup(), job.getStartDate(), job.getEndDate(), 
 						job.getRepeatCount(),  job.getRepeatSeconds()*1000);
 				trigger.setMisfireInstruction(job.getMisfireInstruction());
 				trigger.setDescription(job.getTriggerDescription());
-				//trigger.setVolatility(false);
+				trigger.setVolatility(false);
 				trigger.setPriority(job.getPriority());
 				scheduler.scheduleJob(trigger);				
 		
 			} else {
 				if (trigger.getRepeatInterval() != job.getRepeatSeconds()*1000) {
 					trigger.setRepeatInterval(job.getRepeatSeconds()*1000);
-					scheduler.rescheduleJob(triggerKey(job.getJobName(), job.getJobGroup()), trigger);
+					scheduler.rescheduleJob(job.getJobName(), job.getJobGroup(), trigger);
 				}
 			} 
 		} catch (SchedulerException se) {			
@@ -114,13 +103,7 @@ public abstract class SimpleTriggerJob extends SSStatefulJob {
 		protected Long zoneId;
 		protected String jobName, jobGroup, jobDescription;
 		int seconds;
-		// 09/12/2016 JK - Quartz 2.x throws SchedulerException("Jobs added with no trigger must be durable.")
-		// exception when attempting to save a job with durability set to false when there's no
-		// associated trigger in the database. However, if you try to create a trigger before 
-		// creating associated job, it throws an error saying that associated job isn't found. 
-		// So, basically, you're stuck, and the only option seems to be to create all jobs
-		// with durability set to true whether you want it or not. So, here we go.
-		boolean durability = true;
+		boolean durability = false;
 		int priority = 5;
 		SimpleJobDescription(Long zoneId) {
 			this.zoneId = zoneId;
@@ -135,11 +118,11 @@ public abstract class SimpleTriggerJob extends SSStatefulJob {
 		}
 		public SimpleJobDescription(Long zoneId, String jobName, String jobGroup, String jobDescription, int seconds, boolean durability) {
 			this(zoneId, jobName, jobGroup, jobDescription, seconds);
-			//this.durability = durability;
+			this.durability = durability;
 		}
 		public SimpleJobDescription(Long zoneId, String jobName, String jobGroup, String jobDescription, int seconds, boolean durability, int priority) {
 			this(zoneId, jobName, jobGroup, jobDescription, seconds);
-			//this.durability = durability;
+			this.durability = durability;
 			this.priority = priority;
 		}
 		protected String getJobName() {

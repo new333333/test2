@@ -32,12 +32,6 @@
  */
 package org.kablink.teaming.spring.security;
 
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
@@ -46,17 +40,12 @@ import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.util.SZoneConfig;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
 
 public class ZoneAwareAnonymousProcessingFilter extends AnonymousAuthenticationFilter {
-
-	public ZoneAwareAnonymousProcessingFilter(String key, String principalName, String authorityName) {
-		super(key, principalName, AuthorityUtils.createAuthorityList(authorityName));
-	}
 
 	private ZoneModule zoneModule;
 	public ZoneModule getZoneModule() { return zoneModule; }
@@ -82,22 +71,7 @@ public class ZoneAwareAnonymousProcessingFilter extends AnonymousAuthenticationF
     	return SZoneConfig.getGuestUserName(zoneName);
 	}
 	
-	/*
-	 * Spring 4 removed the deprecated abstract method applyAnonymousForThisRequest
-	 * from its AnonymousAuthenticationFilter class. Therefore, we need to implement
-	 * the same effect by overriding the doFilter() method as in this.
-	 */
 	@Override
-	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
-			throws IOException, ServletException {
-	    if (applyAnonymousForThisRequest((HttpServletRequest) req)) {
-	    	super.doFilter(req, res, chain);
-	    }
-	    else {
-	    	chain.doFilter(req, res);
-	    }
-	}
-	
 	protected boolean applyAnonymousForThisRequest(HttpServletRequest request) {
 		if(SecurityContextHolder.getContext().getAuthentication() == null) {
 	    	Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());

@@ -502,11 +502,7 @@ public class GwtDesktopApplicationsHelper {
 		
 		// Get whether desktop applications can be deployed locally or
 		// not.
-		// NOTE: The following line no longer works with Tomcat 8 because it 
-		// doesn't allow the file reference to go up past the context root
-		// in the hierarchy. Instead, we need to do that inside our own code.
-		//File appsDirectory = new File(SpringContextUtil.getServletContext().getRealPath(LOCAL_DESKTOP_APPS_BASE));
-		File appsDirectory = new File(SpringContextUtil.getServletContext().getRealPath(""), LOCAL_DESKTOP_APPS_BASE);
+		File appsDirectory = new File(SpringContextUtil.getServletContext().getRealPath(LOCAL_DESKTOP_APPS_BASE));
 		boolean localAppsExist = appsDirectory.exists();
 		fileSyncAppConfiguration.setLocalAppsExist(localAppsExist);
 		

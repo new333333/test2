@@ -40,18 +40,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 
 public class NullProviderManager extends ProviderManager {
-	public NullProviderManager(List<AuthenticationProvider> providers) {
-		super(providers);
-	}
-	public NullProviderManager(List<AuthenticationProvider> providers,
-            AuthenticationManager parent) {
-		super(providers, parent);
-	}
 	public void afterPropertiesSet() throws Exception {
 	}
 	public Authentication doAuthentication(Authentication authentication) throws AuthenticationException {

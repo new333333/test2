@@ -41,7 +41,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 
-public class SharedConfigFileChecker implements SharedConfigFileCheckerMBean, InitializingBean, Runnable {
+public class SharedConfigFileChecker implements SharedConfigFileCheckerMBean, InitializingBean {
 
 	private static Log logger = LogFactory.getLog(SharedConfigFileChecker.class);
 	
@@ -125,14 +125,6 @@ public class SharedConfigFileChecker implements SharedConfigFileCheckerMBean, In
 				logger.error("Error while notifying listener '" + listener.getClass().getName() + "' of a change on file '" + file.getAbsolutePath() + "'", e);
 			}
 		}
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Runnable#run()
-	 */
-	@Override
-	public void run() {
-		this.check();
 	}
 
 }

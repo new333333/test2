@@ -15,8 +15,8 @@
 		</property>
 		<property name="urlMap">
 			<map>
-				<entry key="/do"><ref bean="portletAdapter"/></entry>				
-				<entry key="/c/**/*"><ref bean="portletAdapter"/></entry>
+				<entry key="/do"><ref local="portletAdapter"/></entry>				
+				<entry key="/c/**/*"><ref local="portletAdapter"/></entry>
 			</map>
 		</property>
 	</bean>

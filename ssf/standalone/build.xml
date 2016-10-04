@@ -23,7 +23,7 @@
 	<target name="clean-app-server">
 		<delete>
 			<fileset dir="${app.server.common.lib.dir}/.." 
-				includes="activation.jar,jtds.jar,kablink*.jar,mail.jar,mysql-connector.jar,ojdbc*.jar,postgresql-jre7.jar" />
+				includes="activation.jar,jtds.jar,kablink*.jar,mail.jar,mysql-connector.jar,ojdbc*.jar" />
 		</delete>		
 		<delete failonerror="false">
 			<fileset dir="${app.server.dir}/common/lib/ext" includes="*.jar" />
@@ -171,7 +171,6 @@
 		<copy file="${project.dir}/lib/jtds.jar" todir="${tomcat.common.lib.ext}" />
 		<copy file="${project.dir}/lib/mysql-connector.jar" todir="${tomcat.common.lib.ext}" />
 		<copy file="${project.dir}/lib/ojdbc7.jar" todir="${tomcat.common.lib.ext}" />
-		<copy file="${project.dir}/lib/postgresql-jre7.jar" todir="${tomcat.common.lib.ext}" />
 
 		<copy file="${project.dir}/lib/activation.jar" todir="${tomcat.common.lib.ext}" />
 		<copy file="${project.dir}/lib/mail.jar" todir="${tomcat.common.lib.ext}" />
@@ -214,7 +213,6 @@
 		<copy file="${project.dir}/lib/jtds.jar" todir="${app.server.server.dir}/lib" />
 		<copy file="${project.dir}/lib/mysql-connector.jar" todir="${app.server.server.dir}/lib" />
 		<copy file="${project.dir}/lib/ojdbc7.jar" todir="${app.server.server.dir}/lib" />
-		<copy file="${project.dir}/lib/postgresql-jre7.jar" todir="${app.server.server.dir}/lib" />
 
 		<!-- 1. JBoss 4.0.2+ classloader does not work properly if the application 
 		     comes with its own log4j archive. (You get the following error -

@@ -3,17 +3,16 @@
     xmlns:aop="http://www.springframework.org/schema/aop"
     xmlns:security="http://www.springframework.org/schema/security"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
-    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
-    http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-4.3.xsd
-    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.1.xsd">
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 
     <!-- ============================== For HTTP OPTIONS processing =========================== -->
 
     <bean id="optionsProcessingFilter" class="org.kablink.teaming.webdav.spring.security.OptionsProcessingFilter">
-	    <constructor-arg value="notUsed" />
-	    <constructor-arg value="guest" />
-	    <constructor-arg value="ROLE_ANONYMOUS" />
+        <property name="key" value="notUsed"/>
+        <property name="userAttribute" value="guest,ROLE_ANONYMOUS"/>
     </bean>
 
 </beans>

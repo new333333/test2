@@ -33,6 +33,18 @@
 			<handler type="LocalResponder"/>
 		</responseFlow>
 	</transport>
+	<!-- NOTE: The Facade service is deprecated as of ICEcore version 1.1. Use TeamingService instead. -->
+	<service name="Facade" provider="java:RPC">
+	 	<requestFlow>
+   			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">
+    			<parameter name="passwordCallbackClass" value="org.kablink.teaming.remoting.ws.security.PWCallback"/>
+    			<parameter name="action" value="UsernameToken Timestamp"/>
+   			</handler>
+  		</requestFlow>
+		<parameter name="scope" value="application"/>	
+		<parameter name="allowedMethods" value="*"/>
+		<parameter name="className" value="org.kablink.teaming.remoting.ws.JaxRpcFacade"/>
+	</service>
 	<service name="TeamingServiceV1" provider="java:RPC" style="rpc" use="encoded">
 	 	<requestFlow>
    			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">

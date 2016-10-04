@@ -60,7 +60,6 @@ public class DynamicDialect extends Dialect {
 		mysql,
 		oracle,
 		sqlserver,
-		postgresql,
 		other
 	}
 	
@@ -135,8 +134,6 @@ public class DynamicDialect extends Dialect {
 			databaseType = DatabaseType.oracle;
 		else if(dialectName.startsWith("sqlserver"))
 			databaseType = DatabaseType.sqlserver;
-		else if(dialectName.startsWith("postgresql"))
-			databaseType = DatabaseType.postgresql;
 		else 
 			databaseType = DatabaseType.other;
 		

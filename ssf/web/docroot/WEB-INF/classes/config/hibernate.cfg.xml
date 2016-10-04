@@ -96,9 +96,11 @@
 	    <mapping resource="org/kablink/teaming/domain/ZoneConfig.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/ZoneInfo.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/Extensions.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/SchemaInfo.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/EmailLog.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/BinderQuota.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/FolderEntryStats.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/OpenIDProvider.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/BinderState.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/KeyShieldConfig.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/NetFolderConfig.hbm.xml"/>
@@ -254,6 +256,7 @@
  		<class-cache class="org.kablink.teaming.security.function.Function" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.security.function.Condition" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.security.function.WorkAreaFunctionMembership" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.OpenIDProvider" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.BinderState" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.ResourceDriverConfig" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.KeyShieldConfig" usage="read-write"/>

@@ -31,19 +31,3 @@ The schema changes for Filr Axion (2.0) and Vibe 4.0.1 releases.
 7. *-changelog-filrproton.xml - 
 
 The schema changes for Filr Proton (only partial up to source code split!) and Vibe 4.0.2 releases.
-
-8. *-changelog-quartz-1.8-to-2.2.xml -
-
-The schema changes for quartz upgrade from 1.8 to 2.2. Aligned with Vibe 4.0.3 release.
-
-9. *-changelog-vibe4.0.3.xml - 
-
-The schema changes for Vibe 4.0.3 release.
-
-NOTE: For PostgreSQL, Vibe 4.0.3 is the first release. Consequently, 
-      postgresql-changelog-vibe4.0.3.xml contains the full schema definitions
-      rather than just incremental changes from the previous release. 
-
-NOTE: postgresql-changelog-vibe4.0.2.xml is an edited copy of postgresql-changelog-vibe4.0.3.xml
-      made to be compatible with Vibe 4.0.2 release. Specifically, it contains core/jBPM/Quartz
-      schema that can be run with Vibe 4.0.2 runtime.

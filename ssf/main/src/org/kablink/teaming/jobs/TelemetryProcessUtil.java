@@ -41,7 +41,6 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
-import static org.quartz.TriggerKey.*;
 
 /**
  * @author Jong
@@ -60,7 +59,7 @@ public class TelemetryProcessUtil {
 			Long defaultZoneId = ZoneUtil.getDefaultZoneId();
 			Trigger trigger = null;
 			try {
-				trigger = scheduler.getTrigger(triggerKey(defaultZoneId.toString(), TelemetryProcess.TELEMETRY_PROCESS_GROUP));
+				trigger = scheduler.getTrigger(defaultZoneId.toString(), TelemetryProcess.TELEMETRY_PROCESS_GROUP);
 			} catch (SchedulerException e) {
 				logger.warn("Failed to get trigger information on the telemetry process");
 			}

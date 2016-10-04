@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
- * <p/>
+ * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
  * obtain a copy of the CPAL at http://www.opensource.org/licenses/cpal_1.0. The
@@ -8,15 +8,15 @@
  * have been added to cover use of software over a computer network and provide
  * for limited attribution for the Original Developer. In addition, Exhibit A has
  * been modified to be consistent with Exhibit B.
- * <p/>
+ * 
  * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT
  * WARRANTY OF ANY KIND, either express or implied. See the CPAL for the specific
  * language governing rights and limitations under the CPAL.
- * <p/>
+ * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
  * (c) 1998-2009 Novell, Inc. All Rights Reserved.
- * <p/>
+ * 
  * Attribution Information:
  * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
@@ -26,7 +26,7 @@
  * Display of Attribution Information is required in Larger Works which are
  * defined in the CPAL as a work which combines Covered Code or portions thereof
  * with code not governed by the terms of the CPAL.
- * <p/>
+ * 
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
@@ -55,33 +55,33 @@ import org.kablink.teaming.rest.v1.model.admin.*;
 public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> {
 
     private final JAXBContext context;
-
+    
     private final Set<Class> types;
-
+    
     public static final Class[] cTypes = {
             Access.class,
             ApplicationBrief.class,
             ApplicationGroupBrief.class,
             AverageRating.class,
-            Binder.class,
-            BinderBrief.class,
-            BinderChange.class,
-            BinderChanges.class,
-            BinderChildren.class,
-            BinderQuotasConfig.class,
-            BinderTree.class,
-            CustomField.class,
-            DefinitionBrief.class,
-            Description.class,
+    		Binder.class,
+    		BinderBrief.class,
+    		BinderChange.class,
+    		BinderChanges.class,
+    		BinderChildren.class,
+    		BinderQuotasConfig.class,
+    		BinderTree.class,
+    		CustomField.class,
+    		DefinitionBrief.class,
+    		Description.class,
             DesktopAppConfig.class,
             DesktopAppProcessConfig.class,
-            DiskQuotasConfig.class,
-            EntityId.class,
-            ErrorInfo.class,
-            FileBrief.class,
-            FileChange.class,
-            FileProperties.class,
-            FileVersionProperties.class,
+    		DiskQuotasConfig.class,
+    		EntityId.class,
+    		ErrorInfo.class,
+    		FileBrief.class,
+    		FileChange.class,
+    		FileProperties.class,
+    		FileVersionProperties.class,
             Folder.class,
             FolderEntry.class,
             FolderEntryBrief.class,
@@ -89,21 +89,21 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
             Group.class,
             GroupBrief.class,
             GroupMember.class,
-            HistoryStamp.class,
-            LegacyFileProperties.class,
-            LegacyHistoryStamp.class,
-            LibraryInfo.class,
-            Link.class,
-            Locale.class,
-            LongIdLinkPair.class,
+    		HistoryStamp.class,
+    		LegacyFileProperties.class,
+    		LegacyHistoryStamp.class,
+    		LibraryInfo.class,
+    		Link.class,
+    		Locale.class,
+    		LongIdLinkPair.class,
             MobileAppConfig.class,
             MobileDevice.class,
             NetFolderBrief.class,
             NotifyWarning.class,
-            Operation.class,
-            ParentBinder.class,
-            Permission.class,
-            PrincipalBrief.class,
+    		Operation.class,
+    		ParentBinder.class,
+    		Permission.class,
+    		PrincipalBrief.class,
             RecentActivityEntry.class,
             ReleaseInfo.class,
             Reply.class,
@@ -141,7 +141,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
             LdapUserSource.class,
             NetFolder.class,
             NetFolderAccess.class,
-            NetFolderAssignedRight.class,
+			NetFolderAssignedRight.class,
             NetFolderServer.class,
             NetFolderSyncStatus.class,
             PersonalStorage.class,
@@ -150,25 +150,20 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
             Schedule.class,
             SelectedDays.class,
             ShareSettings.class,
-            SystemSharingPermission.class,
+			SystemSharingPermission.class,
             Time.class,
             UserSynchronization.class,
             UserSourceSynchronization.class,
             WebAppConfig.class,
-    };
-
+    		};
+    
     public DefaultJAXBContextResolver() throws Exception {
-        this.types = new HashSet<Class>();
-        addModelClasses(types);
-        this.context = new JSONJAXBContext(JSONConfiguration.natural().usePrefixesAtNaturalAttributes().build(), types.toArray(new Class[0]));
+        this.types = new HashSet(Arrays.asList(cTypes)); 
+        this.context = new JSONJAXBContext(JSONConfiguration.natural().usePrefixesAtNaturalAttributes().build(), cTypes);
     }
-
+    
     public JAXBContext getContext(Class<?> objectType) {
         return (types.contains(objectType)) ? context : null;
-    }
-
-    protected void addModelClasses(Set<Class> types) {
-        types.addAll(Arrays.asList(cTypes));
     }
 
 }

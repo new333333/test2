@@ -212,12 +212,21 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	}
 	
 	protected void rebuildProvidersForZone(ZoneConfig zoneConfig) throws Exception {
+		ProviderManager pm = nonLocalAuthenticators.get(zoneConfig.getZoneId());
 		List<AuthenticationProvider> providers = createProvidersForZone(zoneConfig.getZoneId());
 		if(providers.size() > 0) { // we've got external authenticators such as LDAP
-			nonLocalAuthenticators.put(zoneConfig.getZoneId(), new ProviderManager(providers));
+			if(pm != null) {
+				pm.setProviders(providers);
+			}
+			else {
+				pm = new ProviderManager();
+				pm.setProviders(providers);
+				nonLocalAuthenticators.put(zoneConfig.getZoneId(), pm);
+			}
 		}
 		else { // no external authenticators
-			nonLocalAuthenticators.put(zoneConfig.getZoneId(), null);
+			if(pm != null)
+				nonLocalAuthenticators.put(zoneConfig.getZoneId(), null);
 		}
 		lastUpdates.put(zoneConfig.getZoneId(), zoneConfig.getAuthenticationConfig().getLastUpdate());
 	}
@@ -243,7 +252,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 				try {
 					String url;
 					String timeout;
-					Map<String,Object> baseEnvironmentProperties; 
+					Map<String,String> baseEnvironmentProperties; 
 					
 					// The call to new DefaultSpringSecurityContextSource() will fail if
 					// the word "ldap" is not all lower case.
@@ -264,7 +273,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 					contextSource = new DefaultSpringSecurityContextSource( url );
 					
 					// Set the property that tells ldap whether or not to dereference aliases.
-					baseEnvironmentProperties = new HashMap<>();
+					baseEnvironmentProperties = new HashMap<String, String>();
 					baseEnvironmentProperties.put( "java.naming.ldap.derefAliases", SPropsUtil.getString( "java.naming.ldap.derefAliases", "never" ) );
 
 					// Part of fix for bug 875689

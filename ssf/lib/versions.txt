@@ -1,4 +1,3 @@
-
 When adding entries to this file, please visit the Filr/Vibe credits
 report (the code lives in credits.jsp) and make SURE your additions
 are covered.
@@ -34,8 +33,8 @@ Commons Discovery 0.2
 Commons DBCP 1.2.2
 Commons Fileupload 1.2.2 (from spring distribution)
 Commons HttpClient 3.1 (from spring distribution)
-Commons io 1.4 (from spring distribution)
-Commons Lang 2.6
+Commons io 1.3.1 (from spring distribution)
+Commons Lang 2.4
 Commons Net 3.3 (for SendMail test program; used by telemetry service)
 Commons Logging 1.1.3 (from Apache HttpClient 4.3.5 distribution)
 Commons Transaction 1.1.1pre1
@@ -52,7 +51,7 @@ Ehcache 2.6.7 (needed by Hibernate)
 enunciate-core-annotations 2.2.0 (Used to generate REST documentation)
 ezmorph 1.0.1
 firebug-lite 1.2
-groovy 1.8.9
+groovy 1.8.5
 Guice 3.0 (used by openid4java)
 gQuery 1.4.2 (jQuery port to GWT)
 gwt 2.7.0 (Google Web Toolkit)
@@ -143,13 +142,12 @@ OWASP Java HTML Sanitizer 20160827.1
 POI 2.5-final (for ssfs)
 Portals Bridges 1.0
 Portlet API 2.0 (2.0 refers to specification version, not library version, so we keep in in the file name)
-PostgreSQL JDBC Driver 9.4.1210 (postgresql-9.4.1210.jre7.jar renamed to postgresql-jre7.jar; JDBC 4.1 compliant)
-Quartz 2.2.3 (all)
-RabbitMQ Java client library 3.6.5 (triple-licensed under the APL 2.0 and the MPL and the GPL 2.0) NOTE: Spring AMQP/Rabbit requires this library.
+Quartz 1.8.6 (all)
+RabbitMQ Java client library 3.1.5 (dual-licensed under the MPL and the GPL v2.) NOTE: Spring AMQP/Rabbit requires this library.
 ridl.jar (from OpenOffice 2.0)
 SAAJ 1.2 DO NOT UPGRADE (V1.2 used the ASL1.1, newer versions are from glassfish project which uses cppl and gpl2.0)
 Saxpath 1.0 (for ssfs)
-Servlet 3.1/JSP 2.3 (from Tomcat distribution)
+Servlet 3.0/JSP 2.2
 Simple Logging Facade for Java (SLF4J) api 1.7.7
 Simple Logging Facade for Java (SLF4J) log4j12 1.7.7
 Slide jaas 2.2pre1
@@ -158,11 +156,11 @@ Slide WCK 1.0
 Slide WebDAV client library 2.1
 Slide Roles 2.2-pre1 (for ssfs)
 Slide Stores 2.2-pre1 (for ssfs)
-Spring Framework 4.3.0.RELEASE (except spring-test.jar remaining at 3.2.9)
-Spring Security 4.1.0.RELEASE
-Spring LDAP 2.1.0.RELEASE
-Spring AMQP 1.6.2.RELEASE (spring-amqp & spring-rabbit)
-Spring Retry 1.1.2 (used in conjunction with Spring AMQP/Rabbit)
+Springframework 3.2.9.RELEASE 
+Spring Security 3.2.5.RELEASE
+Spring LDAP 1.3.2.RELEASE
+Spring AMQP 1.3.6.RELEASE (spring-amqp & spring-rabbit)
+Spring Retry 1.1.3 (used in conjunction with Spring AMQP/Rabbit)
 spy memcached 2.10.3 (MIT License; http://code.google.com/p/spymemcached)
 Struts 1.2.9 (removed META-INF/MANIFEST.MF) - Copied from Liferay 4.1.2
 SubEthaSMTP subethasmtp.jar 3.1.7
@@ -172,12 +170,11 @@ tcllib 1.11.1 (for installer)
 tika-core 1.8
 tika-parsers 1.8
 TestNG 6.8
-Tomcat 8.0.33 (Also includes catalina.jar and tomcat-dbcp.jar; Skipping 8.0.35 due to bug https://bz.apache.org/bugzilla/show_bug.cgi?id=59566)
+Tomcat 7.0.64 (Also includes catalina.jar and tomcat-dbcp.jar)
 Trove 3.0.1
 unoil.jar (from OpenOffice 2.0)
-Velocity 1.7
+Velocity 1.5
 Velocity-tools-view 1.4
-websocket 1.1 (from Tomcat distribution; new in Java EE 7)
 WSDL4J 1.5.1
 WSS4J 1.5.3
 Xalan 2.7.0 (XPath and XSLT implementation; used by WSS4J and others; also includes serializer)
