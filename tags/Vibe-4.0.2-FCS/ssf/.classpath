@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="main/src"/>
+	<classpathentry kind="src" path="rest-lib/src"/>
+	<classpathentry kind="src" path="samples/rest-client/src"/>
+	<classpathentry kind="src" path="rest-client/src"/>
+	<classpathentry kind="src" path="indexer-lucene/test/src"/>
+	<classpathentry kind="src" path="ssr/src"/>
+	<classpathentry kind="src" path="rest/src"/>
+	<classpathentry kind="src" path="as-shared/src"/>
+	<classpathentry kind="src" path="as-common/src"/>
+	<classpathentry kind="src" path="tomcat/src"/>
+	<classpathentry kind="src" path="samples/module-event-listeners/src"/>
+	<classpathentry kind="src" path="main-minimum/src"/>
+	<classpathentry kind="src" path="liferay-light/src"/>
+	<classpathentry kind="src" path="util-search/src"/>
+	<classpathentry kind="src" path="samples/portal/jsr168/src"/>
+	<classpathentry kind="src" path="samples/remoteapp/src"/>
+	<classpathentry kind="src" path="samples/portlet/src"/>
+	<classpathentry kind="src" path="samples/backgroundjob/src"/>
+	<classpathentry kind="src" path="samples/extendedws/src"/>
+	<classpathentry kind="src" path="mobile/src"/>
+	<classpathentry kind="src" path="liferay/liferay/src"/>
+	<classpathentry kind="src" path="liferay/teaming/src"/>
+	<classpathentry kind="src" path="simple-url/src"/>
+	<classpathentry kind="src" path="samples/wsclient/src"/>
+	<classpathentry kind="src" path="ws-client/src"/>
+	<classpathentry kind="src" path="slide-webdavclient/src"/>
+	<classpathentry kind="src" path="commons-httpclient-contrib/src"/>
+	<classpathentry kind="src" path="jboss-portal/src"/>
+	<classpathentry kind="src" path="tools/src"/>
+	<classpathentry kind="src" path="ssfs/src"/>
+	<classpathentry kind="src" path="main/test/src"/>
+	<classpathentry kind="src" path="portal-module/src"/>
+	<classpathentry kind="src" path="taglib/src"/>
+	<classpathentry kind="src" path="indexer-lucene/src"/>
+	<classpathentry kind="src" path="util/src"/>
+	<classpathentry kind="src" path="gwt/src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="lib/activation.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-contrib.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/aopalliance.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/axis.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/axis-ant.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-collections.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-httpclient.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-lang.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-logging.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/concurrent.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dom4j.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jaxrpc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jdom.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jta.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/log4j.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/quartz.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/trove.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/velocity.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/hibernate3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jaxen.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cglib.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jtds.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/bsh.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dbunit-2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/easymock.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jakarta-slide-webdavlib.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/junit.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mail.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-discovery.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/saaj.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/wsdl4j.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/wss4j.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xmlrpc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/addressing.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-codec.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/opensaml.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xalan.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xmlsec.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-beanutils.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/frontbasejdbc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-transaction.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackrabbit-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jakarta-slide-wck.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jcr.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/slide-jaas.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/slide-kernel.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jasypt.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/java_uno_accessbridge.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/java_uno.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/juh.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/juniversalchardet.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jurt.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jut.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ridl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/unoil.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/json-lib.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jbosssx.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/portal-identity-lib.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ical4j.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/joda-time.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ezmorph.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jboss-common.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/struts.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/util-java.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackrabbit-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackrabbit-jcr-commons.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/portal-impl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/portal-kernel.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/portal-service.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jakarta-taglibs-standard.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/portals-bridges.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/portal-client.jar"/>
+	<classpathentry exported="true" kind="lib" path="ws-client/kablink-teaming-wsclient.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/velocity-tools-view.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mina-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mina-filter-ssl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mina-integration-jmx.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/slf4j-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/subethasmtp.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-net.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-fileupload.jar"/>
+	<classpathentry kind="lib" path="lib/commons-compress.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jbpm.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-security-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/catalina.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/kaptcha.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jsp-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/servlet-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/md5crypt.jar"/>
+	<classpathentry kind="lib" path="tools/gwt/gwt-servlet-deps.jar"/>
+	<classpathentry kind="lib" path="lib/gwt-cal.jar"/>
+	<classpathentry kind="lib" path="lib/gwt-crypto.jar"/>
+	<classpathentry kind="lib" path="tools/gwt/gwt-dnd.jar"/>
+	<classpathentry kind="lib" path="tools/gwt/gwt-log.jar"/>
+	<classpathentry kind="lib" path="lib/gwtquery.jar"/>
+	<classpathentry kind="lib" path="lib/draggable-plugin.jar"/>
+	<classpathentry kind="lib" path="lib/lib-gwt-file.jar"/>
+	<classpathentry kind="lib" path="lib/gwt-tour.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat-dbcp.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javaxt-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/lucene-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jtidy.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/portlet-api-2.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ehcache-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jsr311-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jersey-client.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jersey-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jersey-json.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jersey-server.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/hibernate-jpa-2.0-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/hibernate-memcached.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spymemcached.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xmemcached.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jersey-apache-client.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/lucene-analyzers.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-core-asl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jaxb-impl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/liquibase-hibernate.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/liquibase.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/slf4j-log4j12.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/milton-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/milton-servlet.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/groovy-all.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-security-config.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-security-ldap.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-security-openid.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-security-web.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-jaxrs.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-mapper-asl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-xc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/lucene-queries.jar"/>
+	<classpathentry kind="lib" path="tools/gwt/gwt-user.jar"/>
+	<classpathentry kind="lib" path="tools/gwt/gwt-dev.jar"/>
+	<classpathentry kind="lib" path="tools/gwt/validation-api-1.0.0.GA-sources.jar"/>
+	<classpathentry kind="lib" path="tools/gwt/validation-api-1.0.0.GA.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/openid4java.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/tomcat-jdbc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-aop.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-aspects.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-beans.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-context-support.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-context.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-expression.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-instrument-tomcat.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-instrument.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-jdbc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-ldap-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-orm.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-oxm.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-test.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-tx.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-web.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc-portlet.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/httpclient.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/httpcore.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-amqp.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-rabbit.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/rabbitmq-client.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-retry.jar"/>
+	<classpathentry kind="lib" path="lib/tika-core.jar"/>
+	<classpathentry kind="lib" path="lib/tika-parsers.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/bcprov-jdk15on.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/httpmime.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/enunciate-core-annotations.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-io.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/chemistry-opencmis-client-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/chemistry-opencmis-client-bindings.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/chemistry-opencmis-client-impl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/chemistry-opencmis-commons-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/chemistry-opencmis-commons-impl.jar"/>
+	<classpathentry kind="output" path="war/WEB-INF/classes"/>
+</classpath>

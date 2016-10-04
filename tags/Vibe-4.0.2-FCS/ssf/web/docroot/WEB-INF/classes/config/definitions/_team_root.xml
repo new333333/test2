@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_team_root" caption="__team_workspace_root" type="8" nextId="11" definitionType="8" databaseId="402883b5132516590113251ca0e90003"> 
+  <item name="workspaceForm" caption="__workspace_form" type="form" id="1"> 
+    <properties/>  
+    <item name="title" caption="__title" type="data" id="2"> 
+      <properties> 
+        <property name="name" value="title"/>  
+        <property name="caption" value="__title"/>  
+        <property name="width" value="60"/>  
+        <property name="generated" value=""/>  
+        <property name="itemSource" value=""/> 
+      </properties> 
+    </item>  
+    <item name="description" caption="__description" type="data" id="3"> 
+      <properties> 
+        <property name="name" value="description"/>  
+        <property name="caption" value="__description"/>  
+        <property name="height" value=""/>  
+        <property name="required" value=""/> 
+      </properties> 
+    </item>  
+    <item name="workspaceIcon" caption="__icon" type="data" id="4"> 
+      <properties> 
+        <property name="name" value="iconName"/>  
+        <property name="caption" value="__icon"/> 
+      </properties> 
+    </item>  
+    <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" display="form" id="10">
+      <properties>
+        <property name="caption" value="__attach_files"/>
+        <property name="name" value="ss_attachFile"/>
+        <property name="width" value="60"/>
+        <property name="number" value=""/>
+        <property name="storage" value="simpleFileRepository"/>
+        <property name="hide" value="true"/>
+      </properties>
+    </item>
+  </item>  
+  <item name="workspaceView" caption="__workspace_view" id="5"> 
+    <item name="workspaceTitleView" caption="__title" category="workspaceViewData" display="view" id="8"> 
+      <item name="workspaceTitleDescriptionView" caption="__description" category="folderViewData" display="view" id="9"> 
+        <properties> 
+          <property name="caption" value="__description"/> 
+        </properties> 
+      </item> 
+    </item>  
+    <item name="dashboardCanvas" caption="__dashboard_canvas" id="6"> 
+      <properties> 
+        <property name="caption" value="__dashboard_canvas"/> 
+      </properties> 
+    </item>  
+    <properties> 
+      <property name="type" value="team_root"/> 
+    </properties> 
+  </item>  
+  <properties> 
+    <property name="name" value="_team_root"/>  
+    <property name="caption" value="__team_workspace_root"/> 
+  </properties>  
+  <export-mappings/>
+</definition>

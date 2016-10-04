@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" table="SS_LibraryEntries" lazy="false" name="org.kablink.teaming.domain.LibraryEntry">
+    <composite-id >
+      <key-property name="binderId" />
+      <key-property name="type"/>
+      <key-property name="name" length="255"/>
+    </composite-id>
+    <property name="zoneId" access="field"/>
+    <property name="entityId"/>
+</class>
+</hibernate-mapping>

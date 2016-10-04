@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class table="SS_AuditTrail" discriminator-value="A" name="org.kablink.teaming.domain.AuditTrail">
+    <id unsaved-value="null" name="id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <discriminator type="char" column="type"/>
+    <property name="zoneId" access="field"/>
+    <property name="startDate" index="startDate_audit"/>
+    <property name="startBy" index="startBy_audit"/>
+    <property name="endBy"/>
+    <property name="endDate"/>
+   	<property name="entityType" length="16" index="entityOwner_audit"/>
+ 	<property name="entityId" index="entityOwner_audit"/>
+	<property name="transactionType" length="16" index="ttype_obkey_audit"/>
+    <property name="owningBinderId" index="owningBinder_audit"/>
+ 	<property name="owningBinderKey" length="255" index="ttype_obkey_audit"/>
+ 	<property name="description" length="512"/>
+ 	<property name="fileId">
+ 		<column name="fileId" sql-type="char(32)"/>
+ 	</property>
+    <property name="applicationId"/>
+    <property name="deletedFolderEntryFamily" length="32"/>
+<!-- deprecated - moved to WorkflowHistory as own class -->
+    <subclass name="org.kablink.teaming.domain.WorkflowStateHistory" discriminator-value="W">
+ 		<property name="tokenId"/>
+    	<property name="state" length="64"/>
+	    <property name="threadName" length="64"/>
+		<property name="definitionId" length="32"/>
+	    <property name="ended"/>
+    </subclass>
+    <subclass name="org.kablink.teaming.domain.LoginInfo" discriminator-value="L">
+    </subclass>
+  </class>
+</hibernate-mapping>

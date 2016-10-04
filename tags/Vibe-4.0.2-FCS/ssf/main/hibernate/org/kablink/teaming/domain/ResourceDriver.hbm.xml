@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+    <typedef name="encrypted" class="org.jasypt.hibernate.type.EncryptedStringType">
+      <param name="encryptorRegisteredName">hibernateStringEncryptor</param>
+    </typedef>
+  <class dynamic-update="true" lazy="false" table="SS_ResourceDriver" 
+  		name="org.kablink.teaming.domain.ResourceDriverConfig">
+    <!--<cache usage="read-write"/>-->
+    <id unsaved-value="null" name="id" type="long">
+      <generator class="native">
+      	<param name="sequence">ss_resource_driver_id_sequence</param>
+      </generator>
+    </id>
+    <property name="zoneId" not-null="true"/>
+    <property name="name"/>
+    <property name="type"/>
+    <property name="readOnly" access="field"/>
+    <property name="synchTopDelete" access="field"/>
+    <property name="putRequiresContentLength" access="field"/>
+	<property name="allowSelfSignedCertificate" access="field"/>
+    <property name="hostUrl"/>
+    <property name="rootPath"/>
+    <property name="accountName"/>
+	<property name="password" access="field" length="64" type="encrypted"/>
+    <property name="useProxyIdentity" access="field"/>
+    <property name="proxyIdentityId" access="field"/>
+    <property name="shareName"/>
+    <property name="serverName"/>
+    <property name="serverIP"/>
+    <property name="volume"/>
+    <property name="modifiedOn"/>
+    <property name="fullSyncDirOnly" access="field"/>
+    <property name="authenticationType" access="field" type="short" />
+	<property name="indexContent" access="field"/>
+    <property name="jitsEnabled" access="field"/>
+    <property name="jitsMaxAge" access="field"/>
+    <property name="jitsAclMaxAge" access="field"/>
+	<property name="allowDesktopAppToTriggerInitialHomeFolderSync" column="allowDAToTriggerInitialHFSync" access="field"/>
+  </class>
+</hibernate-mapping>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="8" internalId="402883c1129b1f8101129b28bc620004">
+  <attribute name="templateTitle" type="string">__template_team_workspace</attribute>
+  <attribute name="templateDescription" type="description">__template_team_workspace_description</attribute>
+  <attribute name="title" type="string">__template_team_workspace</attribute>
+  <attribute name="description" type="description"></attribute>
+  <attribute name="iconName" type="string">/icons/workspace_team.png</attribute>
+  <attribute name="name" type="string">_workspace_team</attribute>
+  <property name="library">false</property>
+  <property name="uniqueTitle">false</property>
+  <property name="inheritFunctionMembership">false</property>
+  <property name="inheritDefinitions">false</property>
+  <property name="inheritTeamMembers">true</property>
+	<!--
+		<workAreaFunctionMembership>
+			<property name="functionName">__role.allowSharing</property>
+			<property name="members">-1 -2</property>
+		</workAreaFunctionMembership>
+		<workAreaFunctionMembership>
+			<property name="functionName">__role.allowSharingPublicLinks</property>
+			<property name="members">-1 -2</property>
+		</workAreaFunctionMembership>
+		<workAreaFunctionMembership>
+			<property name="functionName">__role.allowSharingPublic</property>
+			<property name="members">-1 -2</property>
+		</workAreaFunctionMembership>
+		<workAreaFunctionMembership>
+			<property name="functionName">__role.allowSharingExternal</property>
+			<property name="members">-1 -2</property>
+		</workAreaFunctionMembership>
+		<workAreaFunctionMembership>
+			<property name="functionName">__role.allowSharingForward</property>
+			<property name="members">-1 -2</property>
+		</workAreaFunctionMembership>
+	-->
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.participant</property>
+    <property name="members">-1 -2</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.teamMember</property>
+    <property name="members">-2</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.binderAdmin</property>
+    <property name="members">-1</property>
+  </workAreaFunctionMembership>
+  <definition name="_team_workspace" databaseId="402883b513214e5801132160c3ec0002"/>
+  <dashboard>
+    <property name="nextComponentId">2</property>
+    <property name="showComponents">true</property>
+    <property name="version">1</property>
+    <property name="title"/>
+    <property name="includeBinderTitle">false</property>
+    <layout name="wide_top">
+      <property name="scope">binder</property>
+      <property name="visible">true</property>
+      <property name="id">binder_0</property>
+    </layout>
+    <component name="binder_0">
+      <property name="displayStyle">border</property>
+      <property name="title"></property>
+      <data>
+        <property name="resultsCount">10</property>
+      </data>
+      <property name="roles"></property>
+      <property name="name">teamMembersList</property>
+    </component>
+  </dashboard>
+</template>

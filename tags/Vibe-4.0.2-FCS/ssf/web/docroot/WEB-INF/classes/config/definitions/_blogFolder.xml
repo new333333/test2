@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_blogFolder" caption="__definition_default_folder_blog" type="5" nextId="19" definitionType="5" databaseId="402883c6115753d8011157619e35000b" internalId="402883c6115753d8011157619e35000b"> 
+  <item name="folderForm" caption="__folder_form" type="form" id="1" display="form"> 
+    <properties/>  
+    <item name="title" caption="__title" type="data" id="3"> 
+      <properties> 
+        <property name="name" value="title"/>  
+        <property name="caption" value="__title"/>  
+        <property name="width" value="100"/>  
+        <property name="inline" caption="__inline" type="boolean" value="false"> 
+          <help>ihelp.designers.mark_as_inline</help> 
+        </property>  
+        <property name="generated" caption="__isTitleGenerated" type="boolean" definitionType="1" value="false"> 
+          <help>ihelp.designers.mark_as_title</help> 
+        </property> 
+      </properties> 
+    </item>  
+    <item name="description" caption="__description" type="data" id="4"> 
+      <properties> 
+        <property name="name" value="description"/>  
+        <property name="caption" value="__description"/>  
+        <property name="height" value=""/>  
+        <property name="required" value=""/> 
+      </properties> 
+    </item>  
+    <item name="folderIcon" caption="__icon" type="data" id="5"> 
+      <properties> 
+        <property name="name" value="iconName"/>  
+        <property name="caption" value="__icon"/> 
+      </properties> 
+    </item>  
+    <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" display="form" id="18">
+      <properties>
+        <property name="caption" value="__attach_files"/>
+        <property name="name" value="ss_attachFile"/>
+        <property name="width" value="60"/>
+        <property name="number" value=""/>
+        <property name="storage" value="simpleFileRepository"/>
+        <property name="hide" value="true"/>
+      </properties>
+    </item>
+  </item>  
+  <item name="forumView" caption="__folder_view" id="6"> 
+    <item name="folderTitleView" caption="__title" category="folderViewData" display="view" id="14"> 
+      <properties> 
+        <property name="caption" value="__title"/> 
+      </properties> 
+    </item>  
+    <item name="folderDescriptionView" caption="__description" category="folderViewData" display="view" id="17"> 
+      <properties> 
+        <property name="caption" value="__description"/>  
+        <property name="viewType" value="top"/> 
+      </properties> 
+    </item>  
+    <item name="folderList" caption="__folder_listing" id="9"> 
+      <properties/> 
+    </item>  
+    <properties> 
+      <property name="type" value="blog"/> 
+    </properties> 
+  </item>  
+  <properties> 
+    <property name="caption" value="__definition_default_folder_blog"/>  
+    <property name="name" value="_blogFolder"/>  
+    <property name="family" value="blog"/>  
+    <property name="icon" value="/icons/folder_blue_blog.png"/> 
+  </properties>  
+  <export-mappings/>
+</definition>

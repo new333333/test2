@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+    <typedef name="encrypted" class="org.jasypt.hibernate.type.EncryptedStringType">
+      <param name="encryptorRegisteredName">hibernateStringEncryptor</param>
+    </typedef>
+  <class dynamic-update="true" table="SS_Postings" name="org.kablink.teaming.domain.PostingDef">
+    <!--<cache usage="read-write"/>-->
+    <id unsaved-value="null" name="id" node="@id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
+	<property name="zoneId" not-null="true" index="email_postings"/>
+    <property name="enabled"/>
+    <property name="emailAddress" length="256" index="email_postings"/>
+	<property name="password" access="field" length="64"/>
+	<property name="credentials" access="field" length="64" type="encrypted"/>
+    <many-to-one name="binder"/>
+    <many-to-one name="definition">
+        <column name="definition" sql-type="char(32)"/>
+    </many-to-one>
+    <property name="replyPostingOption"/>
+  </class>
+</hibernate-mapping>

@@ -1,0 +1,168 @@
+<!--
+/**
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * 
+ * This work is governed by the Common Public Attribution License Version 1.0 (the
+ * "CPAL"); you may not use this file except in compliance with the CPAL. You may
+ * obtain a copy of the CPAL at http://www.opensource.org/licenses/cpal_1.0. The
+ * CPAL is based on the Mozilla Public License Version 1.1 but Sections 14 and 15
+ * have been added to cover use of software over a computer network and provide
+ * for limited attribution for the Original Developer. In addition, Exhibit A has
+ * been modified to be consistent with Exhibit B.
+ * 
+ * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT
+ * WARRANTY OF ANY KIND, either express or implied. See the CPAL for the specific
+ * language governing rights and limitations under the CPAL.
+ * 
+ * The Original Code is ICEcore, now called Kablink. The Original Developer is
+ * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * 
+ * Attribution Information:
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
+ * Attribution URL: [www.kablink.org]
+ * Graphic Image as provided in the Covered Code
+ * [ssf/images/pics/powered_by_icecore.png].
+ * Display of Attribution Information is required in Larger Works which are
+ * defined in the CPAL as a work which combines Covered Code or portions thereof
+ * with code not governed by the terms of the CPAL.
+ * 
+ * NOVELL and the Novell logo are registered trademarks and Kablink and the
+ * Kablink logos are trademarks of Novell, Inc.
+ */
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>
+.ss_browseHelpText {
+  font-family: Tahoma, Arial, sans-serif;
+  font-size: 0.7em;
+  }
+.ss_fileUploadProgressBarContainer {
+	padding: 5px;
+	background-color: #FAFAFA;
+	border: 1px solid black;
+}
+
+.ss_fileUploadProgressBarContainer .ss_progressBar {
+    height: 15px;
+    width: 320px;
+    background: #ffffff;
+    border: 1px solid #333333;
+    margin: 0;
+    padding-right: 5px;
+}
+.ss_fileUploadProgressBarContainer .ss_progressBar div {
+    height: 11px;
+    margin: 2px;
+    padding: 0px;
+    background: #333333;
+}
+.ss_fileUploadProgressBarContainer .ss_progressTimeSpeed, .ss_fileUploadProgressBarContainer .ss_progress {
+	width: 160px;
+	font-size: 10px;
+}
+.ss_fileUploadProgressBarContainer .ss_progressTimeSpeed {
+	text-align: left;
+}
+.ss_fileUploadProgressBarContainer .ss_progress {
+	text-align: right;
+}
+</style>
+<script type="text/javascript">
+
+var strNoFileWarningMessage = "";
+var strCloseDivFunction = "";
+
+function setURL() {
+	var url = parent.browseURL;
+
+	var formName = document.getElementById("browseForm");
+	formName.action = url;
+	
+	var submitControl = document.getElementById("ssBrowseSubmit");
+	var closeControl = document.getElementById("ssCloseBrowse");
+	var closeDivFunctionName = document.getElementById("ssCloseDivFunctionName");
+	var divObj = document.getElementById("ssBrowseAddAttachment");
+	
+	submitControl.value = parent.ss_labelButtonOK;
+	closeControl.value = parent.ss_labelButtonCancel;
+	divObj.innerHTML = parent.ss_labelEntryBrowseAddAttachmentHelpText;
+	strNoFileWarningMessage = parent.ss_labelEntryChooseFileWarning;
+
+	var closeDivFunction = parent.browseHideAttachment;
+	var closeDivAndAjaxCallFunction = parent.browseHideAttachmentAndAjax;
+
+	closeDivFunctionName.value = closeDivAndAjaxCallFunction;
+	strCloseDivFunction = closeDivFunction;
+}
+
+function ssCloseDiv() {
+	eval("parent."+strCloseDivFunction);
+}
+
+function ssSubmit() {
+	if (!window.uploadProgressBar) {// prevents many progress bars on one page
+	
+		// the uid binds upload request with upload status check request
+		var uid = new Date().valueOf();
+		var formName = document.getElementById("browseForm");
+		formName.action = formName.action + "&ss_upload_request_uid=" + uid;
+	
+		var url = parent.ss_buildAdapterUrl(parent.ss_AjaxBaseUrl, 
+									{operation:"get_upload_progress_status", 
+									ss_upload_request_uid: uid});								
+		window.uploadProgressBar = new parent.ss_FileUploadProgressBar(document.getElementById("ss_uploadFileProgressBar"));
+	  	setTimeout(function() {
+  		  	parent.ss_FileUploadProgressBar.reloadProgressStatus(window.uploadProgressBar, url);
+	  	}, 1500);
+	}
+	return checkForFile();
+}
+
+function checkForFile() {
+	var fileName = browseForm.ss_attachFile1.value;
+	if (fileName == "") {
+		alert(strNoFileWarningMessage);
+		return false;
+	}
+	else {
+		return true;
+	}
+}
+</script>
+</head>
+<body onLoad="setURL();">
+<form action="" id="browseForm" name="browseForm" method="post" enctype="multipart/form-data">
+
+<table>
+<tbody>
+	<tr>
+		<td>
+			<input id="ss_attachFile1" name="ss_attachFile1" type="file" size="35" />	
+			<input type="hidden" name="ss_upload_request_uid" value=""/>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div id="ss_uploadFileProgressBar" class="ss_fileUploadProgressBarContainer" style="display: none;"></div>
+		</td>
+	</tr>		
+	<tr>
+		<td>
+			<input type="submit" id="ssBrowseSubmit" name="ssBrowseSubmit" value="" onClick="return (ssSubmit());" />&nbsp;&nbsp;
+			<input type="submit" id="ssCloseBrowse" name="ssCloseBrowse" value="" onClick="ssCloseDiv(); return false;" />
+			<input type="hidden" id="ssCloseDivFunctionName" name="ssCloseDivFunctionName" value="" />
+		</td>
+	</tr>	
+	<tr>
+		<td class="ss_browseHelpText">
+			<div id="ssBrowseAddAttachment" name="ssBrowseAddAttachment"></div>
+		</td>
+	</tr>
+</tbody>
+</table>
+</form>
+</body>
+</html>
