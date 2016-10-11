@@ -149,7 +149,6 @@ RabbitMQ Java client library 3.6.5 (triple-licensed under the APL 2.0 and the MP
 ridl.jar (from OpenOffice 2.0)
 SAAJ 1.2 DO NOT UPGRADE (V1.2 used the ASL1.1, newer versions are from glassfish project which uses cppl and gpl2.0)
 Saxpath 1.0 (for ssfs)
-Servlet 3.1/JSP 2.3 (from Tomcat distribution)
 Simple Logging Facade for Java (SLF4J) api 1.7.7
 Simple Logging Facade for Java (SLF4J) log4j12 1.7.7
 Slide jaas 2.2pre1
@@ -172,12 +171,11 @@ tcllib 1.11.1 (for installer)
 tika-core 1.8
 tika-parsers 1.8
 TestNG 6.8
-Tomcat 8.0.33 (Also includes catalina.jar and tomcat-dbcp.jar; Skipping 8.0.35 due to bug https://bz.apache.org/bugzilla/show_bug.cgi?id=59566)
+Tomcat 8.0.33 (Also includes catalina.jar, tomcat-dbcp.jar, Servlet 3.1/JSP 2.3, and websocket 1.1; Skipping 8.0.35 due to bug https://bz.apache.org/bugzilla/show_bug.cgi?id=59566)
 Trove 3.0.1
 unoil.jar (from OpenOffice 2.0)
 Velocity 1.7
 Velocity-tools-view 1.4
-websocket 1.1 (from Tomcat distribution; new in Java EE 7)
 WSDL4J 1.5.1
 WSS4J 1.5.3
 Xalan 2.7.0 (XPath and XSLT implementation; used by WSS4J and others; also includes serializer)
