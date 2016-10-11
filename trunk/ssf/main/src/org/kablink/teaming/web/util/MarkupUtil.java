@@ -1124,6 +1124,7 @@ public class MarkupUtil {
 
 			//Replace the markup urls with real urls "cid:{{attachmentUrl: tempFileHandle}}"
 			outputBuf = markupReplaceAttachmentReference(outputBuf, attachmentUrlPattern2, builder);
+			outputBuf = markupReplaceAttachmentReference(outputBuf, attachmentUrlPattern, builder);
 			//Replace the markup urls with real urls "{{attachmentUrl: tempFileHandle}}"
 			outputBuf = markupReplaceAttachmentReference(outputBuf, v2AttachmentUrlPattern, builder);
 
