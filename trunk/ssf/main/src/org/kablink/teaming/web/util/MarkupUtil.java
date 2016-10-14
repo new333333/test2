@@ -1564,6 +1564,15 @@ public class MarkupUtil {
 
 	//Routine to split a body of text into sections
 	public static List markupSplitBySection(String body) {
+		String unescapedBody =  StringEscapeUtils.unescapeHtml(body);
+		List bodyParts = _markupSplitBySection(unescapedBody, sectionPattern);
+		if (bodyParts.size()==0) {
+			bodyParts = _markupSplitBySection(body, sectionPattern);
+		}
+		return bodyParts;
+	}
+
+	private static List _markupSplitBySection(String body, Pattern sectionPattern) {
 		List bodyParts = new ArrayList();
     	Matcher m0 = sectionPattern.matcher(body);
     	if (m0.find()) {
