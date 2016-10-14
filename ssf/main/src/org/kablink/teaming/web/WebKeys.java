@@ -37,7 +37,8 @@ package org.kablink.teaming.web;
  * 
  * @author ?
  */
-public class WebKeys {
+public class
+		WebKeys {
 	// Attribute names reserved by portlet specification
 	public static final String JAVAX_PORTLET_CONFIG = "javax.portlet.config";
 	public static final String JAVAX_PORTLET_REQUEST = "javax.portlet.request";
