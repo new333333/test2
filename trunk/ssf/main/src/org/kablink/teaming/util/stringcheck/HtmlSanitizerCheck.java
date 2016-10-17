@@ -1,11 +1,14 @@
 package org.kablink.teaming.util.stringcheck;
 
+import org.kablink.teaming.util.SPropsUtil;
 import org.owasp.html.AttributePolicy;
 import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.CssSchema;
 import java.util.Arrays;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -33,7 +36,11 @@ public class HtmlSanitizerCheck implements StringCheck {
             ")|(" + PROTOCOL_DATA_IMAGE + ")", Pattern.CASE_INSENSITIVE
     );
 
-    private static final String [] ALLOWED_ATTRIBUTES = new String[] {
+    private static final String [] DEFAULT_ALLOWED_ELEMENTS = new String[] {
+            "table", "tbody", "td", "tr", "hr"
+    };
+
+    private static final String [] DEFAULT_ALLOWED_ATTRIBUTES = new String[] {
             "align",
             "alt",
             "border",
@@ -42,12 +49,15 @@ public class HtmlSanitizerCheck implements StringCheck {
             "class",
             "dir",
             "frame",
+            "halign",
             "id",
             "lang",
             "name",
             "rules",
+            "scope",
             "style",
-            "summary"
+            "summary",
+            "valign",
     };
     
     /**
@@ -65,7 +75,8 @@ public class HtmlSanitizerCheck implements StringCheck {
         factory = new HtmlPolicyBuilder()
                 .allowCommonBlockElements()
                 .allowCommonInlineFormattingElements()
-                .allowAttributes(ALLOWED_ATTRIBUTES).globally() // name and float attributes is added by lokesh.  This is need by few customers since they have references in long html pages.
+                .allowAttributes(getAllowedAttributes()).globally() // name and float attributes is added by lokesh.  This is need by few customers since they have references in long html pages.
+                .allowElements(getAllowedElements())
                 .allowElements("table", "tbody", "td", "tr", "hr")
                 .allowElements("a", "img", "input", "span")
                 .allowStandardUrlProtocols()
@@ -84,6 +95,20 @@ public class HtmlSanitizerCheck implements StringCheck {
                 .allowStyling(CssSchema.union(CssSchema.DEFAULT, ADDITIONAL_CSS))
                 //.requireRelNofollowOnLinks() // Disabled by Lokesh.  Follow links is needed by few customers since they have references in long html pages.
                 .toFactory();
+    }
+
+    private String[] getAllowedElements() {
+        Set<String> allElements = new HashSet<>();
+        allElements.addAll(Arrays.asList(DEFAULT_ALLOWED_ELEMENTS));
+        allElements.addAll(Arrays.asList(SPropsUtil.getStringArray("html.safe.elements", ",")));
+        return allElements.toArray(new String[allElements.size()]);
+    }
+
+    private String[] getAllowedAttributes() {
+        Set<String> allElements = new HashSet<>();
+        allElements.addAll(Arrays.asList(DEFAULT_ALLOWED_ATTRIBUTES));
+        allElements.addAll(Arrays.asList(SPropsUtil.getStringArray("html.safe.attributes", ",")));
+        return allElements.toArray(new String[allElements.size()]);
     }
 
     @Override
