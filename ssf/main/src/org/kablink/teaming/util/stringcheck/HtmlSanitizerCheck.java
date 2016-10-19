@@ -5,6 +5,8 @@ import org.owasp.html.AttributePolicy;
 import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.CssSchema;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import java.util.HashSet;
@@ -37,27 +39,108 @@ public class HtmlSanitizerCheck implements StringCheck {
     );
 
     private static final String [] DEFAULT_ALLOWED_ELEMENTS = new String[] {
-            "table", "tbody", "td", "tr", "hr"
+            "abbr",
+            "b",
+            "big",
+            "blockquote",
+            "br",
+            "caption",
+            "center",
+            "cite",
+            "code",
+            "dd",
+            "del",
+            "dfn",
+            "dir",
+            "div",
+            "dl",
+            "dt",
+            "em",
+            "figcaption",
+            "figure",
+            "font",
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "hr",
+            "i",
+            "input",
+            "ins",
+            "kbd",
+            "li",
+            "o",
+            "ol",
+            "p",
+            "pre",
+            "q",
+            "s",
+            "samp",
+            "small",
+            "span",
+            "strike",
+            "strong",
+            "sub",
+            "sup",
+            "table",
+            "tbody",
+            "td",
+            "textarea",
+            "tfoot",
+            "th",
+            "thead",
+            "tr",
+            "tt",
+            "u",
+            "ul",
+            "var",
     };
 
     private static final String [] DEFAULT_ALLOWED_ATTRIBUTES = new String[] {
+            "abbr",
+            "acronym",
             "align",
             "alt",
+            "axis",
+            "bgcolor",
             "border",
             "cellpadding",
             "cellspacing",
+            "char",
+            "charoff",
             "class",
+            "color",
+            "colspan",
+            "compact",
             "dir",
+            "face",
             "frame",
             "halign",
+            "headers",
+            "height",
+            "hspace",
             "id",
             "lang",
+            "longdesc",
             "name",
+            "nowrap",
+            "rel",
+            "rowspan",
             "rules",
             "scope",
+            "size",
+            "sortable",
+            "sorted",
             "style",
             "summary",
+            "target",
+            "title",
+            "type",
             "valign",
+            "vspace",
+            "width",
     };
     
     /**
@@ -77,8 +160,7 @@ public class HtmlSanitizerCheck implements StringCheck {
                 .allowCommonInlineFormattingElements()
                 .allowAttributes(getAllowedAttributes()).globally() // name and float attributes is added by lokesh.  This is need by few customers since they have references in long html pages.
                 .allowElements(getAllowedElements())
-                .allowElements("table", "tbody", "td", "tr", "hr")
-                .allowElements("a", "img", "input", "span")
+                .allowElements("a", "img")
                 .allowStandardUrlProtocols()
                 .allowUrlProtocols("cid")
                 // Pasted images in Firefox
@@ -87,12 +169,10 @@ public class HtmlSanitizerCheck implements StringCheck {
                 .allowAttributes("href")
                     .matching(A_PATTERN)
                     .onElements("a")
-                .allowAttributes("target")
-                    .onElements("a")
                 .allowAttributes("src")
                     .matching(IMG_PATTERN)
-                .onElements("img")
-                .allowStyling(CssSchema.union(CssSchema.DEFAULT, ADDITIONAL_CSS))
+                    .onElements("img")
+                .allowStyling(getAllowedCSSSchema())
                 //.requireRelNofollowOnLinks() // Disabled by Lokesh.  Follow links is needed by few customers since they have references in long html pages.
                 .toFactory();
     }
@@ -109,6 +189,11 @@ public class HtmlSanitizerCheck implements StringCheck {
         allElements.addAll(Arrays.asList(DEFAULT_ALLOWED_ATTRIBUTES));
         allElements.addAll(Arrays.asList(SPropsUtil.getStringArray("html.safe.attributes", ",")));
         return allElements.toArray(new String[allElements.size()]);
+    }
+
+    private CssSchema getAllowedCSSSchema() {
+        CssSchema customSchema = CssSchema.withProperties(Arrays.asList(SPropsUtil.getStringArray("css.safe.properties", ",")));
+        return CssSchema.union(CssSchema.DEFAULT, ADDITIONAL_CSS, customSchema);
     }
 
     @Override
