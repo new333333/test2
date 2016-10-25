@@ -271,7 +271,7 @@ define("dijit/Calendar", [
 //!			debugger;
 			var calLang = this.lang;
 			if (calLang) {
-				// Bugzilla 938582:
+				// Bugzilla 938582,1000490:
 				//    For some reason, in French, the language comes
 				//    through as 'fr' when it should be 'fr-fr' and as
 				//    'fr-fr' when it should be 'fr'.  I've been unable
