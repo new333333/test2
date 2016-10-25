@@ -9950,7 +9950,7 @@ public class GwtServerHelper {
 			MarkupStringReplacementCmd msrCmd = ((MarkupStringReplacementCmd) cmd);
 			String html = msrCmd.getHtml();
 			if (MiscUtil.hasString(html)) {
-				msrCmd.setHtml(StringCheckUtil.checkHtml(html));
+				msrCmd.setHtml(StringCheckUtil.checkHtml(MarkupUtil.fixupAllV2Urls(html)));
 			}
 			break;
 		}
@@ -9971,7 +9971,7 @@ public class GwtServerHelper {
 			
 		case SAVE_BRANDING: {
 			SaveBrandingCmd sbCmd = ((SaveBrandingCmd) cmd);
-			GwtBrandingData bd = sbCmd.getBrandingData(); 
+			GwtBrandingData bd = sbCmd.getBrandingData();
 			String html = bd.getBranding();
 			if (MiscUtil.hasString(html)) {
 				bd.setBranding(StringCheckUtil.checkHtml(html));
