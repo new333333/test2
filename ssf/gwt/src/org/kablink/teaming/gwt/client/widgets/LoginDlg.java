@@ -1161,6 +1161,7 @@ public class LoginDlg extends DlgBox
 				//	t,
 				//	GwtTeaming.getMessages().rpcFailure_GetSelfRegInfo());
 				debugAlert( "In CompleteExternalUserSelfRegistrationCmd / onFailure()" );
+				m_registerBtn.setEnabled(true);
 			}
 	
 			/**
@@ -1170,6 +1171,7 @@ public class LoginDlg extends DlgBox
 			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
+				m_registerBtn.setEnabled(true);
 				debugAlert( "In CompleteExternalUserSelfRegistrationCmd / onSuccess()" );
 				if ( response.getResponseData() != null && response.getResponseData() instanceof ErrorListRpcResponseData )
 				{
@@ -1209,6 +1211,7 @@ public class LoginDlg extends DlgBox
 		// Did the user fill out all the necessary information
 		if ( isExternalUserSelfRegDataValid() == false )
 		{
+			m_registerBtn.setEnabled(true);
 			// No, just bail.  The user will have already been told what's wrong.
 			return;
 		}
@@ -1817,6 +1820,7 @@ public class LoginDlg extends DlgBox
 				@Override
 				public void onClick( ClickEvent event )
 				{
+					m_registerBtn.setEnabled(false);
 					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
