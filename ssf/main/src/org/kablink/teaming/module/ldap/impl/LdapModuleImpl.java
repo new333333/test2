@@ -33,6 +33,7 @@
 package org.kablink.teaming.module.ldap.impl;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -6392,7 +6393,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							id = lAttrs.get( "cn" );
 							if ( id != null )
 							{
-								teamingName = idToName((String)id.get());
+								teamingName = idToName(id.get()); // Do NOT cast to String!
 							}
 							else
 								teamingName = dn;
@@ -7925,6 +7926,26 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	}
 	protected String idToName(String id) {
 		return id.trim();
+	}
+	protected String idToName(Object id) {
+		String strId = null;
+		if(id instanceof String) {
+			strId = (String)id;
+		}
+		else if(id instanceof byte[]) {
+			try {
+				strId = new String((byte[])id, "UTF-8");
+				if(logger.isDebugEnabled())
+					logger.debug("Converted id from byte[] to String '" + strId + "'");
+			} catch (UnsupportedEncodingException ex) {
+				logger.error("Error converting id from byte[] to String", ex);
+			}
+		}
+		else {
+			strId = id.toString();
+		}
+		if(strId == null) return null;
+		return idToName(strId);
 	}
 	protected String dnToGroupName(String dn) {
 		//already trimmed
