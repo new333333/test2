@@ -35,7 +35,13 @@ public class SeenMapTest {
 
 	@Test
 	public void testCompareSerializedMapSizes() throws IOException, ClassNotFoundException {
-		long testSize = 100_000;
+		// MySQL, longblob - 4294967295 bytes (4 GB)
+		// Oracle, blob - 2 GB
+		// PostgreSQL, bytea - 1 GB
+		// MSSQL, image - 2 GB
+		
+		long testSize = 20_000;
+		System.out.println("Test size: " + testSize);
 		
 		long now = System.currentTimeMillis();
 		Map<Long,Date> dateMap = new HashMap<Long,Date>();
