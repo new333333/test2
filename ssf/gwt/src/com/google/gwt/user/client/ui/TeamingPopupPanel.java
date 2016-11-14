@@ -43,6 +43,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
  * access features in PopupPanel that aren't otherwise exposed.
  *  
  * @author drfoster@novell.com
+ * @author lokesh.reddy@microfocus.com
  */
 public class TeamingPopupPanel extends PopupPanel {
 	/**
