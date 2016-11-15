@@ -53,6 +53,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.IdentityInfo;
@@ -569,12 +570,13 @@ public interface ProfileModule {
      * @param entry
      */
     public void setSeen(Long userId, Entry entry);
+    
     /**
-     * Mark a collection of entries as seen.
+     * Mark an entry and all of its descendants (i.e. replies) as seen
      * @param userId
-     * @param entries
+     * @param entry
      */
-    public void setSeen(Long userId, Collection<Entry> entries);
+    public void setSeenRecursive(Long userId, FolderEntry entry);
     /**
      * Mark a collection of entries as seen.
      * @param userId
