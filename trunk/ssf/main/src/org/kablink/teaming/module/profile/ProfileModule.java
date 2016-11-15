@@ -570,19 +570,24 @@ public interface ProfileModule {
      * @param entry
      */
     public void setSeen(Long userId, Entry entry);
-    
     /**
      * Mark an entry and all of its descendants (i.e. replies) as seen
      * @param userId
-     * @param entry
+     * @param entryId
      */
-    public void setSeenRecursive(Long userId, FolderEntry entry);
+    public void setSeenRecursive(Long userId, Long entryId);
     /**
      * Mark a collection of entries as seen.
      * @param userId
      * @param entryIds
      */
     public void setSeenIds(Long userId, Collection<Long> entryIds);
+    /**
+     * Mark a collection of entries and all of their descendants (i.e. replies) as seen.
+     * @param userId
+     * @param entryIds
+     */
+    public void setSeenIdsRecursive(Long userId, Collection<Long> entryIds);
     /**
      * Mark a collection of entryIds as seen.
      * @param userId

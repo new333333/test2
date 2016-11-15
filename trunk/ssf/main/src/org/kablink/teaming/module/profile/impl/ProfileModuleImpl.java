@@ -691,11 +691,13 @@ public void setSeen(Long userId, Entry entry) {
   }
    //RW transaction
    @Override
-   public void setSeenRecursive(Long userId, FolderEntry entry) {
+   public void setSeenRecursive(Long userId, Long entryId) {
 		User user = getUser(userId, true);
 		if (user.isShared()) return;
 		SeenMap seen = getProfileDao().loadSeenMap(user.getId());
-		seen.setSeenRecursive(entry);
+		FolderEntry entry = (FolderEntry) getCoreDao().load(FolderEntry.class, entryId);
+		if(entry != null)
+			seen.setSeenRecursive(entry);
   }
    //RW transaction
    @Override
@@ -704,6 +706,22 @@ public void setSeenIds(Long userId, Collection<Long> entryIds) {
 		if (user.isShared()) return;
 		SeenMap	seen = getProfileDao().loadSeenMap(user.getId());
 		seen.setSeen(entryIds);
+  }  	
+   //RW transaction
+   @Override
+   public void setSeenIdsRecursive(Long userId, Collection<Long> entryIds) {
+		User user = getUser(userId, true);
+		if (user.isShared()) return;
+		SeenMap	seen = getProfileDao().loadSeenMap(user.getId());
+		FolderEntry entry;
+		List<FolderEntry> entries = new ArrayList<FolderEntry>();
+		for(Long entryId:entryIds) {
+			entry = (FolderEntry) getCoreDao().load(FolderEntry.class, entryId);
+			if(entry != null)
+				entries.add(entry);
+		}
+		if(!entries.isEmpty())
+			seen.setSeenRecursive(entries);
   }  	
 
    //RW transaction
