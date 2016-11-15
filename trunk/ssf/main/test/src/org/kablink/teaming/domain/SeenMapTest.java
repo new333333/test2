@@ -40,7 +40,7 @@ public class SeenMapTest {
 		// PostgreSQL, bytea - 1 GB
 		// MSSQL, image - 2 GB
 		
-		long testSize = 20_000;
+		long testSize = 30_000;
 		System.out.println("Test size: " + testSize);
 		
 		long now = System.currentTimeMillis();
