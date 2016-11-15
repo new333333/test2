@@ -200,6 +200,21 @@ public class SeenMap extends ZonedObject {
 		}
 		setSeen(entries);
     }
+    /**
+     * Mark a collection of entries and all of their descendants (i.e. replies) as seen
+     * @param folderEntries
+     */
+    public void setSeenRecursive(Collection<FolderEntry> folderEntries) {
+    	List<FolderEntry> entries = new ArrayList<FolderEntry>();
+		LinkedList<FolderEntry> items = new LinkedList<FolderEntry>();
+		items.addAll(folderEntries);
+		FolderEntry item;
+		while((item = items.poll()) != null) {
+			entries.add(item);
+			items.addAll(item.getReplies());	
+		}
+		setSeen(entries);
+    }
     public void setUnseen(Long entryId) {
     	if(mapContainsKey(seenMap, entryId))
     		mapRemove(seenMap, entryId);
