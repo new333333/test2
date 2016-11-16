@@ -7337,7 +7337,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Marks a list of entries as having been seen.
 	 */
 	private Boolean setSeen(HttpServletRequest req, List<Long> entryIds) throws GwtTeamingException {
-		getProfileModule().setSeenIds(GwtServerHelper.getCurrentUserId(), entryIds);
+		getProfileModule().setSeenIdsRecursive(GwtServerHelper.getCurrentUserId(), entryIds);
 		return Boolean.TRUE;
 	}
 	
