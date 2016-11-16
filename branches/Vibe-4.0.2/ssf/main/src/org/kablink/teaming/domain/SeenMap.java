@@ -32,15 +32,21 @@
  */
 
 package org.kablink.teaming.domain;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.search.Constants;
+
+import gnu.trove.list.array.TLongArrayList;
+import gnu.trove.map.hash.TLongLongHashMap;
+import gnu.trove.procedure.TLongLongProcedure;
 
 
 /**
@@ -53,7 +59,7 @@ import org.kablink.util.search.Constants;
  */
 public class SeenMap extends ZonedObject {
 	protected Long principalId;
-	protected Map seenMap;
+	protected Object seenMap;
 	protected Date lastPrune;
 	protected Long pruneDays;	//used if this user has too many items in seenMap.
 	
@@ -62,82 +68,72 @@ public class SeenMap extends ZonedObject {
 		//only called by hibernate.  Prevent null maps.
 	}
 
+	// Used by application
 	public SeenMap(Long principalId) {
-		setSeenMap(new HashMap());
+		setSeenMap(new TLongLongHashMap());
 		setPrincipalId(principalId);
 	}
-	/**
- 	 * @hibernate.id generator-class="assigned"
- 	 */
-	public Long getPrincipalId() {
+	
+	protected void setSeenMap(TLongLongHashMap troveMap) {
+		this.seenMap = troveMap;
+	}
+	
+	protected Long getPrincipalId() {
 		return principalId;
 	}
-	public void setPrincipalId(Long principalId) {
+	protected void setPrincipalId(Long principalId) {
 		this.principalId = principalId;
 	}	
 
-	/**
-	 * @hibernate.property type="org.springframework.orm.hibernate3.support.BlobSerializableType" not-null="true"
-	 * @return
-	 */
-	public Map getSeenMap() {
-		return seenMap;
-	}
-	protected void setSeenMap(Map seenMap) {
-		this.seenMap = seenMap;
-	}
-
-	/**
-	 * @hibernate.property
-	 * @param entry
-	 */
-	protected Date getLastPrune() {
-		return lastPrune;
-	}
-	protected void setLastPrune(Date lastSeenPrune) {
-		this.lastPrune = lastSeenPrune;
-	}
-
-	/**
-	 * @hibernate.property
-	 * @param entry
-	 */
-	public Long getPruneDays() {
-		return pruneDays;
-	}
-	public void setPruneDays(Long pruneDays) {
-		this.pruneDays = pruneDays;
-	}	
-
     protected void pruneMap(Date now) {
-    	Iterator it;
-    	Map.Entry me;
-    	Long seenMapTimeout = ObjectKeys.SEEN_MAP_TIMEOUT;
-    	if (pruneDays != null) {
+    	final Long seenMapTimeout;
+    	if(pruneDays == null) {
+        	seenMapTimeout = ObjectKeys.SEEN_MAP_TIMEOUT;    		
+    	}
+    	else {
     		//This user is being cut back, so use the value in pruneDays for the timeout
     		seenMapTimeout = pruneDays * 24 * 60 * 60 * 1000;  //Days converted into milliseconds
     	}
-    	Long maxSeenMapSize = SPropsUtil.getLong("seen.maxNumberOfSeenEntries", 20000L);
+    	Long maxSeenMapSize = SPropsUtil.getLong("seen.maxNumberOfSeenEntries", 30_000L);
     	long nowT = now.getTime();
-    	if ((lastPrune == null) || ((nowT - lastPrune.getTime()) > seenMapTimeout) ||
-    			seenMap.size() > maxSeenMapSize || 
-    			(pruneDays != null && seenMap.size() < maxSeenMapSize * 60 / 100)) {
-        	ArrayList removeList = new ArrayList();
-    		it = seenMap.entrySet().iterator();
-    		while (it.hasNext()) {
-    			 me = (Map.Entry) it.next();
-    			if (nowT - ((Date)me.getValue()).getTime() > seenMapTimeout) {
-    				removeList.add(me.getKey());
-    			}
+    	if ((lastPrune == null) || 
+    			((nowT - lastPrune.getTime()) > seenMapTimeout) ||
+    			(getMapSize(seenMap) > maxSeenMapSize) || 
+    			(pruneDays != null && getMapSize(seenMap) < maxSeenMapSize * 60 / 100)) {
+    		if(seenMap instanceof TLongLongHashMap) {
+    			final TLongArrayList removeList = new TLongArrayList();
+    			TLongLongHashMap troveMap = (TLongLongHashMap) seenMap;
+    			troveMap.forEachEntry(new TLongLongProcedure() {
+					@Override
+					public boolean execute(long key, long val) {
+						if(nowT - val > seenMapTimeout)
+							removeList.add(key);
+						return true;
+					}
+    			});
+        		for (int i=0; i<removeList.size(); ++i)
+        			troveMap.remove(removeList.get(i));
     		}
-    		for (int i=0; i<removeList.size(); ++i) {
-    			seenMap.remove(removeList.get(i));
-    		}
-    	   	removeList.clear();
-    	    setLastPrune(now);
-    	    
+    		else {
+    			// (Bugzilla #942648) JK 11/14/2016
+    			// On-demand migration from java.util.Map to gnu.trove.map.hash.TLongLongHashMap
+    			// for more efficient and smaller storage representation.
+    			Map<Long,Date> jdkMap = (Map<Long,Date>) seenMap;
+    	    	Map.Entry<Long,Date> me;
+    			TLongLongHashMap troveMap = new TLongLongHashMap();
+        		Iterator<Map.Entry<Long,Date>> it = jdkMap.entrySet().iterator();
+        		while (it.hasNext()) {
+        			 me = it.next();
+        			if (nowT - ((Date)me.getValue()).getTime() <= seenMapTimeout)
+        				// This entry is still valid - Transfer it to the new map.
+        				troveMap.put(me.getKey(), ((Date)me.getValue()).getTime());
+        		}
+        		// Switch the map
+        		seenMap = troveMap;
+    		}   		
+    	   	this.lastPrune = now;
     	    //See if this pruning got it down to below 80% of the max
-    	    if (seenMap.size() > maxSeenMapSize * 80 / 100) {
+    	    if (getMapSize(seenMap) > maxSeenMapSize * 80 / 100) {
     	    	//The map is too large, we will try pruning it more by limiting the pruneDays a little
     	    	if (pruneDays == null) {
     	    		pruneDays = ObjectKeys.SEEN_TIMEOUT_DAYS;
@@ -147,8 +143,8 @@ public class SeenMap extends ZonedObject {
     	    	//The next pruning cycle should cut a few more out of the map
     	    	//This will occur when the next entry is marked seen.
     	    	
-    	    } else if (seenMap.size() < maxSeenMapSize * 60 / 100) {
-    	    	//The number of entries in the map is now below 6%, we can increase the prune days if they had been cut back
+    	    } else if (getMapSize(seenMap) < maxSeenMapSize * 60 / 100) {
+    	    	//The number of entries in the map is now below 60%, we can increase the prune days if they had been cut back
     	    	if (pruneDays != null) {
     	    		pruneDays++;
     	    		if (pruneDays >= ObjectKeys.SEEN_TIMEOUT_DAYS) {
@@ -160,8 +156,10 @@ public class SeenMap extends ZonedObject {
     	}
 
     }
+    
     public void setSeen(Entry entry) {
-    	if (entry instanceof FolderEntry) checkAndSetSeen((FolderEntry) entry, true);
+    	if (entry instanceof FolderEntry) 
+    		checkAndSetSeen((FolderEntry) entry, true);
     }
     public void setSeen(FolderEntry entry) {
     	checkAndSetSeen(entry, true);
@@ -169,13 +167,62 @@ public class SeenMap extends ZonedObject {
     public void setSeen(Long entryId) {
     	checkAndSetSeen(entryId, null, true);
     }
+    public void setSeen(Collection<Long> entryIds) {
+    	if(entryIds.isEmpty()) return;	
+		Date now = new Date();
+		for(Long id:entryIds) {
+			checkAndSetSeen(id, null, true, now, false);
+		}
+		// Prune the map only once at the end
+		pruneMap(now);
+    }
+	private void setSeen(List<FolderEntry> entries) {
+		if(entries.isEmpty()) return;
+		Date now = new Date();
+		for(FolderEntry entry:entries) {
+			checkAndSetSeen(entry.getId(), entry.getLastActivity(), true, now, false);
+		}
+		// Prune the map only once at the end
+		pruneMap(now);
+	}
+    /**
+     * Mark an entry and all of its descendants (i.e. replies) as seen
+     * @param entry
+     */
+    public void setSeenRecursive(FolderEntry entry) {
+    	List<FolderEntry> entries = new ArrayList<FolderEntry>();
+		LinkedList<FolderEntry> items = new LinkedList<FolderEntry>();
+		items.add(entry);
+		FolderEntry item;
+		while((item = items.poll()) != null) {
+			entries.add(item);
+			items.addAll(item.getReplies());	
+		}
+		setSeen(entries);
+    }
+    /**
+     * Mark a collection of entries and all of their descendants (i.e. replies) as seen
+     * @param folderEntries
+     */
+    public void setSeenRecursive(Collection<FolderEntry> folderEntries) {
+    	List<FolderEntry> entries = new ArrayList<FolderEntry>();
+		LinkedList<FolderEntry> items = new LinkedList<FolderEntry>();
+		items.addAll(folderEntries);
+		FolderEntry item;
+		while((item = items.poll()) != null) {
+			entries.add(item);
+			items.addAll(item.getReplies());	
+		}
+		setSeen(entries);
+    }
     public void setUnseen(Long entryId) {
-    	if (seenMap.containsKey(entryId)) seenMap.remove(entryId);
+    	if(mapContainsKey(seenMap, entryId))
+    		mapRemove(seenMap, entryId);
     }
     public boolean checkIfSeen(FolderEntry entry) {
     	return checkAndSetSeen(entry, false);
     }
-	protected boolean checkAndSetSeen(FolderEntry entry, boolean setIt) {
+	protected boolean checkAndSetSeen(FolderEntry entry, boolean setIt) {	
 		return checkAndSetSeen(entry.getId(), entry.getLastActivity(), setIt);
 	}
 	public boolean checkAndSetSeen(Map entry, boolean setIt) {
@@ -206,30 +253,87 @@ public class SeenMap extends ZonedObject {
     	}
     	return checkAndSetSeen(id, modDate, false);
     }   
-    
 	public boolean checkAndSetSeen(Long id, Date modDate, boolean setIt) {
-      	Date seen,now;
+		return checkAndSetSeen(id, modDate, setIt, new Date(), true);
+	}
+	
+	private boolean checkAndSetSeen(Long id, Date modDate, boolean setIt, Date now, boolean allowMapPruning) {
       	boolean ret = false;
-      	seen = (Date)seenMap.get(id);
-   		now = new Date();
+      	long seenTime = -1L;
+      	Object seen = mapGet(seenMap, id);
+      	if(seen instanceof Date)
+      		seenTime = ((Date)seen).getTime();
+      	else if(seen instanceof Long)
+      		seenTime = ((Long)seen).longValue();
     	Long seenMapTimeout = ObjectKeys.SEEN_MAP_TIMEOUT;
     	if (pruneDays != null) {
     		//This user is being cut back, so use the value in pruneDays for the timeout
     		seenMapTimeout = pruneDays * 24 * 60 * 60 * 1000;  //Days converted into milliseconds
     	}
-        if (seen == null) {
+        if (seenTime < 0) {
     		if ((modDate != null) && (now.getTime() - modDate.getTime()) > seenMapTimeout) {
      		    ret = true;
     		}
     	} else {
-    		if (modDate != null && seen.compareTo(modDate) >= 0) {
+    		if (modDate != null && seenTime >= modDate.getTime()) {
     			ret = true; 
     		}
     	}
 		if (setIt) {
-			if (!ret) seenMap.put(id, now);
-			pruneMap(now);
+			if (!ret) 
+				mapPut(seenMap, id, now);
+			if(allowMapPruning)
+				pruneMap(now);
 		}
 		return ret;
-	}	
+	}
+
+	private int getMapSize(Object map) {
+		if(map instanceof TLongLongHashMap)
+			return ((TLongLongHashMap)map).size();
+		else if(map instanceof Map)
+			return ((Map)map).size();
+		else
+			throw new IllegalArgumentException("Unexpected object type: " + map.getClass().getName());
+	}
+	
+	private boolean mapContainsKey(Object map, Long key) {
+		if(map instanceof TLongLongHashMap)
+			return ((TLongLongHashMap)map).containsKey(key);
+		else if(map instanceof Map)
+			return ((Map)map).containsKey(key);
+		else
+			throw new IllegalArgumentException("Unexpected object type: " + map.getClass().getName());
+	}
+	
+	private Object mapGet(Object map, Long key) {
+		if(map instanceof TLongLongHashMap) {
+			if(((TLongLongHashMap)map).containsKey(key))
+				return Long.valueOf(((TLongLongHashMap)map).get(key)); // Long
+			else
+				return null;
+		}
+		else if(map instanceof Map)
+			return ((Map)map).get(key); // Date
+		else
+			throw new IllegalArgumentException("Unexpected object type: " + map.getClass().getName());
+	}
+	
+	private void mapPut(Object map, Long key, Date val) {
+		if(map instanceof TLongLongHashMap)
+			((TLongLongHashMap)map).put(key, val.getTime());
+		else if(map instanceof Map)
+			((Map)map).put(key, val);
+		else
+			throw new IllegalArgumentException("Unexpected object type: " + map.getClass().getName());
+	}
+	
+	private void mapRemove(Object map, Long key) {
+		if(map instanceof TLongLongHashMap)
+			((TLongLongHashMap)map).remove(key);
+		else if(map instanceof Map)
+			((Map)map).remove(key);
+		else
+			throw new IllegalArgumentException("Unexpected object type: " + map.getClass().getName());
+	}
 }
