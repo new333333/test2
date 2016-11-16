@@ -9948,7 +9948,7 @@ public class GwtViewHelper {
 					ProfileModule	pm     = bs.getProfileModule();
 					Long			userId = GwtServerHelper.getCurrentUserId();
 					if (markRead)
-					     pm.setSeenIds(userId, entryIds);
+						pm.setSeenIdsRecursive(userId, entryIds);
 					else pm.setUnseen( userId, entryIds);
 				}
 			}
