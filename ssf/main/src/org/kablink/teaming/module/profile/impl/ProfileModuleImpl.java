@@ -68,6 +68,7 @@ import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.context.request.SessionContext;
+import org.kablink.teaming.dao.FolderDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.GroupSelectSpec;
@@ -690,22 +691,37 @@ public void setSeen(Long userId, Entry entry) {
   }
    //RW transaction
    @Override
-public void setSeen(Long userId, Collection<Entry> entries) {
+   public void setSeenRecursive(Long userId, Long entryId) {
 		User user = getUser(userId, true);
 		if (user.isShared()) return;
-		SeenMap	seen = getProfileDao().loadSeenMap(user.getId());
-		for (Entry reply:entries) {
-			seen.setSeen(reply);
-		}
-  }  	
+		SeenMap seen = getProfileDao().loadSeenMap(user.getId());
+		FolderEntry entry = (FolderEntry) getCoreDao().load(FolderEntry.class, entryId);
+		if(entry != null)
+			seen.setSeenRecursive(entry);
+  }
+   //RW transaction
    @Override
 public void setSeenIds(Long userId, Collection<Long> entryIds) {
 		User user = getUser(userId, true);
 		if (user.isShared()) return;
 		SeenMap	seen = getProfileDao().loadSeenMap(user.getId());
-		for (Long id:entryIds) {
-			seen.setSeen(id);
+		seen.setSeen(entryIds);
+  }  	
+   //RW transaction
+   @Override
+   public void setSeenIdsRecursive(Long userId, Collection<Long> entryIds) {
+		User user = getUser(userId, true);
+		if (user.isShared()) return;
+		SeenMap	seen = getProfileDao().loadSeenMap(user.getId());
+		FolderEntry entry;
+		List<FolderEntry> entries = new ArrayList<FolderEntry>();
+		for(Long entryId:entryIds) {
+			entry = (FolderEntry) getCoreDao().load(FolderEntry.class, entryId);
+			if(entry != null)
+				entries.add(entry);
 		}
+		if(!entries.isEmpty())
+			seen.setSeenRecursive(entries);
   }  	
 
    //RW transaction
