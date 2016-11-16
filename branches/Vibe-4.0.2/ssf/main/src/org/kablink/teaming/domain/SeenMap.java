@@ -95,7 +95,7 @@ public class SeenMap extends ZonedObject {
     		seenMapTimeout = pruneDays * 24 * 60 * 60 * 1000;  //Days converted into milliseconds
     	}
     	Long maxSeenMapSize = SPropsUtil.getLong("seen.maxNumberOfSeenEntries", 30_000L);
-    	long nowT = now.getTime();
+    	final long nowT = now.getTime();
     	if ((lastPrune == null) || 
     			((nowT - lastPrune.getTime()) > seenMapTimeout) ||
     			(getMapSize(seenMap) > maxSeenMapSize) || 
