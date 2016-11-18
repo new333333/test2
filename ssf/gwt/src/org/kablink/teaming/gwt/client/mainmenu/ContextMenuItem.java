@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.mainmenu;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DownloadFolderAsCSVFileEvent;
@@ -300,9 +301,14 @@ public class ContextMenuItem extends VibeMenuItem {
 					
 				case MARK_FOLDER_CONTENTS_READ:
 					// Fire the appropriate event.
+					boolean isFolderReadEvtExists=GwtTeaming.isEventHandled(MarkFolderContentsReadEvent.TYPE);
 					eventEID = ToolbarItem.getEntityIdValueFromList("entityId",  m_eventEntityIds);
-					GwtTeaming.fireEvent(new MarkFolderContentsReadEvent(eventEID.getEntityId()));
-					break;
+					if(!isFolderReadEvtExists){
+						BinderViewsHelper.markFolderContentsRead(eventEID.getEntityId());
+					}
+					else{
+						GwtTeaming.fireEvent(new MarkFolderContentsReadEvent(eventEID.getEntityId()));
+					}
 					
 				case MARK_FOLDER_CONTENTS_UNREAD:
 					// Fire the appropriate event.
