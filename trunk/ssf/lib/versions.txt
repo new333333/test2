@@ -179,7 +179,6 @@ Velocity-tools-view 1.4
 WSDL4J 1.5.1
 WSS4J 1.5.3
 Xalan 2.7.0 (XPath and XSLT implementation; used by WSS4J and others; also includes serializer)
-Xerces 2.7.1
 xmemcached 1.4.3 (Apache License 2.0)
 xml-apis.jar (from OpenOffice)
 xmlrpc 2.0.1
