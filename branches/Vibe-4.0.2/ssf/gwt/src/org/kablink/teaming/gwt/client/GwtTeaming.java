@@ -62,6 +62,7 @@ import com.google.gwt.user.client.rpc.XsrfTokenServiceAsync;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.web.bindery.event.shared.Event;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
@@ -79,7 +80,7 @@ public class GwtTeaming implements EntryPoint {
 	private static final GwtTeamingMainMenuImageBundle		m_mainMenuImageBundle		= GWT.create(GwtTeamingMainMenuImageBundle.class     );
 	private static final GwtTeamingTaskListingImageBundle	m_taskListingImageBundle	= GWT.create(GwtTeamingTaskListingImageBundle.class  );
 	private static final GwtTeamingWorkspaceTreeImageBundle	m_wsTreeImageBundle			= GWT.create(GwtTeamingWorkspaceTreeImageBundle.class);
-	private static final SimpleEventBus 					m_eventBus 					= GWT.create(SimpleEventBus.class                    );
+	private static final SimpleEventBus 					m_eventBus 					= GWT.create(TeamingEventBus.class                    );
 	
 	private static GwtMainPage	m_mainPage;							// The application's main page.	
 	private static HistoryInfo	m_browserReloadInfo;				// History information for reloading the browser page.
@@ -614,4 +615,8 @@ public class GwtTeaming implements EntryPoint {
 		// Return a reference to the JavaScript variable called, m_requestInfo.
 		return $wnd.top.m_requestInfo;
 	}-*/;
+	
+	public static boolean isEventHandled(Event.Type<?> eventKey){
+		return ((TeamingEventBus)m_eventBus).isEventHandled(eventKey);
+	}
 }
