@@ -313,8 +313,14 @@ public class ContextMenuItem extends VibeMenuItem {
 					
 				case MARK_FOLDER_CONTENTS_UNREAD:
 					// Fire the appropriate event.
+					isFolderReadEvtExists=GwtTeaming.isEventHandled(MarkFolderContentsReadEvent.TYPE);
 					eventEID = ToolbarItem.getEntityIdValueFromList("entityId",  m_eventEntityIds);
-					GwtTeaming.fireEvent(new MarkFolderContentsUnreadEvent(eventEID.getEntityId()));
+					if(!isFolderReadEvtExists){
+						BinderViewsHelper.markFolderContentsUnread(eventEID.getEntityId());
+					}
+					else{
+						GwtTeaming.fireEvent(new MarkFolderContentsUnreadEvent(eventEID.getEntityId()));
+					}
 					break;
 					
 				case ZIP_AND_DOWNLOAD_FOLDER:
