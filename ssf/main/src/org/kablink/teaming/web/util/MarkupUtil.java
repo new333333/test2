@@ -103,7 +103,7 @@ import org.springframework.web.multipart.MultipartFile;
 @SuppressWarnings({"unchecked","unused"})
 public class MarkupUtil {
 	protected static Log logger = LogFactory.getLog(MarkupUtil.class);
-	protected final static Pattern mceSrcPattern = Pattern.compile( "(mce_src=\")([^\"]*)(\")", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern mceSrcPattern = Pattern.compile("(mce_src=\")([^\"]*)(\")", Pattern.CASE_INSENSITIVE);
 	//From Doc: All of the state involved in performing a match resides in the matcher, so many matchers can share the same pattern. 
 	// Fix for bug 727558, uploadImagePattern was changed to be case insensitive.  In IE, the tinyMCE editor is adding <IMG instead of the normal <img
 	// the Pattern.CASE_INSENSITIVE parameter was added to all the Patter.compile() calls.  Some of these calls
@@ -1076,11 +1076,12 @@ public class MarkupUtil {
 		return markupStringReplacement(req, res, httpReq, httpRes, builder,
 				entity.getId().toString(), entity.getEntityType().name(), inputString, type, isMobile);
 	}
-	private static String markupStringReplacement(RenderRequest req, RenderResponse res, 
+
+	static String markupStringReplacement(RenderRequest req, RenderResponse res,
 			HttpServletRequest httpReq, HttpServletResponse httpRes, UrlBuilder builder, 
 			String entityId, String entityType, String inputString, String type, Boolean isMobile) {
 		if (Validator.isNull(inputString)) return inputString;  //don't waste time
-		StringBuffer outputBuf = new StringBuffer(StringEscapeUtils.unescapeHtml(inputString));
+		StringBuffer outputBuf = new StringBuffer(inputString);
 
 //why?		outputString = outputString.replaceAll("%20", " ");
 //		outputString = outputString.replaceAll("%7B", "{");
@@ -1564,7 +1565,8 @@ public class MarkupUtil {
 
 	//Routine to split a body of text into sections
 	public static List markupSplitBySection(String body) {
-		String unescapedBody =  StringEscapeUtils.unescapeHtml(body);
+		//String unescapedBody =  StringEscapeUtils.unescapeHtml(body);
+		String unescapedBody = body.replace("&#61;", "=");
 		List bodyParts = _markupSplitBySection(unescapedBody, sectionPattern);
 		if (bodyParts.size()==0) {
 			bodyParts = _markupSplitBySection(body, sectionPattern);
@@ -1572,7 +1574,7 @@ public class MarkupUtil {
 		return bodyParts;
 	}
 
-	private static List _markupSplitBySection(String body, Pattern sectionPattern) {
+	static List _markupSplitBySection(String body, Pattern sectionPattern) {
 		List bodyParts = new ArrayList();
     	Matcher m0 = sectionPattern.matcher(body);
     	if (m0.find()) {
@@ -1694,7 +1696,7 @@ public class MarkupUtil {
 
 	//Routine to split a body of text into sections
 	public static String markupSectionsReplacement(String body) {
-		String unescapedBody = StringEscapeUtils.unescapeHtml(body);
+		String unescapedBody = body.replace("&#61;", "=");
 		return _markupSectionsReplacement(unescapedBody);
 	}
 
