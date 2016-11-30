@@ -870,7 +870,33 @@ public class GwtMainPage extends ResizeComposite
 			}
 			m_requestInfo.setShowSpecificWhatsNewHistoryAction();
 		}
-		
+
+		final boolean canCancel;
+		boolean promptForLogin = false;
+		// Is the user logged in?
+		if ( m_requestInfo.isUserLoggedIn() == false )
+		{
+
+			// No!  Should we prompt for login?
+			promptForLogin = m_requestInfo.promptForLogin();
+			if ( promptForLogin == false )
+			{
+				// No, are we running Filr?
+				if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
+				{
+					// Yes, we always want to prompt for login.
+					promptForLogin = true;
+					canCancel = true;
+				}
+				else
+					canCancel = getLoginCanCancel();
+			}
+			else
+				canCancel = getLoginCanCancel();
+		} else {
+			canCancel = true;
+		}
+
 		// Is the browser being reloaded on other than an activity
 		// stream?
 		if ( isReload && ( ! isReloadWhatsNew ) )
@@ -900,52 +926,28 @@ public class GwtMainPage extends ResizeComposite
 				}
 				
 				// ...and put the URL into affect.
-				gotoUrlAsync( url, isReload );
+				gotoUrlAsync( url, isReload, !promptForLogin );
 			}
 		}
 		
-		// Is the user logged in?
-		if ( m_requestInfo.isUserLoggedIn() == false )
+		// Should we invoke the login dialog?
+		if ( promptForLogin == true )
 		{
-			final boolean canCancel;
-			
-			// No!  Should we prompt for login?
-			boolean promptForLogin = m_requestInfo.promptForLogin();
-			if ( promptForLogin == false )
+			// Yes
+			// Hide the workspace tree control and the menu bar.
+			m_wsTreeCtrl.setVisible( false );
+			m_mainMenuCtrl.setVisible( false );
+			// invoke the login dialog.
+			GwtClientHelper.deferCommand( new ScheduledCommand()
 			{
-				// No, are we running Filr?
-				if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
+				@Override
+				public void execute()
 				{
-					// Yes, we always want to prompt for login.
-					promptForLogin = true;
-					canCancel = true;
+					invokeLoginDlg( canCancel, null );
 				}
-				else
-					canCancel = getLoginCanCancel();
-			}
-			else
-				canCancel = getLoginCanCancel();
-			
-			// Should we invoke the login dialog?
-			if ( promptForLogin == true )
-			{
-				// Yes
-				// Hide the workspace tree control and the menu bar.
-				m_wsTreeCtrl.setVisible( false );
-				m_mainMenuCtrl.setVisible( false );
-				
-				// invoke the login dialog.
-				GwtClientHelper.deferCommand( new ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						invokeLoginDlg( canCancel, null );
-					}
-				} );
-			}
+			} );
 		}
-				
+
 		// If we're running GroupWise integrations or otherwise require
 		// session captive mode...
 		if ((VibeProduct.GW == m_requestInfo.getVibeProduct()) || m_requestInfo.isSessionCaptive())
@@ -2467,21 +2469,21 @@ public class GwtMainPage extends ResizeComposite
 	 * This method will be called asynchronously goto a URL,
 	 * permalink or otherwise, received as a parameter.
 	 */
-	private void gotoUrlAsync( final String url, final boolean historyAction )
+	private void gotoUrlAsync( final String url, final boolean historyAction, final boolean alertOnFailure )
 	{
 		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
-				gotoUrlNow( url, historyAction );
+				gotoUrlNow( url, historyAction, alertOnFailure );
 			}
 		} );
 	}
 	
 	private void gotoUrlAsync( final String url )
 	{
-		gotoUrlAsync( url, false );
+		gotoUrlAsync( url, false, true );
 	}
 	
 	private void gotoUrlAsync_FromJSP( final String url )
@@ -2542,7 +2544,7 @@ public class GwtMainPage extends ResizeComposite
 	 * This method will be called synchronously goto a URL,
 	 * permalink or otherwise, received as a parameter.
 	 */
-	private void gotoUrlNow( final String url, final boolean historyAction )
+	private void gotoUrlNow( final String url, final boolean historyAction, final boolean alertOnFailure )
 	{
 		// Change the browser's URL.
 		OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
@@ -2551,7 +2553,7 @@ public class GwtMainPage extends ResizeComposite
 		
 		if ( GwtClientHelper.validateOSBI( osbInfo ) )
 		{
-			ChangeContextEvent ccEvent = new ChangeContextEvent( osbInfo );
+			ChangeContextEvent ccEvent = new ChangeContextEvent( osbInfo, alertOnFailure );
 			ccEvent.setHistoryAction( historyAction );
 			GwtTeaming.fireEvent( ccEvent );
 		}

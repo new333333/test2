@@ -524,7 +524,7 @@ public class ContentControl extends Composite
 		// Reload the URL.
 		ContextChangingEvent.fireOne();						
 		setContentFrameUrl( "",  Instigator.FORCE_FULL_RELOAD              );
-		setViewFromUrl(     url, Instigator.FORCE_FULL_RELOAD, false, null );
+		setViewFromUrl(     url, Instigator.FORCE_FULL_RELOAD, false, null , true);
 	}// end reload()
 
 	/*
@@ -689,7 +689,7 @@ public class ContentControl extends Composite
 	/*
 	 * Sets the view based on the URL.
 	 */
-	private void setViewFromUrl( final String url, final Instigator instigator, final boolean historyAction, final CollectionType historySelectedMastheadCollection )
+	private void setViewFromUrl( final String url, final Instigator instigator, final boolean historyAction, final CollectionType historySelectedMastheadCollection, final boolean alertOnFailure )
 	{
 		// Are we running the admin console?
 		if ( m_isAdminContent )
@@ -705,7 +705,9 @@ public class ContentControl extends Composite
 			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {
-					GwtClientHelper.deferredAlert("GetViewInfoCmd failed (" + t.getClass().getName() + "): " + t.getMessage());
+					if (alertOnFailure) {
+						GwtClientHelper.deferredAlert("GetViewInfoCmd failed (" + t.getClass().getName() + "): " + t.getMessage());
+					}
 					GwtClientHelper.handleGwtRPCFailure(
 							t,
 							GwtTeaming.getMessages().rpcFailure_GetViewInfo(),
@@ -1052,7 +1054,8 @@ public class ContentControl extends Composite
 				osbInfo.getBinderUrl(),
 				osbInfo.getInstigator(),
 				event.isHistoryAction(),
-				event.getHistorySelectedMastheadCollection() );
+				event.getHistorySelectedMastheadCollection(),
+				event.isAlertOnFailure());
 		}
 	}// end onChangeContext()
 
@@ -1987,7 +1990,8 @@ public class ContentControl extends Composite
 						event.getViewForumEntryUrl(),
 						Instigator.VIEW_FOLDER_ENTRY,
 						false,    // false -> Not a history action.
-						null);    // null  -> No history Filr masthead action.
+						null,// null  -> No history Filr masthead action.
+						true);
 			}
 		});
 	}
