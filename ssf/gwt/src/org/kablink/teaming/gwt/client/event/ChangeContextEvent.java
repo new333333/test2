@@ -48,6 +48,7 @@ public class ChangeContextEvent extends VibeEventBase<ChangeContextEvent.Handler
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	private OnSelectBinderInfo m_osbi;
+	private Boolean m_alertOnFailure = true;
 
 	/**
 	 * Handler interface for this event.
@@ -65,13 +66,22 @@ public class ChangeContextEvent extends VibeEventBase<ChangeContextEvent.Handler
 		super();
 		m_osbi = osbi;
 	}
-	
+
+	public ChangeContextEvent(OnSelectBinderInfo osbi, Boolean m_silentGetViewInfoCmdFailure) {
+		this(osbi);
+		this.m_alertOnFailure = m_silentGetViewInfoCmdFailure;
+	}
+
 	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
 	public OnSelectBinderInfo getOnSelectBinderInfo() {return m_osbi;}
+
+	public Boolean isAlertOnFailure() {
+		return m_alertOnFailure;
+	}
 
 	/**
 	 * Dispatches this event when one is triggered.
