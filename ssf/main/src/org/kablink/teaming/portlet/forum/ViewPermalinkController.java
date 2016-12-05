@@ -361,7 +361,7 @@ public class ViewPermalinkController  extends SAbstractController {
 						return null;
 					} else {
 						entryId = String.valueOf(targetEntryId);
-						entity = getProcessEntry(response, entryId);
+						entity = getProcessEntry(request, response, entryId);
 						String entityBinderId =
 							((null == entity)                      ?
 								GwtUIHelper.getTopWSIdSafely(this) :
@@ -569,13 +569,20 @@ public class ViewPermalinkController  extends SAbstractController {
 	 * Returns the DefinableEntry if the FolderEntry can be accessed
 	 * and null if it can't.
 	 */
-	private DefinableEntity getProcessEntry(ActionResponse response, String entryId) {
+	private DefinableEntity getProcessEntry(ActionRequest request, ActionResponse response, String entryId) {
 		DefinableEntity reply;
 		try {
 			reply = GwtUIHelper.getEntrySafely2(getFolderModule(), entryId);
 		}
 		catch (Exception ex) {
-			if      (ex instanceof AccessControlException)   response.setRenderParameter(KEY_ACCESS_EXCEPTION,              EXCEPTION_FLAG);
+			if (ex instanceof AccessControlException) {
+				// We should throw the exception if guest is logged in so the user is redirected to the login page
+				if (WebHelper.isGuestLoggedIn(request)) {
+					throw ex;
+				} else {
+					response.setRenderParameter(KEY_ACCESS_EXCEPTION, EXCEPTION_FLAG);
+				}
+			}
 			else if (ex instanceof NoBinderByTheIdException) response.setRenderParameter(KEY_NO_BINDER_BY_THE_ID_EXCEPTION, EXCEPTION_FLAG);
 			reply = null;
 		}
