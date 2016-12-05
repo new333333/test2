@@ -46,6 +46,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -94,6 +96,9 @@ import org.kablink.util.Validator;
  * @author ?
  */
 public class LoginFilter  implements Filter {
+	
+	protected Log logger = LogFactory.getLog(getClass());
+	
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 	}
@@ -110,11 +115,11 @@ public class LoginFilter  implements Filter {
 			if(isAtRoot(req) && req.getMethod().equalsIgnoreCase("get")) {
 				if (WebHelper.isMobileUI(req)) {
 					String landingPageUrl = getWapLandingPageURL(req);
-					res.sendRedirect(landingPageUrl);
+					sendRedirect(res,landingPageUrl);
 				} else {
 					// Not a mobile device, or a mobile device in full UI mode
 					String workspaceUrl = getWorkspaceURL(req);
-					res.sendRedirect(workspaceUrl);
+					sendRedirect(res,workspaceUrl);
 				}
 			}
 			else {
@@ -130,7 +135,7 @@ public class LoginFilter  implements Filter {
 					// Redirect to the permalink.
 					if ( permalinkUrl != null )
 					{
-						res.sendRedirect( permalinkUrl );
+						sendRedirect(res, permalinkUrl );
 						return;
 					}
 				}
@@ -185,7 +190,7 @@ public class LoginFilter  implements Filter {
 					if (url != null) { 
 						redirectUrl = redirectUrl.replace(WebKeys.URL_USER_ID_PLACE_HOLDER, WebHelper.getRequiredUserId(req).toString());
 						if (!redirectUrl.equals(url)) {
-							res.sendRedirect(req.getRequestURI() + "?" + redirectUrl);
+							sendRedirect(res,req.getRequestURI() + "?" + redirectUrl);
 							return;
 						}
 					}
@@ -213,10 +218,18 @@ public class LoginFilter  implements Filter {
 			throw e;
 		}
 		catch(Exception e) {
-			res.sendRedirect(getErrorUrl(req, MiscUtil.exToString(e)));
+			sendRedirect(res,getErrorUrl(req, MiscUtil.exToString(e)));
 		}
 	}
 	
+    private void sendRedirect(HttpServletResponse response, String location) throws IOException {
+    	try {
+    		response.sendRedirect(location);
+    	}
+    	catch(IllegalStateException e) {
+    		logger.warn("Error sending redirect to '" + location + "'", e);
+    	}
+    }
 	
 	/**
 	 * Convert the given url to a permalink.
@@ -357,13 +370,13 @@ public class LoginFilter  implements Filter {
 					// Guest access allow, just not to that URL.
 					// Send them to their personal workspace.
 					currentURL = getUserPermalinkFromId(req, WebKeys.URL_USER_ID_PLACE_HOLDER);
-					res.sendRedirect(currentURL);
+					sendRedirect(res,currentURL);
 				}
 				else {
 					// It's a readFile URL to an entry that the Guest
 					// can't access or Guest access not allowed.
 					// Redirect the Guest to the login page.
-					res.sendRedirect(getLoginURL(req, currentURL));
+					sendRedirect(res,getLoginURL(req, currentURL));
 				}
 			}
 		}		
