@@ -62,6 +62,7 @@ public class LdapServer implements IsSerializable {
 	public enum DirectoryType implements IsSerializable {
 		EDIRECTORY,
 		ACTIVE_DIRECTORY,
+		GROUPWISE,
 		UNKNOWN;
 		
 		/**
@@ -71,6 +72,7 @@ public class LdapServer implements IsSerializable {
 		 */
 		public boolean isActiveDirectory() {return this.equals(ACTIVE_DIRECTORY);}
 		public boolean isEDirectory()      {return this.equals(EDIRECTORY      );}
+		public boolean isGroupWise()	   {return this.equals(GROUPWISE       );}
 		public boolean isUnknown()         {return this.equals(UNKNOWN         );}
 	}
 

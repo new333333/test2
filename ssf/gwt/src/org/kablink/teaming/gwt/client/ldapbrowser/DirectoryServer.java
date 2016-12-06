@@ -54,6 +54,7 @@ public final class DirectoryServer extends LdapServer implements IsSerializable 
 	
 	public static final String GUID_ATTRIBUTE            = "GUID";
 	public static final String OBJECT_GUID_ATTRIBUTE     = "objectGUID";
+	public static final String ENTRY_UUID_ATTRIBUTE		 = "entryUUID";
 	public static final String OBJECT_SID_ATTRIBUTE      = "objectSid";
 	public static final String NDS_HOME_DIR_ATTRIBUTE    = "ndsHomeDirectory";
 	public static final String HOME_DIR_ATTRIBUTE        = "homeDirectory";
@@ -114,6 +115,10 @@ public final class DirectoryServer extends LdapServer implements IsSerializable 
 			if (m_guidAttribute.equalsIgnoreCase(GUID_ATTRIBUTE)) {
 				return DirectoryType.EDIRECTORY;
 			}
+			
+			if (m_guidAttribute.equalsIgnoreCase(ENTRY_UUID_ATTRIBUTE)){
+				return DirectoryType.GROUPWISE;
+			}
 		}
 	
 		return DirectoryType.UNKNOWN;
@@ -131,6 +136,7 @@ public final class DirectoryServer extends LdapServer implements IsSerializable 
 		case UNKNOWN:           guid = null;                  break;
 		case ACTIVE_DIRECTORY:  guid = OBJECT_GUID_ATTRIBUTE; break;
 		case EDIRECTORY:        guid = GUID_ATTRIBUTE;        break;
+		case GROUPWISE:			guid = ENTRY_UUID_ATTRIBUTE;  break;
 		}
 		setGuidAttribute(guid);
 	}
@@ -161,6 +167,16 @@ public final class DirectoryServer extends LdapServer implements IsSerializable 
 	 */
 	public boolean isEDirectory() {
 		return getDirectoryType().isEDirectory();
+	}
+	
+	/**
+	 * Returns true if this DirectoryServer describes an GroupWise
+	 * LDAP server and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isGroupWise() {
+		return getDirectoryType().isGroupWise();
 	}
 	
 	/**
