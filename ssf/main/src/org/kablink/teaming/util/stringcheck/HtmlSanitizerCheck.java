@@ -40,6 +40,7 @@ public class HtmlSanitizerCheck implements StringCheck {
 
     private static final String [] DEFAULT_ALLOWED_ELEMENTS = new String[] {
             "abbr",
+            "area",
             "b",
             "big",
             "blockquote",
@@ -71,6 +72,7 @@ public class HtmlSanitizerCheck implements StringCheck {
             "ins",
             "kbd",
             "li",
+            "map",
             "o",
             "ol",
             "p",
@@ -114,6 +116,7 @@ public class HtmlSanitizerCheck implements StringCheck {
             "color",
             "colspan",
             "compact",
+            "coords",
             "dir",
             "face",
             "frame",
@@ -138,9 +141,14 @@ public class HtmlSanitizerCheck implements StringCheck {
             "target",
             "title",
             "type",
+            "usemap",
             "valign",
             "vspace",
             "width",
+
+            "data-mce-href",
+            "data-mce-src",
+            "data-mce-style",
     };
     
     /**
@@ -148,8 +156,9 @@ public class HtmlSanitizerCheck implements StringCheck {
      * improve the fidelity of the HTML display without unacceptable risk.
      */
     private static final CssSchema ADDITIONAL_CSS = CssSchema.withProperties(Arrays.asList(
+            "display",
             "float",
-            "display"
+            "z-index"
     ));
 
     private PolicyFactory factory;
@@ -168,7 +177,7 @@ public class HtmlSanitizerCheck implements StringCheck {
                 .allowUrlsInStyles(AttributePolicy.IDENTITY_ATTRIBUTE_POLICY)
                 .allowAttributes("href")
                     .matching(A_PATTERN)
-                    .onElements("a")
+                    .onElements("a", "area")
                 .allowAttributes("src")
                     .matching(IMG_PATTERN)
                     .onElements("img")
