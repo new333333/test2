@@ -98,14 +98,17 @@ public class EditLdapServerConfigDlg extends DlgBox
 {
 	private static String EDIR_NAME = "eDirectory";
 	private static String AD_NAME = "Active Directory";
+	private static String GW_NAME = "GroupWise";
 	private static String DIR_TYPE_AD = "objectGUID";
 	private static String DIR_TYPE_EDIR = "GUID";
+	private static String DIR_TYPE_GW = "entryUUID";
 	private static String DIR_TYPE_OTHER = "other";
 	private static String SAM_ACCOUNT_NAME_ATTRIB = "sAMAccountName";
 	private static String CN_ATTRIB = "cn";
 	private static String OTHER_ATTRIB = "other";
 	private static String EDIR_GUID_NAME = "GUID";
 	private static String AD_GUID_NAME = "objectGUID";
+	private static String GW_GUID_NAME = "entryUUID";
 	private static String OTHER_GUID_NAME = "other-guid";
 	private static String MAIL_ATTRIB = "mail";
 	
@@ -630,6 +633,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 				m_dirTypeLB.setVisibleItemCount( 1 );
 				m_dirTypeLB.addItem( EDIR_NAME, DIR_TYPE_EDIR );
 				m_dirTypeLB.addItem( AD_NAME, DIR_TYPE_AD );
+				m_dirTypeLB.addItem( GW_NAME, DIR_TYPE_GW);
 				
 				// Filr only supports eDir and AD.  Add "Other" if we are not running Filr
 				if ( ! m_isFilr  )
@@ -1178,7 +1182,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 					m_nameAttribLB.insertItem( SAM_ACCOUNT_NAME_ATTRIB, SAM_ACCOUNT_NAME_ATTRIB, (((-1) == mailIndex) ? 0 : 1) );
 				}
 			}
-			else if ( dirType.equalsIgnoreCase( DIR_TYPE_EDIR ) )
+			else if ( dirType.equalsIgnoreCase( DIR_TYPE_EDIR ) || dirType.equalsIgnoreCase(DIR_TYPE_GW) )
 			{
 				// Is sAMAccountName in the listbox?
 				if ( index != -1 )
@@ -1245,6 +1249,34 @@ public class EditLdapServerConfigDlg extends DlgBox
 					m_guidLB.insertItem( EDIR_GUID_NAME, EDIR_GUID_NAME, 0 );
 				}
 			}
+			else if ( dirType.equalsIgnoreCase( DIR_TYPE_GW ) )
+			{			
+				// Is "objectGUID" in the list box?
+				if ( index != -1 )
+				{
+					// Yes
+					// Remove it.
+					m_guidLB.removeItem( index );
+				}
+				
+				// Is "guid" in the list box?
+				int guidIndex = GwtClientHelper.doesListboxContainValue( m_guidLB, EDIR_GUID_NAME );
+				if ( guidIndex != -1 )
+				{
+					// No
+					// Add it
+					m_guidLB.removeItem( guidIndex );
+				}
+				
+				// Is "entryGuid" in the list box?
+				int entryGuidIndex = GwtClientHelper.doesListboxContainValue( m_guidLB, GW_GUID_NAME );
+				if ( entryGuidIndex == -1 )
+				{
+					// No
+					// Add it
+					m_guidLB.insertItem( GW_GUID_NAME, GW_GUID_NAME, 0 );
+				}
+			}			
 		}
 	}
 	
@@ -1603,7 +1635,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 		else
 		{
 			dirType = guidValue;
-			if ( dirType.equalsIgnoreCase( DIR_TYPE_AD ) == false && dirType.equalsIgnoreCase( DIR_TYPE_EDIR ) == false )
+			if ( dirType.equalsIgnoreCase( DIR_TYPE_AD ) == false && dirType.equalsIgnoreCase( DIR_TYPE_EDIR ) == false && dirType.equalsIgnoreCase( DIR_TYPE_GW ) == false )
 				dirType = DIR_TYPE_OTHER;
 		}
 		
@@ -1651,6 +1683,15 @@ public class EditLdapServerConfigDlg extends DlgBox
 			// User selected eDirectory
 			// Select "GUID" as the guid attribute
 			GwtClientHelper.selectListboxItemByValue( m_guidLB, EDIR_GUID_NAME );
+			
+			// Select cn as the name attribute
+			GwtClientHelper.selectListboxItemByValue( m_nameAttribLB, createAsExternal ? MAIL_ATTRIB : CN_ATTRIB );
+		}
+		else if ( DIR_TYPE_GW.equalsIgnoreCase( dirType ) )
+		{
+			// User selected eDirectory
+			// Select "GUID" as the guid attribute
+			GwtClientHelper.selectListboxItemByValue( m_guidLB, GW_GUID_NAME );
 			
 			// Select cn as the name attribute
 			GwtClientHelper.selectListboxItemByValue( m_nameAttribLB, createAsExternal ? MAIL_ATTRIB : CN_ATTRIB );

@@ -237,8 +237,11 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 								}
 								else {
 									String baseDn = getBaseDnFromUserName(ds.getSyncUser());
-									if (!(GwtClientHelper.hasString(baseDn))) {
+									if (!(GwtClientHelper.hasString(baseDn))) {										
 										baseDn = getBaseDnFromUserName(ds.getBaseDn());
+									}
+									if(!(GwtClientHelper.hasString(baseDn))){
+										baseDn=getBaseDnForGroupWiseFromUserName(ds.getSyncUser());
 									}
 									ds.setUrl(baseDn);
 								}
@@ -502,6 +505,18 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 			return baseDn.toString();
 		}
 		return syncUser;
+	}
+	
+	/*
+	 * Returns the base DN to use for an GroupWise user based on their DN.
+	 */
+	private String getBaseDnForGroupWiseFromUserName(String syncUser) {
+		if(syncUser==null || syncUser.trim().length()==0) return "";
+		int lastIndexOfComma=syncUser.lastIndexOf(",");
+		if(lastIndexOfComma >= 0){
+			return syncUser.substring(lastIndexOfComma+1);
+		}
+		return "";
 	}
 
 	/**
