@@ -82,6 +82,7 @@ import org.kablink.teaming.module.binder.impl.AbstractEntryProcessor;
 import org.kablink.teaming.module.binder.impl.EntryDataErrors;
 import org.kablink.teaming.module.binder.impl.EntryDataErrors.Problem;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.FilterException;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -135,7 +136,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	}
     	super.addEntry_fillIn(folder, entry, inputData, entryData, ctx);
     	fEntry.updateLastActivity(fEntry.getModification().getDate());
-    	if (!folder.isMirrored() && fEntry.isTop()) {
+    	if(isStatisticsApplicable(folder,fEntry)) {
     		Statistics statistics = getFolderStatistics(folder);
 	    	statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
 	    	setFolderStatistics(folder, statistics);
@@ -382,8 +383,10 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //inside write transaction
     @Override
 	protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
-    	Statistics statistics = getFolderStatistics((Folder)binder);
-    	statistics.deleteStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
+    	if(isStatisticsApplicable(binder, entry)) {
+    		Statistics statistics = getFolderStatistics((Folder)binder);
+    		statistics.deleteStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
+    	}
     	super.modifyEntry_fillIn(binder, entry, inputData, entryData, ctx);
     }
     //inside write transaction
@@ -393,7 +396,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  		super.modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
     	FolderEntry fEntry = (FolderEntry)entry;
 		fEntry.updateLastActivity(fEntry.getModification().getDate());
-		if(!binder.isMirrored()) {
+	    if(isStatisticsApplicable(binder,entry)) {
 	    	Statistics statistics = getFolderStatistics((Folder)binder);
 		    statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
 		    setFolderStatistics((Folder)binder, statistics);
@@ -460,20 +463,28 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //inside write transaction
     @Override
 	protected void deleteEntry_preDelete(Binder parentBinder, Entry entry, Map ctx) {
-        Statistics statistics = getFolderStatistics((Folder)parentBinder);        
-        statistics.deleteStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
+    	boolean statisticsApplicable = this.isStatisticsApplicable(parentBinder, entry);
+    	Statistics statistics = null;
+    	if(statisticsApplicable) {
+	        statistics = getFolderStatistics((Folder)parentBinder);        
+	        statistics.deleteStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
+    	}
     	super.deleteEntry_preDelete(parentBinder, entry, ctx);
        	FolderEntry fEntry = (FolderEntry)entry;
      	List<FolderEntry> replies= (List)ctx.get("this.replies");
       	//repeat pre-delete for each reply
       	for (int i=0; i<replies.size(); ++i) {
       		FolderEntry reply = (FolderEntry)replies.get(i);
-            statistics.deleteStatistics(reply.getEntryDefId(), reply.getEntryDefDoc(), reply.getCustomAttributes());
+      		if(statisticsApplicable) {
+      			statistics.deleteStatistics(reply.getEntryDefId(), reply.getEntryDefDoc(), reply.getCustomAttributes());
+      		}
     		super.deleteEntry_preDelete(parentBinder, reply, null);
     		reply.updateLastActivity(reply.getModification().getDate());
     	}
       	fEntry.updateLastActivity(fEntry.getModification().getDate());
-        setFolderStatistics((Folder)parentBinder, statistics);
+      	if(statisticsApplicable) {
+      		setFolderStatistics((Folder)parentBinder, statistics);
+      	}
       	
     }
     //inside write transaction    
@@ -706,7 +717,7 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
     		if (entry.getParentFolder().isUniqueTitles()) 
     			getCoreDao().updateTitle(entry.getParentBinder(), entry, null, entry.getNormalTitle());
     		
-    		if(!entry.getParentFolder().isMirrored()) {
+    	    if(isStatisticsApplicable(entry.getParentFolder(),entry)) {
 	    		Statistics statistics = getFolderStatistics(entry.getParentFolder());
 	    		statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
 	    		setFolderStatistics(entry.getParentFolder(), statistics);
@@ -839,12 +850,14 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
 		   // If the caller specified new title for the moved entry, then we need to change the title here.
     		entry.setTitle(newTitle);
     	}
-   		if (to.isUniqueTitles()) getCoreDao().updateTitle(to, entry, null, entry.getNormalTitle());		
-        Statistics statistics = getFolderStatistics(from);        
-        statistics.deleteStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
-        setFolderStatistics(from, statistics);
-        if(!destination.isMirrored()) {
-	        statistics = getFolderStatistics((Folder)destination);
+   		if (to.isUniqueTitles()) getCoreDao().updateTitle(to, entry, null, entry.getNormalTitle());
+   		if(isStatisticsApplicable(from, entry)) {
+   			Statistics statistics = getFolderStatistics(from);        
+   			statistics.deleteStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
+   			setFolderStatistics(from, statistics);
+   		}
+        if(isStatisticsApplicable(destination,entry)) {
+	        Statistics statistics = getFolderStatistics((Folder)destination);
 	        statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
 	        setFolderStatistics((Folder)destination, statistics);
         }
@@ -1411,11 +1424,10 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
     private Statistics getFolderStatistics(Folder folder) {
         CustomAttribute statisticsAttribute = folder.getCustomAttribute(Statistics.ATTRIBUTE_NAME);
         Statistics statistics = null;
-        if (statisticsAttribute == null) {
+        if(statisticsAttribute != null)
+        	statistics = (Statistics)statisticsAttribute.getValue();
+        if(statistics == null)
         	statistics = new Statistics();
-        } else {
-        	 statistics = (Statistics)statisticsAttribute.getValue();
-        }
         return statistics;
 	}
     
@@ -1429,6 +1441,19 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
         }
 	}
     
+    private boolean isStatisticsApplicable(Binder binder, Entry entry) {
+    	if (!binder.isMirrored() && entry.isTop()) {
+    		Document entryDefDoc = entry.getEntryDefDoc();
+    		String family = null;
+    		if(entryDefDoc != null)
+    			family = DefinitionUtils.getFamily(entryDefDoc);
+    		if(ObjectKeys.FAMILY_MILESTONE.equalsIgnoreCase(family) ||
+    				ObjectKeys.FAMILY_TASK.equalsIgnoreCase(family))
+    			return true;
+    	}
+    	return false;
+    }
+
     @Override
 	protected List<Long> indexEntries_getEntryIds(Binder binder) {
 		return getCoreDao().getFolderEntryIds(binder);
