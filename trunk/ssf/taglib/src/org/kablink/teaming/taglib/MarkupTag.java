@@ -41,7 +41,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -106,8 +105,6 @@ public class MarkupTag extends BodyTagSupport {
 			if (!this.leaveSectionsUnchanged) {
 				//Translate the "sections" markup
 				translatedString = MarkupUtil.markupSectionsReplacement(translatedString);
-			} else {
-				translatedString = StringEscapeUtils.unescapeHtml(translatedString);
 			}
 			pageContext.getOut().print(translatedString);
 
