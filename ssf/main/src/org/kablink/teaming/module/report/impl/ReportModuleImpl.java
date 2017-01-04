@@ -2202,7 +2202,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			public Object doInHibernate(Session session) throws HibernateException {
 				List l = null;
 				try {
-					String sql = "Select w.id, w.firstName, w.lastName, w.emailAddress, w.creation.date,w.termsAndConditionsAcceptDate"
+					String sql ="" //"Select w.id, w.firstName, w.lastName, w.emailAddress, w.creation.date,w.termsAndConditionsAcceptDate,w.emailAddresses"
 						+ " FROM org.kablink.teaming.domain.Principal w "
 						+ " WHERE w.zoneId = :zoneId"
 						+ " AND w.type = 'user'"
@@ -2230,14 +2230,14 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 
 		if(results!=null){
 			for(int i=0; i< results.size(); i++) {
-				Object[] result = (Object[]) results.get(i);
+				User principal = (User)results.get(i);
 				HashMap<String,Object> row = new HashMap<String,Object>();
-					row.put(ReportModule.EXTERNAL_USER_ID, (Long)result[0]);
-					row.put(ReportModule.EXTERNAL_USER_FIRSTNAME,result[1]);
-					row.put(ReportModule.EXTERNAL_USER_LASTNAME, result[2]);
-					row.put(ReportModule.EXTERNAL_USER_EMAIL, result[3]);
-					row.put(ReportModule.EXTERNAL_USER_CREATION_DATE, result[4]);
-					row.put(ReportModule.EXTERNAL_USER_TERMS_ACCEPT_DATE, result[5]);
+					row.put(ReportModule.EXTERNAL_USER_ID, principal.getId());
+					row.put(ReportModule.EXTERNAL_USER_FIRSTNAME,principal.getFirstName());
+					row.put(ReportModule.EXTERNAL_USER_LASTNAME, principal.getLastName());
+					row.put(ReportModule.EXTERNAL_USER_EMAIL, principal.getEmailAddress());
+					row.put(ReportModule.EXTERNAL_USER_CREATION_DATE, principal.getCreation());
+					row.put(ReportModule.EXTERNAL_USER_TERMS_ACCEPT_DATE, principal.getTermsAndConditionsAcceptDate());
 					report.add(row);
 				}
 		}
