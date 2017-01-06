@@ -227,7 +227,8 @@ public class LoginFilter  implements Filter {
     		response.sendRedirect(location);
     	}
     	catch(IllegalStateException e) {
-    		logger.warn("Error sending redirect to '" + location + "'", e);
+    		if(logger.isDebugEnabled())
+    			logger.debug("Error sending redirect to '" + location + "'", e);
     	}
     }
 	
