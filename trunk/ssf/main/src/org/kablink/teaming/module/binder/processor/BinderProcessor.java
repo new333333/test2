@@ -70,7 +70,7 @@ public interface BinderProcessor {
     public void indexOwner(Collection<Binder>binders, Long ownerId);
 	public IndexErrors indexBinder(Binder binder, boolean includeEntries);	
 	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags);
-	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing);
+	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, Boolean skipFileContentIndexing);
 	public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries);
 	public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries, boolean skipFileContentIndexing);
 	public Collection indexTree(Binder binder, Collection exclusions);

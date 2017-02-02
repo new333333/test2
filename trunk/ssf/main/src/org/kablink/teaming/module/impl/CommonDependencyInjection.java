@@ -42,6 +42,7 @@ import org.kablink.teaming.license.LicenseManager;
 import org.kablink.teaming.modelprocessor.ProcessorManager;
 import org.kablink.teaming.presence.PresenceManager;
 import org.kablink.teaming.relevance.RelevanceManager;
+import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.search.LuceneSessionFactory;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.accesstoken.AccessTokenManager;
@@ -86,6 +87,7 @@ public abstract class CommonDependencyInjection {
 	protected LicenseManager licenseManager;
 	protected AccessTokenManager accessTokenManager;
     protected RelevanceManager relevanceManager;
+	protected RunAsyncManager runAsyncManager;
 
 	
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
@@ -184,6 +186,12 @@ public abstract class CommonDependencyInjection {
     public void setRelevanceManager(RelevanceManager relevanceManager) {
     	this.relevanceManager = relevanceManager;
     }
+	public RunAsyncManager getRunAsyncManager() {
+		return runAsyncManager;
+	}
+	public void setRunAsyncManager(RunAsyncManager runAsyncManager) {
+		this.runAsyncManager = runAsyncManager;
+	}
 
 	protected void end(long beginInNanoseconds, String methodName) {
 		if(debugEnabled) {
