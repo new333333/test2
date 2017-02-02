@@ -379,8 +379,6 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 					purgeOldDocument(uidField, doc);
 					String tastingText = getTastingText(doc);
 					getIndexingResource().getIndexWriter().addDocument(doc, getAnalyzer(tastingText));
-					if(logger.isTraceEnabled())
-						logTrace("Called addDocument2 on writer with doc [" + doc.toString() + "]");
 				} catch (IOException e) {
 					throw newLuceneException("Could not add document to the index", e);					
 				} catch (OutOfMemoryError e) {
@@ -394,8 +392,6 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 				Term term = (Term) obj;
 				try {
 					getIndexingResource().getIndexWriter().deleteDocuments(term);
-					if(logger.isTraceEnabled())
-						logTrace("Called deleteDocuments2 on writer with term [" + term.toString() + "]");
 				} catch (IOException e) {
 					throw newLuceneException(
 							"Could not delete documents from the index", e);
