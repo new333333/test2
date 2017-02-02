@@ -244,14 +244,6 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		this.transactionTemplate = transactionTemplate;
 	}
 
-	private RunAsyncManager runAsyncManager;
-	protected RunAsyncManager getRunAsyncManager() {
-		return runAsyncManager;
-	}
-	public void setRunAsyncManager(RunAsyncManager runAsyncManager) {
-		this.runAsyncManager = runAsyncManager;
-	}
-	
  	protected FolderDelete getDeleteProcessor(Workspace zone) {
  	   String jobClass = SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FolderDelete.DELETE_JOB + "']");
  	   if (Validator.isNotNull(jobClass)) {

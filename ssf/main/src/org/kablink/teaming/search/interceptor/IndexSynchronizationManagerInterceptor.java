@@ -56,8 +56,15 @@ public class IndexSynchronizationManagerInterceptor implements MethodInterceptor
 	private static final ThreadLocal<Integer> depth = new ThreadLocal<Integer>();
 	
 	private static final ThreadLocal<Integer> threshold = new ThreadLocal<Integer>();
+	
+	private static final ThreadLocal<Boolean> disabledForTheThread = new ThreadLocal<Boolean>();
     
 	public Object invoke(MethodInvocation invocation) throws Throwable {
+		if(disabledForTheThread()) {
+			// This facility is temporarily disabled for this particular thread.
+			return invocation.proceed();
+		}
+		
 		if(getDepth() == 0) {
 			if(logger.isTraceEnabled())
 				logger.trace("Begin index-synchronization session for the thread");
@@ -151,6 +158,14 @@ public class IndexSynchronizationManagerInterceptor implements MethodInterceptor
 			depth.set(new Integer(d.intValue() - 1));
 	}	
 	
+	private boolean disabledForTheThread() {
+		Boolean b = (Boolean) disabledForTheThread.get();
+		if(b == null)
+			return false; // enabled for all threads by default
+		else
+			return b.booleanValue();
+	}
+	
 	/*
 	 * Disable auto-apply for the current thread only
 	 */
@@ -168,6 +183,14 @@ public class IndexSynchronizationManagerInterceptor implements MethodInterceptor
 	
 	public static void clearThreshold() {
 		threshold.set(null);
+	}
+	
+	public static void disableForTheThread() {
+		disabledForTheThread.set(Boolean.TRUE);
+	}
+	
+	public static void cancelDisableForTheThread() {
+		disabledForTheThread.set(null);
 	}
 }
 

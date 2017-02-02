@@ -1560,6 +1560,9 @@ text/calendar											  ics
 	        <entry key="Vibe:type=Other,name=runtimeStatistics">
 	          <ref bean="runtimeStatistics"/>
 	        </entry>
+	        <entry key="Vibe:type=Processor,name=defaultFolderCoreProcessor">
+	          <ref bean="defaultFolderCoreProcessor"/>
+	        </entry>
 	      </map>
 	    </property>
 	</bean>

@@ -87,6 +87,8 @@ import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
+import org.kablink.teaming.runasync.RunAsyncCallback;
+import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.IndexSynchronizationManager;
@@ -94,6 +96,7 @@ import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.QueryBuilder;
 import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.search.filter.SearchFilter;
+import org.kablink.teaming.search.interceptor.IndexSynchronizationManagerInterceptor;
 import org.kablink.teaming.security.acl.AclContainer;
 import org.kablink.teaming.security.acl.AclControlled;
 import org.kablink.teaming.task.TaskHelper;
@@ -107,6 +110,7 @@ import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.FieldFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
@@ -120,11 +124,24 @@ import org.springframework.transaction.support.TransactionCallback;
  */
 @SuppressWarnings("unchecked")
 public abstract class AbstractEntryProcessor extends AbstractBinderProcessor 
-	implements EntryProcessor {
+	implements EntryProcessor, AbstractEntryProcessorMBean, InitializingBean {
     
 	private static final int DEFAULT_MAX_CHILD_ENTRIES = ObjectKeys.LISTING_MAX_PAGE_SIZE;
 	//***********************************************************************************************************	
     
+	volatile private long fileContentIndexingSizeAsynchronousThreshold;
+	public long getFileContentIndexingSizeAsynchronousThreshold() {
+		return fileContentIndexingSizeAsynchronousThreshold;
+	}
+	public void setFileContentIndexingSizeAsynchronousThreshold(long fileContentIndexingSizeAsynchronousThreshold) {
+		this.fileContentIndexingSizeAsynchronousThreshold = fileContentIndexingSizeAsynchronousThreshold;
+	}
+    
+	@Override
+	public void afterPropertiesSet() {
+		fileContentIndexingSizeAsynchronousThreshold = SPropsUtil.getLong("file.content.indexing.size.asynchronous.threshold", 10240L);
+	}
+
 	@Override
 	//no transaction
 	public Entry addEntry(final Binder binder, Definition def, Class clazz, 
@@ -589,9 +606,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
   	   if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
     	if (ctx != null) tags = (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS);
     	if (tags == null) tags = new ArrayList();
-    	boolean skipFileContentIndexing = false;
+    	Boolean skipFileContentIndexing = null;
     	if(ctx != null && ctx.get(ObjectKeys.INPUT_OPTION_NO_FILE_CONTENT_INDEX) != null)
-    		skipFileContentIndexing = ((Boolean)ctx.get(ObjectKeys.INPUT_OPTION_NO_FILE_CONTENT_INDEX)).booleanValue();
+    		skipFileContentIndexing = (Boolean)ctx.get(ObjectKeys.INPUT_OPTION_NO_FILE_CONTENT_INDEX);
     		
     	indexEntry(binder, entry, fileUploadItems, null, true, tags, skipFileContentIndexing);
     }
@@ -1038,10 +1055,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		Collection<FileAttachment> filesToIndex, Map ctx) {
   	   	if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
   	   	
-    	boolean skipFileContentIndexing = false;
+    	Boolean skipFileContentIndexing = null;
     	
     	if(ctx != null && ctx.get(ObjectKeys.INPUT_OPTION_NO_FILE_CONTENT_INDEX) != null)
-    		skipFileContentIndexing = ((Boolean)ctx.get(ObjectKeys.INPUT_OPTION_NO_FILE_CONTENT_INDEX)).booleanValue();
+    		skipFileContentIndexing = (Boolean)ctx.get(ObjectKeys.INPUT_OPTION_NO_FILE_CONTENT_INDEX);
   	   	
   	    //tags will be null for now
     	indexEntry(binder, 
@@ -1400,7 +1417,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     
     @Override
-	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing) {
+	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, Boolean skipFileContentIndexing) {
     	IndexErrors errors = super.indexBinder(binder, includeEntries, deleteIndex, tags);
     	if (includeEntries == false) return errors;
     	IndexErrors entryErrors;
@@ -1439,7 +1456,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     // work when we use helper threads for admin-triggered re-indexing task. When using scroll 
     // in extended period of time, we get "Operation not allowed after ResultSet closed" error
     // if we use scroll in conjunction with helper threads (see bug #846126).
-    protected IndexErrors indexEntries(Binder binder, boolean deleteIndex, boolean deleteEntries, boolean skipFileContentIndexing) {
+    protected IndexErrors indexEntries(Binder binder, boolean deleteIndex, boolean deleteEntries, Boolean skipFileContentIndexing) {
     	IndexErrors errors = new IndexErrors();
     	SimpleProfiler.start("indexEntries");
     	//may already have been handled with an optimized query
@@ -1480,7 +1497,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         return errors;
     }
     
-    protected void indexEntryBatch(Binder binder, List<Entry> batch, boolean deleteEntries, boolean skipFileContentIndexing, IndexErrors errors, int total, int threshhold) {
+    protected void indexEntryBatch(Binder binder, List<Entry> batch, boolean deleteEntries, Boolean skipFileContentIndexing, IndexErrors errors, int total, int threshhold) {
 			//have 1000 entries, manually load their collections
 			SimpleProfiler.start("indexEntries_load");
 			indexEntries_load(binder, batch);
@@ -1827,7 +1844,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      * @param newEntry
      */
     protected IndexErrors indexEntry(Binder binder, Entry entry, List fileUploadItems, 
-    		Collection<FileAttachment> filesToIndex, boolean newEntry, Collection tags, boolean skipFileContentIndexing) {
+    		Collection<FileAttachment> filesToIndex, boolean newEntry, Collection tags, Boolean skipFileContentIndexing) {
     	// Logically speaking, the only files we need to index are the ones
     	// that have been uploaded (fileUploadItems) and the ones explicitly
     	// specified (in the filesToIndex). In ideal world, indexing only
@@ -1861,7 +1878,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      * @param newEntry
      */
 	protected IndexErrors indexEntryWithAttachments(Binder binder, Entry entry,
-			Collection<FileAttachment> fileAttachments, List fileUploadItems, boolean newEntry, Collection tags, boolean skipFileContentIndexing) {
+			Collection<FileAttachment> fileAttachments, List fileUploadItems, boolean newEntry, Collection tags, Boolean skipFileContentIndexing) {
 		IndexErrors errors = new IndexErrors();
 		if(SPropsUtil.getBoolean("indexing.escalate.add.to.update", true))
 			newEntry = false;
@@ -1873,21 +1890,115 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	        IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
 		}
 		
-        // Create an index document from the entry object.
-       // Register the index document for indexing.
+        // Create an index document from the entry object and register it for indexing.
         IndexSynchronizationManager.addDocument(buildIndexDocumentFromEntry(entry.getParentBinder(), entry, tags));
-        //Create separate documents one for each attached file and index them.
+        
+        // Create separate documents one for each attached file and index them.
+        
+        // File meta data is always indexed synchronously, but file content indexing may vary.
+        boolean indexFileContentSynchronously;
+        boolean indexFileContentAsynchronously;
+        if(Boolean.TRUE.equals(skipFileContentIndexing)) {
+        	// This request is from net folder sync.
+        	// Index metadata only.
+        	indexFileContentSynchronously = false; 
+        	// File content indexing, if enabled, is performed by separate background
+        	// job dedicated to net folder. No need to submit it here.
+        	indexFileContentAsynchronously = false; 
+        }
+        else if(Boolean.FALSE.equals(skipFileContentIndexing)) {
+        	// This request is from administrative re-indexing.
+        	// Synchronously index both metadata and content.
+        	indexFileContentSynchronously = true;
+        	// Since we index content synchronously, there is no need to index it again asynchronously.
+        	indexFileContentAsynchronously = false;
+        }
+        else {
+        	// This request is from client (most normal use case).
+        	boolean exceedsSizeThreshold = false;
+        	for(FileAttachment fa : fileAttachments) {
+        		if(fa.getFileItem().getLength() > fileContentIndexingSizeAsynchronousThreshold) {
+        			exceedsSizeThreshold = true;
+        			break;
+        		}
+        	}
+        	if(exceedsSizeThreshold) {
+        		// There is at least one attachment exceeding the specified size threshold.
+        		// Only index metadata synchronously and file content asynchronously.
+        		indexFileContentSynchronously = false;
+        		indexFileContentAsynchronously = true;
+        	}
+        	else {
+        		// There is no attachment exceeding the specified size threshold (or there's
+        		// no attachment at all).
+        		// Index both metadata and content synchronously.
+        		indexFileContentSynchronously = true;
+        		indexFileContentAsynchronously = false;
+        	}
+        }
+        
+        // First, synchronous part of the indexing file attachments
         for(FileAttachment fa : fileAttachments) {
         	try {
                 IndexSynchronizationManager.deleteDocuments(new Term(Constants.FILE_ONLY_ID_FIELD, fa.getId()));
-        		IndexSynchronizationManager.addDocument(buildIndexDocumentFromEntryFile(binder, entry, fa, tags, skipFileContentIndexing));
+                if(logger.isDebugEnabled())
+                	logger.debug("Synchronously indexing " + (indexFileContentSynchronously? "content for file '" : "just metadata for file '") + fa.getFileItem().getName() + "' for entry " + entry.getId());
+        		IndexSynchronizationManager.addDocument(buildIndexDocumentFromEntryFile(binder, entry, fa, tags, indexFileContentSynchronously));
            		// Register the index document for indexing.
 	        } catch (Exception ex) {
-		       		//log error but continue
-		       		logger.error("Error indexing file for entry " + entry.getId() + " attachment " + fa, ex);
-		       		errors.addError(entry);
+	       		//log error but continue
+	       		logger.error("Error indexing file for entry " + entry.getId() + " attachment " + fa, ex);
+	       		errors.addError(entry);
         	}
          }
+        
+        // Second, if necessary, asynchronous part of the indexing file attachments
+        if(indexFileContentAsynchronously) {
+        	// This request didn't come from net folder sync task. This is normal upload scenario.
+        	// Submit a task that would index the content of the file asynchronously.
+        	// To avoid race condition, we need to synchronously flush the index changes 
+        	// associated with the current thread before submitting the asynchronous task.
+        	IndexSynchronizationManager.applyChanges();
+    		getRunAsyncManager().execute(new RunAsyncCallback<Object>() {
+    			@Override
+    			public Object doAsynchronously() throws Exception {
+    				// Temporarily disable IndexSynchronizationManagerInterceptor.
+    				// Otherwise, when DefinitionModule.walkDefinition() crosses transaction
+    				// boundary during buildIndexDocumentFromEntryFile(), it causes 
+    				// IndexSynchronizationManagerInterceptor to prematurely flush out
+    				// index changes. While it doesn't cause functional issue, it's not
+    				// as efficient as flushing everything at the end of the task so that
+    				// index change can be written out within a single commit.
+    				IndexSynchronizationManagerInterceptor.disableForTheThread();
+    				try {
+	    		        for(FileAttachment fa : fileAttachments) {
+	    		        	try {
+	    		                IndexSynchronizationManager.deleteDocuments(new Term(Constants.FILE_ONLY_ID_FIELD, fa.getId()));
+	    		                if(logger.isDebugEnabled())
+	    		                	logger.debug("Asynchronously indexing content for file '" + fa.getFileItem().getName() + "' for entry " + entry.getId());
+	    		        		IndexSynchronizationManager.addDocument(buildIndexDocumentFromEntryFile(binder, entry, fa, tags, true));
+	    		           		// Register the index document for indexing.
+	    			        } catch (Exception ex) {
+	    			       		//log error but continue
+	    			       		logger.error("Error indexing file content for entry " + entry.getId() + " attachment " + fa, ex);
+	    		        	}
+	    		         }
+	    		        // Flush the index changes (even if we encountered error)
+	    		        IndexSynchronizationManager.applyChanges(); 
+    				}
+    				finally {
+    					// Restore normal function of IndexSynchronizationManagerInterceptor for the current thread.
+    					IndexSynchronizationManagerInterceptor.cancelDisableForTheThread();
+    				}
+    		        if(logger.isDebugEnabled())
+    		        	logger.debug("Asynchronous part of indexEntryWithAttachments() completes");
+    				return null;
+    			}
+    		}, RunAsyncManager.TaskType.MISC);
+        }
+        
+        if(logger.isDebugEnabled())
+        	logger.debug("Synchronous part of indexEntryWithAttachments() completes");
         return errors;
  	}
 	
@@ -1946,13 +2057,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
     @Override
 	public org.apache.lucene.document.Document buildIndexDocumentFromEntryFile
-	(Binder binder, Entry entry, FileAttachment fa, Collection tags, boolean skipFileContentIndexing) {
+	(Binder binder, Entry entry, FileAttachment fa, Collection tags, boolean indexFileContent) {
     	SimpleProfiler.start("buildIndexDocumentFromEntryFile");
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
     	//do common part first. Indexing a file overrides some values
     	fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry, true);
         BasicIndexUtils.addAttachmentType(indexDoc, Constants.ATTACHMENT_TYPE_ENTRY, true);
-  		buildIndexDocumentFromFile(indexDoc, binder, entry, fa, tags, binder.isLibrary(), skipFileContentIndexing);
+  		buildIndexDocumentFromFile(indexDoc, binder, entry, fa, tags, binder.isLibrary(), indexFileContent);
     	SimpleProfiler.stop("buildIndexDocumentFromEntryFile");
    		return indexDoc;
  

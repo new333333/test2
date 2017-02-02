@@ -2380,7 +2380,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     
     @Override
-	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing) {
+	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, Boolean skipFileContentIndexing) {
     	// Ignore skipFileContentIndexing arg
     	return indexBinder(binder, includeEntries, deleteIndex, tags);
     }
@@ -2941,7 +2941,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        	fillInIndexDocWithCommonPartFromBinder(indexDoc, binder, true);
         BasicIndexUtils.addAttachmentType(indexDoc, Constants.ATTACHMENT_TYPE_BINDER, true);
 
-  	  	buildIndexDocumentFromFile(indexDoc, binder, binder, fa, tags, false, false);
+  	  	buildIndexDocumentFromFile(indexDoc, binder, binder, fa, tags, false, true);
        	return indexDoc;
      }
 
@@ -2954,7 +2954,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      * @return
      */
     protected void buildIndexDocumentFromFile
-    	(org.apache.lucene.document.Document indexDoc, Binder binder, DefinableEntity entity, FileAttachment fa, Collection tags, boolean isLibraryFile, boolean skipFileContentIndexing) {
+    	(org.apache.lucene.document.Document indexDoc, Binder binder, DefinableEntity entity, FileAttachment fa, Collection tags, boolean isLibraryFile, boolean indexFileContent) {
 
 		String text = "";
 		//See if the file contents are supposed to be indexed
@@ -2969,7 +2969,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		//		OR
 		//	2. The caller specifies to include file content AND (The file is adhoc file OR (The file is net folder file AND The net folder has content indexing enabled))   
 		if(!(entity instanceof FolderEntry) ||
-				(!skipFileContentIndexing && 
+				(indexFileContent && 
 				(rootFolder == null || 
 				!rootFolderIsNetFolder ||
 				(rootFolderIsNetFolder && rootFolder.getComputedIndexContent())))) {

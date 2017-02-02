@@ -207,7 +207,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class BinderModuleImpl extends CommonDependencyInjection implements
 		BinderModule {
 	private TransactionTemplate transactionTemplate;
-	private RunAsyncManager runAsyncManager;
 
 	protected TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
@@ -215,14 +214,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
 		this.transactionTemplate = transactionTemplate;
-	}
-
-	protected RunAsyncManager getRunAsyncManager() {
-		return runAsyncManager;
-	}
-
-	public void setRunAsyncManager(RunAsyncManager runAsyncManager) {
-		this.runAsyncManager = runAsyncManager;
 	}
 
 	protected FileModule getFileModule() {
@@ -848,12 +839,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	@Override
 	public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket,
-			String[] nodeNames, IndexErrors errors, boolean allowUseOfHelperThreads, boolean skipFileContentIndexing) {
+			String[] nodeNames, IndexErrors errors, boolean allowUseOfHelperThreads, Boolean skipFileContentIndexing) {
 		return indexTreeWithHelper(binderIds, statusTicket, nodeNames, errors, allowUseOfHelperThreads, skipFileContentIndexing);				
 	}
 
 	private Set<Long> indexTreeWithHelper(Collection binderIds, StatusTicket statusTicket,
-			String[] nodeNames, IndexErrors errors, boolean canUseHelperThreads, boolean skipFileContentIndexing) {
+			String[] nodeNames, IndexErrors errors, boolean canUseHelperThreads, Boolean skipFileContentIndexing) {
 		long startTime = System.nanoTime();
 		getCoreDao().flush(); // just incase
 		if(statusTicket != null && canUseHelperThreads) {
@@ -1060,7 +1051,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 
-	private void indexOneBinder(Binder binder, ConcurrentStatusTicket concurrentStatusTicket, IndexErrors errors, Collection<Long> done, boolean skipFileContentIndexing) {
+	private void indexOneBinder(Binder binder, ConcurrentStatusTicket concurrentStatusTicket, IndexErrors errors, Collection<Long> done, Boolean skipFileContentIndexing) {
 	    BinderProcessor processor = loadBinderProcessor(binder);
 		concurrentStatusTicket.incrementCurrentAndTotalCounts();
 		if(logger.isDebugEnabled())
@@ -1087,7 +1078,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return netFolderIds;
 	}
 	
-	private List<Long> obtainConcurrentBinderIdsFromPersonalWorkspaces(Binder personalWorkspaces, Collection<Long> done, ConcurrentStatusTicket statusTicket, IndexErrors errors, boolean skipFileContentIndexing) {		
+	private List<Long> obtainConcurrentBinderIdsFromPersonalWorkspaces(Binder personalWorkspaces, Collection<Long> done, ConcurrentStatusTicket statusTicket, IndexErrors errors, Boolean skipFileContentIndexing) {		
 		// Index "/Home Workspace/Personal Workspaces" workspace (one level only).
 		// This is a special workspace in which all principal objects (users and groups)
 		// reside. So this will synchronously index all users and groups right here
@@ -1108,7 +1099,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return personalWorkspaceIds;
 	}
 	
-	private List<Long> obtainConcurrentBinderIdsFromSite(Binder siteWorkspace, Collection<Long> done, ConcurrentStatusTicket statusTicket, IndexErrors errors, boolean skipFileContentIndexing) {
+	private List<Long> obtainConcurrentBinderIdsFromSite(Binder siteWorkspace, Collection<Long> done, ConcurrentStatusTicket statusTicket, IndexErrors errors, Boolean skipFileContentIndexing) {
 		// Index the very top workspace (= /Home Workspace)
 		indexOneBinder(siteWorkspace, statusTicket, errors, done, skipFileContentIndexing);
 		
