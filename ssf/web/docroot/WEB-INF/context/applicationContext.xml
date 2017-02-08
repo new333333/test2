@@ -713,6 +713,7 @@ Application exception overridden by commit exception
 		<property name="licenseManager"><ref bean="licenseManager"/></property>
 		<property name="accessTokenManager"><ref bean="accessTokenManager"/></property>
 		<property name="relevanceManager"><ref bean="relevanceManager"/></property>
+        <property name="runAsyncManager"><ref bean="runAsyncManager"/></property>
 	</bean>
 	
 	<bean id="processorDependencyTemplate" parent="dependOnCommonServicesTemplate" depends-on="coreDao" abstract="true">
