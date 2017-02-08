@@ -6,7 +6,6 @@ import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.CssSchema;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import java.util.HashSet;
@@ -22,14 +21,16 @@ public class HtmlSanitizerCheck implements StringCheck {
     private static final String PROTOCOL_MAILTO = "^mailto[:].*$";
     private static final String PROTOCOL_CID= "^cid[:].*$";
     private static final String PROTOCOL_DATA_IMAGE= "^data[:]image/(jpeg|png|gif).*$";
-    private static final String PROTOCOL_FRAGMENT = "^#.*$";
+    private static final String PROTOCOL_FRAGMENT_ONLY = "^#.*$";
+    private static final String PROTOCOL_RELATIVE = "^[\\.]{0,2}/.*$";
 
     private static final Pattern A_PATTERN = Pattern.compile(
             "(" + PROTOCOL_HTTP +
             ")|(" + PROTOCOL_HTTPS +
             ")|(" + PROTOCOL_MAILTO +
             ")|(" + PROTOCOL_CID +
-            ")|(" + PROTOCOL_FRAGMENT +
+            ")|(" + PROTOCOL_FRAGMENT_ONLY +
+            ")|(" + PROTOCOL_RELATIVE +
             ")", Pattern.CASE_INSENSITIVE
     );
 
@@ -38,6 +39,7 @@ public class HtmlSanitizerCheck implements StringCheck {
             ")|(" + PROTOCOL_HTTPS +
             ")|(" + PROTOCOL_MAILTO +
             ")|(" + PROTOCOL_CID +
+            ")|(" + PROTOCOL_RELATIVE +
             ")|(" + PROTOCOL_DATA_IMAGE + ")", Pattern.CASE_INSENSITIVE
     );
 
