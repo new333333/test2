@@ -29,7 +29,7 @@ public class HtmlSanitizerCheckTest  {
     }
 
     @Test
-    public void testHash() {
+    public void testHash1() {
         String unsanitized = "<p><a href=\"#blah\"></p>";
         String expected = "<p><a href=\"#blah\"></a></p>";
         String sanitized = sanitizer.check(unsanitized);
@@ -37,6 +37,23 @@ public class HtmlSanitizerCheckTest  {
 
     }
 
+    @Test
+    public void testHash2() {
+        String unsanitized = "<p><a href=\"./#menuSectionTab-1\">Programme</a></p>";
+        String expected = "<p><a href=\"./#menuSectionTab-1\">Programme</a></p>";
+        String sanitized = sanitizer.check(unsanitized);
+        Assert.assertEquals(expected, sanitized);
+    }
+
+    @Test
+    public void testHash3() {
+        String unsanitized = "<p><a href=\"https://portal.senwi.verwalt-berlin.de/ssf/.../.../.../...#menuSectionTab-1\">Programme</a></p>";
+        String expected = "<p><a href=\"https://portal.senwi.verwalt-berlin.de/ssf/.../.../.../...#menuSectionTab-1\">Programme</a></p>";
+        String sanitized = sanitizer.check(unsanitized);
+        Assert.assertEquals(expected, sanitized);
+    }
+
+    @Test
     public void testBasic() {
         String sanitized = sanitizer.check("<a href=\"javascript:alert(1)\" target=\"_blank\">clickme</a>");
         sanitized = sanitizer.check("<div class=\"fak_header\" style=\"font-size: 100%; height: 33px; font-family: verdana; background-image: url(http://vignette4.wikia.nocookie.net/despicableme/images/c/ca/Bob-from-the-minions-movie.jpg/revision/latest?cb=20151224154354); color: #fff; margin-top: 5px; padding-left: 10px; margin-left: 0px; line-height: 33px; padding-right: 0px; margin-right: 0px;\">Meddelelser fra holdlederen og l�rerne</div> <br>");
