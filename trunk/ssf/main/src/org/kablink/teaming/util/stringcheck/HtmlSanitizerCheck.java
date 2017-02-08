@@ -22,12 +22,15 @@ public class HtmlSanitizerCheck implements StringCheck {
     private static final String PROTOCOL_MAILTO = "^mailto[:].*$";
     private static final String PROTOCOL_CID= "^cid[:].*$";
     private static final String PROTOCOL_DATA_IMAGE= "^data[:]image/(jpeg|png|gif).*$";
+    private static final String PROTOCOL_FRAGMENT = "^#.*$";
 
     private static final Pattern A_PATTERN = Pattern.compile(
             "(" + PROTOCOL_HTTP +
             ")|(" + PROTOCOL_HTTPS +
             ")|(" + PROTOCOL_MAILTO +
-            ")|(" + PROTOCOL_CID + ")", Pattern.CASE_INSENSITIVE
+            ")|(" + PROTOCOL_CID +
+            ")|(" + PROTOCOL_FRAGMENT +
+            ")", Pattern.CASE_INSENSITIVE
     );
 
     private static final Pattern IMG_PATTERN = Pattern.compile(
@@ -212,7 +215,7 @@ public class HtmlSanitizerCheck implements StringCheck {
 
     @Override
     public String check(String input, boolean checkOnly) throws StringCheckException {
-        String safeHtml = factory.sanitize(input);
+            String safeHtml = factory.sanitize(input);
         if (checkOnly && !safeHtml.equals(input)) {
             throw new XSSCheckException();
         }
