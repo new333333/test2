@@ -28,6 +28,15 @@ public class HtmlSanitizerCheckTest  {
 //        xssCheck = new XSSCheck();
     }
 
+    @Test
+    public void testHash() {
+        String unsanitized = "<p><a href=\"#blah\"></p>";
+        String expected = "<p><a href=\"#blah\"></a></p>";
+        String sanitized = sanitizer.check(unsanitized);
+        Assert.assertEquals(expected, sanitized);
+
+    }
+
     public void testBasic() {
         String sanitized = sanitizer.check("<a href=\"javascript:alert(1)\" target=\"_blank\">clickme</a>");
         sanitized = sanitizer.check("<div class=\"fak_header\" style=\"font-size: 100%; height: 33px; font-family: verdana; background-image: url(http://vignette4.wikia.nocookie.net/despicableme/images/c/ca/Bob-from-the-minions-movie.jpg/revision/latest?cb=20151224154354); color: #fff; margin-top: 5px; padding-left: 10px; margin-left: 0px; line-height: 33px; padding-right: 0px; margin-right: 0px;\">Meddelelser fra holdlederen og l�rerne</div> <br>");
