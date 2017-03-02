@@ -324,11 +324,15 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 			if (!current.isRoot()) {
 				removeWorkflowResponses(wEntry, state);
 				wEntry.removeWorkflowState(state);
+				// (bug #1025321) 03/01/2017
+				getInstance().getCoreDao().delete(state);
 				//check all other threads
 				WorkflowProcessUtils.processConditions(wEntry, current);
 			} else if (deleteIt) {
 				removeWorkflowResponses(wEntry, state);
 				wEntry.removeWorkflowState(state);
+				// (bug #1025321) 03/01/2017
+				getInstance().getCoreDao().delete(state);
 				context.getGraphSession().deleteProcessInstance(current.getProcessInstance());
 			}
 
