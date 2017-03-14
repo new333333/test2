@@ -35,11 +35,6 @@ package org.kablink.teaming.module.definition.index;
 public class FieldBuilderGenericAnalyzed extends FieldBuilderGeneric {
 
 	@Override
-	public String getSortFieldName(String dataElemName) {
-		return null;
-	}
-
-	@Override
 	public boolean getOmitTermFreqAndpositions() {
 		return false;
 	}
