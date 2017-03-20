@@ -226,10 +226,14 @@ public class Question {
 	}
 
 	public void removeAllVotes() {
-		Iterator<Answer> it = answers.iterator();
-		while (it.hasNext()) {
-			Answer answer = (Answer)it.next();
-			answer.removeAllVotes();
+		if (this.type==Type.input) {
+			this.removeInputAnswerAll();
+		} else {
+			Iterator<Answer> it = answers.iterator();
+			while (it.hasNext()) {
+				Answer answer = (Answer) it.next();
+				answer.removeAllVotes();
+			}
 		}
 
 		setTotalResponses(0);
@@ -284,10 +288,13 @@ public class Question {
 	}
 
 	private void removeInputAnswerAll() {
-		try {
-			jsonObj.remove("answers");
-		} catch (JSONException e) { 
-			// input has no answers
+		if (type==Type.input) {
+			try {
+				jsonObj.remove("answers");
+			} catch (JSONException e) {
+				// input has no answers
+			}
+			this.answers.clear();
 		}
 	}
 
