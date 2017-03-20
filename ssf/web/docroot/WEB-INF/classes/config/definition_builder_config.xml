@@ -3472,7 +3472,7 @@
 			<option_select definitionType="1" path="//item[@category='commonEntryViewData']" />
 			<option_select definitionType="1" path="//item[@category='entryViewData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
+			<option_select definitionType="1" path="//item[@category='entryLayoutView']" />
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/only_in_state.jsp" />
@@ -3547,7 +3547,7 @@
 			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
 			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
+			<option_select definitionType="1" path="//item[@category='entryLayoutView']" />
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/box.jsp" />
@@ -3621,7 +3621,7 @@
 			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
 			<option_select definitionType="12" path="//item[@category='workspaceData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
+			<option_select definitionType="1" path="//item[@category='entryLayoutView']" />
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
@@ -3693,7 +3693,7 @@
 			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
 			<option_select definitionType="12" path="//item[@category='workspaceData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
+			<option_select definitionType="1" path="//item[@category='entryLayoutView']" />
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
@@ -3777,7 +3777,7 @@
 			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
 			<option_select definitionType="12" path="//item[@category='workspaceData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
+			<option_select definitionType="1" path="//item[@category='entryLayoutView']" />
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/conditional.jsp" />
@@ -3890,7 +3890,7 @@
 			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
 			<option_select definitionType="12" path="//item[@category='workspaceData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
+			<option_select definitionType="1" path="//item[@category='entryLayoutView']" />
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
@@ -4003,7 +4003,7 @@
 			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
 			<option_select definitionType="12" path="//item[@category='workspaceData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
+			<option_select definitionType="1" path="//item[@category='entryLayoutView']" />
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
@@ -4096,7 +4096,7 @@
 			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
 			<option_select definitionType="12" path="//item[@category='workspaceData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
+			<option_select definitionType="1" path="//item[@category='entryLayoutView']" />
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html.jsp" />
@@ -4174,7 +4174,7 @@
 			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
 			<option_select definitionType="12" path="//item[@category='workspaceData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
+			<option_select definitionType="1" path="//item[@category='entryLayoutView']" />
 		</options>
 		<folderViews>
 			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewJsp" />
