@@ -771,7 +771,7 @@ public class GwtViewHelper {
 		}
 
 		// If the trimmed base name already ends with .jsp...
-		if (baseJsp.toLowerCase().endsWith(".jsp")) {
+		if (baseJsp.toLowerCase().endsWith(".jsp") || baseJsp.indexOf('?')>=0) {
 			// ...simply return it.
 			return baseJsp;
 		}
