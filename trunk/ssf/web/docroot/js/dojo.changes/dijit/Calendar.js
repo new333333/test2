@@ -281,6 +281,7 @@ define("dijit/Calendar", [
 				//    locales.
 				if      (calLang == "fr")    calLang = "fr-fr";
 				else if (calLang == "fr-fr") calLang = "fr";
+				if		(calLang == "es")	 calLang = "es-es";
 			}
 			var monthNames = this.dateLocaleModule.getNames('months', 'wide', 'standAlone', calLang, month);
 			this.dropDown.set("months", monthNames);
