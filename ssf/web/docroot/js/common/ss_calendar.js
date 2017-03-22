@@ -70,7 +70,20 @@ function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard,
 		return dest;
 	}
 	
+	this.validateCalendarObj=function(calendarObj){
+		if(!calendarObj) return false;
+		template=calendarObj.templateHTML;
+		if(!template) return true;
+		divindex=template.indexOf(">");
+		if(divindex < 0) return false;
+		template=template.substring(0,divindex);
+		if(!template) return false;
+		if(template.indexOf("display:none") > 0) return false;
+		return true;	
+	}
+	
 	this.loadEventsByDate = function(reqParams, date, calendarObj) {
+		if(!this.validateCalendarObj(calendarObj)) return;		
 		dojo.xhrGet({
 	    	url: ss_buildAdapterUrl(ss_AjaxBaseUrl, mergeObj({operation: "find_calendar_events",
 										binderId: binderId, 
@@ -90,7 +103,8 @@ function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard,
 		});
 	}
 	
-	this.loadEntryEvents = function(reqParams, calendarObj) {
+	this.loadEntryEvents = function(reqParams, calendarObj) {		
+		if(!this.validateCalendarObj(calendarObj)) return;	
 		dojo.xhrGet({
 	    	url: ss_buildAdapterUrl(ss_AjaxBaseUrl, mergeObj({operation: "find_calendar_events",
 											binderId: binderId, 
