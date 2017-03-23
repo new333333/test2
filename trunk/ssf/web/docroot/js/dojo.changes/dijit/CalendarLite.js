@@ -322,6 +322,7 @@ define("dijit/CalendarLite", [
 				if      (calLang == "fr")    calLang = "fr-fr";
 				else if (calLang == "fr-fr") calLang = "fr";
 				if		(calLang == "es")	 calLang = "es-es";
+				else if	(calLang == "es-es") calLang = "es";
 			}
 			// Markup for days of the week (referenced from template)
 			var d = this.dowTemplateString,
