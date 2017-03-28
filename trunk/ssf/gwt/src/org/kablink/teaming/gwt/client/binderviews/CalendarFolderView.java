@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -117,10 +118,14 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.logical.shared.OpenEvent;
 import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -262,19 +267,32 @@ public class CalendarFolderView extends FolderViewBase
 				event.setCancelled(true);
 			}
 		});
+		
+		m_calendar.addMouseOutHandler(new MouseOutHandler(){
 
+			@Override
+			public void onMouseOut(MouseOutEvent event) {
+				m_hoverHintPopup.hide();
+			}
+		});
+		
 		// Add a mouse over handler.
 		m_calendar.addMouseOverHandler(new MouseOverHandler<Appointment>() {
 			@Override
 			public void onMouseOver(MouseOverEvent<Appointment> event) {
 				// Does the current day view support hover hints?
-				if (viewSupportsHoverHints()) {
+				if (true) {
 					// Yes!  Does the appointment have a description?
 					CalendarAppointment ca = ((CalendarAppointment) event.getTarget());
 					String caDesc = ca.getDescriptionHtml();
 					if (!(GwtClientHelper.hasString(caDesc))) {
 						caDesc = ca.getDescription();
 					}
+					DateTimeFormat dateFormat=DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_MEDIUM);
+					String catitle="<p>"+ca.getTitle()+"</p>";
+					String startDate="<p>"+dateFormat.format(ca.getStart())+"</p>";
+					String endDate="<p>"+dateFormat.format(ca.getEnd())+"</p>";
+					caDesc=caDesc+catitle+startDate+endDate;
 					if (GwtClientHelper.hasString(caDesc)) {
 						// Yes!  If we haven't created a hover hint
 						// popup to show descriptions in yet...
