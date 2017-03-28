@@ -33,8 +33,15 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import com.bradrydzewski.gwt.calendar.client.Appointment;
 import com.bradrydzewski.gwt.calendar.client.Calendar;
+import com.bradrydzewski.gwt.calendar.client.event.MouseOverEvent;
+import com.bradrydzewski.gwt.calendar.client.event.MouseOverHandler;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.HasMouseOutHandlers;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 
@@ -44,7 +51,7 @@ import com.google.gwt.user.client.Event;
  * @author drfoster@novell
  */
 @SuppressWarnings("deprecation")
-public class VibeCalendar extends Calendar {
+public class VibeCalendar extends Calendar implements HasMouseOutHandlers {
 	/**
 	 * Overrides the CalendarWidget.onMouseDown() method.
 	 *
@@ -62,4 +69,9 @@ public class VibeCalendar extends Calendar {
 		     event.stopPropagation();
 		else super.onMouseDown(element, event);
    }
+
+	@Override
+	public HandlerRegistration addMouseOutHandler(MouseOutHandler handler) {
+		return addHandler(handler, MouseOutEvent.getType());
+	}
 }
