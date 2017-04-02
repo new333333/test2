@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.Set;
 
+import com.google.gwt.user.client.Cookies;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -335,7 +336,8 @@ public class ImportProfilesDlg extends DlgBox implements EditSuccessfulHandler {
 		hi = new Hidden(); hi.setName("action");    hi.setValue("import_profiles"         ); uploadPanel.add(hi);
 		hi = new Hidden(); hi.setName("operation"); hi.setValue("importProfilesGWT"       ); uploadPanel.add(hi);
 		hi = new Hidden(); hi.setName("okBtn");     hi.setValue("okBtn"                   ); uploadPanel.add(hi);
-		
+		hi = new Hidden(); hi.setName("_csrf"); hi.setValue(Cookies.getCookie("XSRF-TOKEN")); uploadPanel.add(hi);
+
 		// ...create the file input widget...
 		m_fileInput = new FileUpload();
 		m_fileInput.setName("profiles");

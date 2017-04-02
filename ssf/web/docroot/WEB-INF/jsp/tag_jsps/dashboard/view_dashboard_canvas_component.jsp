@@ -114,6 +114,7 @@
 				  title="<ssf:nlt tag="button.show"/>" <ssf:alt/> /></a></li>
 			  </c:if>
 			</ul>
+			<sec:csrfInput />
 	</form>
 	<strong><ssf:nlt tag="${ssDashboard.dashboard.components[ssComponentId].title}" checkIfTag="true"/>&nbsp;</strong>
   </div>

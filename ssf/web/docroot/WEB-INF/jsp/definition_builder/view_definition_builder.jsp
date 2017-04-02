@@ -621,6 +621,7 @@ function ss_saveUserGroupResults(s) {
 <form name="form1" action="<ssf:url actionUrl="false" binderId="${ssBinderId}" action="manage_definitions"/>" 
 				method="post">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
+	<sec:csrfInput />
 </form>
 </td>
 </tr>
@@ -674,6 +675,7 @@ function ss_saveUserGroupResults(s) {
 			<input type="hidden" name="operationItem" />
 			<input type="hidden" name="operationItemName" />
 			<input type='hidden' name='sourceDefinitionId'>
+				<sec:csrfInput />
 			</form>
 			</div>
 			<div id="displaydiv_spacer_bottom"></div>

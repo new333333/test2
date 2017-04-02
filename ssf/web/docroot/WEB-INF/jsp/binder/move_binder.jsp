@@ -120,6 +120,7 @@ function ss_submitMoveBinderForm() {
 <input type="button" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
   onClick="ss_cancelButtonCloseWindow();return false;">
 <input type="hidden" name="okBtn" value="okBtn"/>
+  <sec:csrfInput />
 </form>
 </ssf:form>
 </div>

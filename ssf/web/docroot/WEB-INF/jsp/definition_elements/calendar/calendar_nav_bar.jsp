@@ -100,6 +100,7 @@
 									 popupDivId="ss_calDivPopup${prefix}" id="${gotoId}" initDate="${ssCurrentDate}"
 									 callbackRoutine="ss_getMonthCalendarEvents${prefix}" immediateMode="true" 
 									 altText='<%= NLT.get("calendar.view.popupAltText") %>' />
+									<sec:csrfInput />
 								</form>
 						</td>	
 					</tr>

@@ -106,7 +106,8 @@
 	  </c:if>
 		<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>"
 			onClick="ss_cancelButtonCloseWindow();return false;"/>
-	</div>		
+	</div>
+		<sec:csrfInput />
 	</form>
 </div>
 </body>

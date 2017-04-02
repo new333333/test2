@@ -168,6 +168,7 @@ function ss_checkForFileSelected() {
 		
 		</div>
 	</div>
+	<sec:csrfInput />
 
 </form>
 </div>

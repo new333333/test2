@@ -193,6 +193,7 @@ function ss_saveChangeLogEntryId(id) {
 	<div class="margintop3"><input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>" 
 		  onClick="if (${ssNamespace}_getChanges) {${ssNamespace}_getChanges()};return false;"></div>
 	</div>
+	<sec:csrfInput />
 </form>
 
 <iframe class="roundcornerSM margintop2" id="${ssNamespace}_display" name="${ssNamespace}_display" style="width:100%; height:350px; border: 1px solid #cccccc;

@@ -187,6 +187,7 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 	</table>
 
 	<input type="hidden" name="columns__order"/>
+		<sec:csrfInput />
 </form>
 </div>
 </div>

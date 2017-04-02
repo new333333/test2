@@ -155,6 +155,7 @@ function handleCloseBtn() {
 		<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
 			  onClick="return handleCloseBtn();"/>
 	</div>
+		<sec:csrfInput />
 	</form>
 </ssf:form>
 </div>

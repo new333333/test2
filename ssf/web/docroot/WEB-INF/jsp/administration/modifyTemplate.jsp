@@ -178,6 +178,7 @@ ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" onClick="ss_buttonSelect('cancelBtn');">
 </div>
 
+	<sec:csrfInput />
 </form>
 </c:if>
 
@@ -255,6 +256,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>">
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 </div>
+	<sec:csrfInput />
 </form>
 
 
@@ -339,6 +341,7 @@ onchange="ss_ajaxValidate(ss_buildAdapterUrl(ss_AjaxBaseUrl,{operation:'check_te
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" onClick="ss_buttonSelect('cancelBtn');">
 </div>
 
+	<sec:csrfInput />
 </form>
 </c:if>
 </c:if>

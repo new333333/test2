@@ -172,6 +172,7 @@ function ss_confirmDelete(obj) {
 	  <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
 		  onClick="return handleCloseBtn();"/>
 	</div>
+	<sec:csrfInput />
 </form>
 
 	<div style="margin: 20px 0 10px 0; padding-right: 50px;">
@@ -213,6 +214,7 @@ function ss_confirmDelete(obj) {
 				<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel"/>"
 				  onClick="hideAllDivs();return false;"/>
 			</div>
+				<sec:csrfInput />
 		  </form>
 	    </div>
 	</div>	
@@ -298,6 +300,7 @@ function ss_confirmDelete(obj) {
 				<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel"/>"
 				  onClick="hideAllDivs();return false;"/>
 			</div>
+				<sec:csrfInput />
 		  </form>
 	    </div>
 	</div>	
@@ -336,6 +339,7 @@ function ss_confirmDelete(obj) {
 			</td>
 		  </tr>
 	  </table>
+		<sec:csrfInput />
 	</form>
 	</c:if>
 
@@ -344,6 +348,7 @@ function ss_confirmDelete(obj) {
 		action="<ssf:url action="manage_user_accounts" actionUrl="true"/>">
 	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
 		  onClick="return handleCloseBtn();"/>
+		<sec:csrfInput />
 	</form>
   </div>		  
 </form>

@@ -76,6 +76,7 @@ function ss_saveChangeLogEntryId(id) {
 	    clickRoutine="ss_saveChangeLogEntryId"
 	    /> 
   </div>
+	<sec:csrfInput />
 </form>
 </div>
 </c:if>

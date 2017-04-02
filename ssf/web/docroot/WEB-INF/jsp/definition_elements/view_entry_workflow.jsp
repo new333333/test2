@@ -95,6 +95,7 @@ function ss_checkForWorkflowStateSelection(obj) {
 		  </select><input type="submit" class="ss_submit" name="changeStateBtn" 
 		   value="<ssf:nlt tag="button.ok" text="OK"/>"
 		   onClick="return ss_checkForWorkflowStateSelection(this)">
+				<sec:csrfInput />
 		  </form>
 		  </td>
 		</c:if>
@@ -135,6 +136,7 @@ function ss_checkForWorkflowStateSelection(obj) {
 		    </c:forEach>
 		    </select><input type="submit" class="ss_submit" name="respondBtn" 
 		     value="<ssf:nlt tag="button.ok" text="OK"/>"><br/>
+					<sec:csrfInput />
 		    </form>
 		    </td>
 		    <td valign="top" style="padding-left:10px;">
@@ -211,7 +213,8 @@ function ss_checkForWorkflowStateSelection(obj) {
 				  </c:forEach>
 				  </select><input type="submit" class="ss_submit" name="changeStateBtn" 
 				   value="<ssf:nlt tag="button.ok" text="OK"/>">
-				  </form>
+						<sec:csrfInput />
+					</form>
 				  </td>
 				</c:if>
 				<c:if test="${empty ssWorkflowTransitions[workflow2.id]}">
@@ -247,7 +250,8 @@ function ss_checkForWorkflowStateSelection(obj) {
 				    </c:forEach>
 				    </select><input type="submit" class="ss_submit" name="respondBtn" 
 				     value="<ssf:nlt tag="button.ok" text="OK"/>">
-				    </form>
+							<sec:csrfInput />
+						</form>
 				    </td>
 				    <td valign="top" style="padding-left:10px;">
 				     <c:if test="${!empty question.value.workflow_questionResponses}">

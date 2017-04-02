@@ -197,6 +197,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		<input type="button" value="<ssf:nlt tag="button.cancel"/>" class="ss_submit" name="cancelBtn"
 		  onclick="ss_cancelButtonCloseWindow();return false;"/>
 	</div>
+	<sec:csrfInput />
 </form>
 </div>
 </div>

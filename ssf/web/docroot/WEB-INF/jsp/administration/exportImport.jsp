@@ -276,6 +276,7 @@ function ss_folderTree_showId(id, obj, action) {
 
 </div>
 <input type="hidden" name="btnClicked"/>
+	<sec:csrfInput />
 </form>
 </div>
 

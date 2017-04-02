@@ -122,6 +122,7 @@
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" 
   onclick="if (!ss_confirmIfCBChecked('ss_purgeImmediately', '<ssf:escapeJavaScript><c:if test="${ssBinder.entityType == 'folder'}"><ssf:nlt tag="trash.confirm.Purge.immediately.folder.verify"/></c:if><c:if test="${ssBinder.entityType != 'folder'}"><ssf:nlt tag="trash.confirm.Purge.immediately.workspace.verify"/></c:if></ssf:escapeJavaScript>')) {return false;} else {ss_startSpinner(); return true;}">
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
+	<sec:csrfInput />
 
 </form>
 </ssf:form>

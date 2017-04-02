@@ -240,6 +240,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				  name="newTab" value="1"/></ssf:url>');"><img 
 				  src="<html:imagesPath/>pics/menudown.gif" /></a>
 				<div id="ss_navbarPopupPane${renderResponse.namespace}" class="ss_navbarPopupPane"></div>
+					<sec:csrfInput />
 			</form>
      	</div>
 	</div>
@@ -277,6 +278,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 					<input type="hidden" name="searchBtn" value="searchBtn"/>
 					<input type="hidden" name="quickSearch" value="true"/>					
 					<input type="hidden" name="operation" value="ss_searchResults"/>
+					<sec:csrfInput />
 			</form>
      	</div>
 	</div>
@@ -301,7 +303,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				  <ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
 				    formElement="searchText" 
 				    type="user"
-				    width="70px" singleItem="true"/> 
+				    width="70px" singleItem="true"/>
+				<sec:csrfInput />
 			</form>
 	</div>
 </ssf:ifnotaccessible>
@@ -319,6 +322,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				    <ssf:nlt tag="navigation.findUser"/>
 				  </ssf:param>
 				  </ssf:find>
+				<sec:csrfInput />
 			</form>
 		</div>
 	</div>
@@ -344,7 +348,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				    formName="ss_findPlacesForm${renderResponse.namespace}" 
 				    formElement="searchText" 
 				    type="places"
-				    width="70px" singleItem="true"/> 
+				    width="70px" singleItem="true"/>
+				<sec:csrfInput />
 			</form>
 		</div>
 	</div>
@@ -364,6 +369,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				    <ssf:nlt tag="navigation.findPlace"/>
 				  </ssf:param>
 				  </ssf:find>
+				<sec:csrfInput />
 			</form>
 		</div>
 	</div>
@@ -388,7 +394,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				    formName="ss_findTagsForm${renderResponse.namespace}" 
 				    formElement="searchText" 
 				    type="tags"
-				    width="70px" singleItem="true"/> 
+				    width="70px" singleItem="true"/>
+				<sec:csrfInput />
 			</form>
 		</div>
 	</div>
@@ -408,6 +415,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				    <ssf:nlt tag="navigation.findTag"/>
 				  </ssf:param>
 				  </ssf:find>
+				<sec:csrfInput />
 			</form>
 		</div>
 	</div>
@@ -546,6 +554,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			    src="<html:imagesPath/>pics/1pix.gif" <ssf:alt tag="alt.search"/> /></a>
 		    <input type="hidden" name="searchBtn" value="searchBtn"/>
 		  </ssHelpSpot>
+			<sec:csrfInput />
 		</form>
 		
 		<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" 
@@ -574,6 +583,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				<input type="hidden" name="searchBtn" value="searchBtn"/>
 				<input type="hidden" name="quickSearch" value="true"/>					
 				<input type="hidden" name="operation" value="ss_searchResults"/>
+			<sec:csrfInput />
 		</form>
 		
 		<a class="ss_advanced ss_fineprint" 
@@ -602,7 +612,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			  <ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
 			    formElement="searchText" 
 			    type="user"
-			    width="70px" singleItem="true"/> 
+			    width="70px" singleItem="true"/>
+			<sec:csrfInput />
 		</form>
 	</div>
 </ssf:ifnotaccessible>
@@ -620,6 +631,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				    <ssf:nlt tag="navigation.findUser"/>
 				  </ssf:param>
 				  </ssf:find>
+				<sec:csrfInput />
 			</form>
 		</div>
 	</div>
@@ -636,7 +648,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			    formName="ss_findPlacesForm${renderResponse.namespace}" 
 			    formElement="searchText" 
 			    type="places"
-			    width="70px" singleItem="true"/> 
+			    width="70px" singleItem="true"/>
+			<sec:csrfInput />
 		</form>
 	</div>
 </ssf:ifnotaccessible>
@@ -655,6 +668,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				    <ssf:nlt tag="navigation.findPlace"/>
 				  </ssf:param>
 				  </ssf:find>
+				<sec:csrfInput />
 			</form>
 		</div>
 	</div>
@@ -671,7 +685,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			    formName="ss_findTagsForm${renderResponse.namespace}" 
 			    formElement="searchText" 
 			    type="tags"
-			    width="70px" singleItem="true"/> 
+			    width="70px" singleItem="true"/>
+			<sec:csrfInput />
 		</form>
 	</div>
 </ssf:ifnotaccessible>
@@ -690,6 +705,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				    <ssf:nlt tag="navigation.findTag"/>
 				  </ssf:param>
 				  </ssf:find>
+				<sec:csrfInput />
 			</form>
 		</div>
 	</div>

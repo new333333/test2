@@ -76,5 +76,6 @@ var ${renderResponse.namespace}_savedIndex;
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
   onClick="ss_cancelButtonCloseWindow();return false;"/>
 </div>
+			<sec:csrfInput />
 </form>
 

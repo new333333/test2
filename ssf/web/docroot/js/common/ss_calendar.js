@@ -2703,7 +2703,8 @@ if (!window["ss_calendar_import"]) {
 							"<p class=\"ss_smallprint ss_light\">" + props.legend + "</p>" + 
 						"</div>" +
 						"<input type=\"button\" value=\"" + props.btn + "\" onclick=\"ss_calendar_import.uploadFile('" + props.namespace + "');\"/>" +
-						"<input type=\"hidden\" name=\"folderId\" value=\"" + props.forumId + "\">" +
+						"<input type=\"hidden\" name=\"folderId\" value=\"" + props.forumId + "\"/>" +
+						"<input type=\"hidden\"	name=\"_csrf\" value=\"_csrf.token\"/>" +
 					"</form>";
 			}
 			
@@ -2715,7 +2716,8 @@ if (!window["ss_calendar_import"]) {
 							"<p class=\"ss_smallprint ss_light\">" + props.legend + "</p>" + 
 						"</div>" +
 						"<input type=\"button\" value=\"" + props.btn + "\" onclick=\"ss_calendar_import.loadURL('" + props.namespace + "');\"/>" +
-						"<input type=\"hidden\" name=\"folderId\" value=\"" + props.forumId + "\">" +
+						"<input type=\"hidden\" name=\"folderId\" value=\"" + props.forumId + "\"/>" +
+						"<input type=\"hidden\"	name=\"_csrf\" value=\"_csrf.token\"/>" +
 					"</form>";
 		    }
 			ss_showPopupDivCentered(this.divId);

@@ -72,6 +72,7 @@
         </table>
         
         <input type="hidden" name="spring-security-redirect" value="${ssUrl}"/>
+        <sec:csrfInput />
       </form>
     </div>
   </div>

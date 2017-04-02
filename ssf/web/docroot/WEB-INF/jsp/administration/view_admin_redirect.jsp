@@ -60,6 +60,7 @@ setTimeout("ss_cancelButtonCloseWindow()", timeout);
 </c:forEach>
 </ul>
 <input type="submit" class="ss_submit" name="cancelBtn" onClick="ss_cancelButtonCloseWindow();return false;" value="<ssf:nlt tag="button.ok" text="OK"/>">
+	<sec:csrfInput />
 
 </form>
 </c:if>

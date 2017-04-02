@@ -173,4 +173,5 @@ function ${renderResponse.namespace}_getUnseenCountsReturn() {
   style="display:none;">
 <input type="hidden" name="forumList" value="<%= folderIdList %>">
 <input type="hidden" name="ssNamespace" value="${renderResponse.namespace}">
+	<sec:csrfInput />
 </form>

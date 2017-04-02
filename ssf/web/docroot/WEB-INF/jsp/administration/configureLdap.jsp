@@ -298,6 +298,7 @@ var m_searchCount = 0;
 						onClick="handleCloseBtn();return false;" />
 				</div>
 				<input type="hidden" name="ldapConfigDoc" id="ldapConfigDoc" value="" />
+				<sec:csrfInput />
 			</form>
 		</ssf:form>
 	</div>

@@ -114,6 +114,7 @@ First editor has height=150, second one has no size specified, so defaults to 25
 	<br>
 	<hr>
 	<input type="submit" class="ss_submit" name="OK" value="OK">
+	<sec:csrfInput />
 </form>
 
 </div>

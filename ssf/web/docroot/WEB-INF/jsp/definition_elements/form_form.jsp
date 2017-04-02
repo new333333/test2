@@ -97,6 +97,7 @@
 	  configElement="<%= item %>" 
 	  configJspStyle="${ssConfigJspStyle}" 
 	  entry="${ssDefinitionEntry}" />
+		<sec:csrfInput />
 	</form>  
   </c:otherwise>  
   

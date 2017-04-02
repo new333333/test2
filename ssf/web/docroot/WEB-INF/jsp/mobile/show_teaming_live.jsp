@@ -249,7 +249,8 @@ ss_createOnLoadObj("initiatePolling", initiatePolling);
 			  		  <img border="0" src="<html:rootPath/>images/pics/nl_left_dis_20.png"/>
 				</c:if>
 				</span>
-			</div>	
+			</div>
+			<sec:csrfInput />
 		</form>
     </div>
 

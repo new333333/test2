@@ -33,9 +33,7 @@
 package org.kablink.teaming.portletadapter.portlet;
 
 import java.security.Principal;
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -49,6 +47,7 @@ import javax.portlet.PortletSession;
 import javax.portlet.WindowState;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
 
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
@@ -306,8 +305,9 @@ public class PortletRequestImpl implements PortletRequest, MultipartFileSupport,
 	 * Otherwise, returns <code>null</code>.
 	 */
 	public Iterator getFileNames() {
-		if(req instanceof MultipartHttpServletRequest)
-			return ((MultipartHttpServletRequest) req).getFileNames();
+		MultipartHttpServletRequest mpReq = getMultipartHttpServletRequest();
+		if (mpReq!=null)
+			return mpReq.getFileNames();
 		else
 			return null;
 	}
@@ -317,8 +317,9 @@ public class PortletRequestImpl implements PortletRequest, MultipartFileSupport,
 	 * Otherwise, returns <code>null</code>.
 	 */
 	public MultipartFile getFile(String name) {
-		if(req instanceof MultipartHttpServletRequest)
-			return ((MultipartHttpServletRequest) req).getFile(name);
+		MultipartHttpServletRequest mpReq = getMultipartHttpServletRequest();
+		if (mpReq!=null)
+			return mpReq.getFile(name);
 		else
 			return null;
 	}
@@ -327,8 +328,9 @@ public class PortletRequestImpl implements PortletRequest, MultipartFileSupport,
 	 * Returns file map if they exist. Otherwise returns <code>null</code>.
 	 */
 	public Map getFileMap() {
-		if(req instanceof MultipartHttpServletRequest)
-			return ((MultipartHttpServletRequest) req).getFileMap();
+		MultipartHttpServletRequest mpReq = getMultipartHttpServletRequest();
+		if (mpReq!=null)
+			return mpReq.getFileMap();
 		else
 			return null;
 	}
@@ -355,5 +357,19 @@ public class PortletRequestImpl implements PortletRequest, MultipartFileSupport,
 
 	public String getWindowID() {
 		throw new UnsupportedOperationException();
+	}
+
+	private MultipartHttpServletRequest getMultipartHttpServletRequest() {
+		HttpServletRequest currReq = req;
+		while (currReq!=null) {
+			if (currReq instanceof MultipartHttpServletRequest) {
+				return (MultipartHttpServletRequest) currReq;
+			} else if (currReq instanceof HttpServletRequestWrapper) {
+				currReq = (HttpServletRequest) ((HttpServletRequestWrapper)currReq).getRequest();
+			} else {
+				currReq = null;
+			}
+		}
+		return null;
 	}
 }

@@ -130,6 +130,7 @@ var ssReportURL="<ssf:url action="quota_report" actionUrl="true"><ssf:param
 					  onClick="return handleCloseBtn();"/>
 			</div>
 		</c:if>
+		<sec:csrfInput />
 	</form>
 	</td></tr></table>
 </ssf:form>

@@ -214,7 +214,9 @@ Date rangeEndDate = calendarRangeEndDate.getTime();
 		 popupDivId="ss_calDivPopup${prefix}" id="ss_goto${prefix}" initDate="${ssCurrentDate}"
 		 callbackRoutine="ss_getMonthCalendarEvents${prefix}" immediateMode="true" 
 		 altText='<%= NLT.get("calendar.view.popupAltText") %>'
-		 /></div></form>
+		 /></div>
+		<sec:csrfInput />
+	</form>
 		 
 	<div id="ss_calDivPopup${prefix}" class="ss_calPopupDiv"></div>
 

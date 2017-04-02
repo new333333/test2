@@ -66,7 +66,8 @@
 <ssf:nlt tag="administration.reload.definitions.warning"/>
 </span>
 <br/>
-<br/> 
+<br/>
+	<sec:csrfInput />
 
 </form>
 

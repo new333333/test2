@@ -95,6 +95,7 @@
 	name="workAreaType" value="${ssWorkArea.workAreaType}"/></ssf:url>">
   <input type="submit" class="ss_submit" name="closeBtn" 
     value="<ssf:nlt tag="button.close" text="Close"/>">
+  <sec:csrfInput />
 </form>
 </td>
 </tr>
@@ -199,6 +200,7 @@
 </c:if>
   <input type="submit" class="ss_submit" name="closeBtn" 
     value="<ssf:nlt tag="button.close" text="Close"/>">
+  <sec:csrfInput />
 </form>
 </div>
 </div>

@@ -168,6 +168,7 @@ function checkFilterForm(obj) {
   onClick="ss_buttonSelect('close');"
   value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
+	<sec:csrfInput />
 
 </form>
 

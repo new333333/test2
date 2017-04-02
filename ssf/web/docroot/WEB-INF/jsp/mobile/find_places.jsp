@@ -59,7 +59,8 @@
 	  <input type="text" size="25" name="searchText" id="searchText" autocomplete="off"
 	    value="<ssf:escapeQuotes>${ss_searchText}</ssf:escapeQuotes>"/><input 
 	    type="submit" name="okBtn" value="<ssf:nlt tag="button.search"/>"/>
-	  </form>
+			<sec:csrfInput />
+		</form>
 	</div>
 
 		<c:forEach var="binder" items="${ssEntries}" >

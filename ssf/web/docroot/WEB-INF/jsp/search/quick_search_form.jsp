@@ -208,4 +208,5 @@
 			</div>
 		</div>
 	</div>
+	<sec:csrfInput />
 </form>

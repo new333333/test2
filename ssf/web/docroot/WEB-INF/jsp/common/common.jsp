@@ -42,6 +42,7 @@
 --%><%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %><%--
 --%><%@ taglib prefix="portlet" uri="http://java.sun.com/portlet" %><%--
 --%><%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %><%--
+--%><%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %><%--
 
 --%><portletadapter:defineObjects1/><%--
 --%><%

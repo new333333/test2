@@ -111,6 +111,7 @@
 <input type="hidden" name="binderId" value="${ssBinder.id}"/>
 <input type="hidden" name="_scope" value="${ss_dashboard_table_scope}"/>
 <input type="hidden" name="dashboard_layout"/>
+	<sec:csrfInput />
 </form>
 
 <script type="text/javascript">

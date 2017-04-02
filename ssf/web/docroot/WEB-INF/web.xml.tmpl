@@ -145,6 +145,11 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
+	<filter>
+		<filter-name>MultipartFilter</filter-name>
+		<filter-class>org.springframework.web.multipart.support.MultipartFilter</filter-class>
+	</filter>
+
 @@LOGIN_FILTER@@
 
 	<filter-mapping>
@@ -231,6 +236,10 @@
 	<filter-mapping>
 		<filter-name>noEtagFilter</filter-name>
 		<url-pattern>/static/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>MultipartFilter</filter-name>
+		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
 	<listener>

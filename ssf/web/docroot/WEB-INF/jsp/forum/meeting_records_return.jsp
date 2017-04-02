@@ -120,7 +120,8 @@
 					</table>
 						
 
-					<input type="button" value="<ssf:nlt tag="__ok"/>" onclick="ss_attacheMeetingRecords('ss_form${ss_recordsDivId}', '${binderId}', '${entryId}', '${ssNamespace}')" />					
+					<input type="button" value="<ssf:nlt tag="__ok"/>" onclick="ss_attacheMeetingRecords('ss_form${ss_recordsDivId}', '${binderId}', '${entryId}', '${ssNamespace}')" />
+					<sec:csrfInput />
 				</form>
 			</div>
 

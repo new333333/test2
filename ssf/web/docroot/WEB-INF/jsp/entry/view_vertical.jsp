@@ -136,6 +136,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 
 		<form class="ss_style ss_form" name="ss_saveEntryHeightForm" id="ss_saveEntryHeightForm" >
 		<input type="hidden" name="entry_height">
+			<sec:csrfInput />
 		</form>
 
 <% // Footer toolbar %>

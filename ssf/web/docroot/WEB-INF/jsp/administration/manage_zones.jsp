@@ -103,6 +103,7 @@ function ss_confirmDeleteZone() {
 	<input type="text" class="ss_text" size="50" name="virtualHost"><br/><br/>
 		
 	<input type="submit" class="ss_submit" name="addBtn" onclick="ss_startSpinner();" value="<ssf:nlt tag="button.add" text="Add"/>">
+	<sec:csrfInput />
 </form>
 </ssf:expandableArea>
 <br/>
@@ -146,6 +147,7 @@ function ss_confirmDeleteZone() {
 	  onClick="return ss_confirmDeleteZone();" />
 	</td>	
 	</c:if>
+		<sec:csrfInput />
 	</form>
   </tr>
   </c:forEach>
@@ -162,6 +164,7 @@ function ss_confirmDeleteZone() {
 	  action="<ssf:url action="site_administration" actionUrl="false"/>">
 		<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
 		  onClick="return handleCloseBtn();"/>
+		<sec:csrfInput />
 	</form>
 
 </div>

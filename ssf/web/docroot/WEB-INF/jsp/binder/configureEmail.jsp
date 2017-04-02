@@ -221,7 +221,7 @@
 			<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
 			<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 		</div>
-	
+		<sec:csrfInput />
 	</form>
 </ssf:form>
 </div>

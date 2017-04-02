@@ -108,7 +108,8 @@ function ss_setMobileSearchActionUrl(formObj) {
         <input id="search-ok" type="submit" value="<ssf:nlt tag="button.search"/>" 
           name="quickSearch" onClick="ss_hideMenu('search-dialog');return true;" />
        </div>
-    </form>
+		<sec:csrfInput />
+	</form>
     
 	<%@ include file="/WEB-INF/jsp/mobile/saved_searches.jsp" %>
 

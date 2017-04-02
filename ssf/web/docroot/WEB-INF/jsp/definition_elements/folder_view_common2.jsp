@@ -1244,6 +1244,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     value="deleteEntriesBtn" />
   <input type="hidden" name="delete_entries_list"/>
   <input type="hidden" name="delete_operation"/>
+		<sec:csrfInput />
   </form>
  </div>
 </c:if>

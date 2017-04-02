@@ -99,6 +99,7 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
 		<input type="submit" value="<ssf:nlt tag="button.ok"/>" style="height:10px; width:10px; margin-left: -8000px;"
   		  onClick="ss_tagAdd('${ss_tagViewNamespace}', '${ss_tagDivNumber}', '${ssBinder.id}', 
   		  '${ss_tagObject.entityType}', '${ss_tagObject.id}');return false;"/>
+		<sec:csrfInput />
   </form>
 </div>
 

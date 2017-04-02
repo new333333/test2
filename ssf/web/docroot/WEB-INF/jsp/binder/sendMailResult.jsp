@@ -171,6 +171,7 @@
   onClick="handleReturnToPrevious();return false;"
   style="padding-left:20px;">
 </div>
+	<sec:csrfInput />
 </form>
 </ssf:form>
 

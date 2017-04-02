@@ -46,7 +46,7 @@
 <br/>
 <br/>
 <span class="ss_smallprint ss_italic">[<ssf:nlt tag="entry.noEntryByThisTitle"/>]</span>
-<c:if test="${!empty ssAddEntryTitles}">
+<form test="${!empty ssAddEntryTitles}">
 <br/>
 <br/>
 <c:set var="count" value="0"/>
@@ -98,7 +98,8 @@ function ss_setPageFormActionUrl2${renderResponse.namespace}() {
   <a href="javascript:;" style="padding-left: 10px;" class="ss_linkButton"
     onClick="self.history.back();return false;"><ssf:nlt tag="button.cancel"/> </a>
 </c:if>
-</c:if>
+  <sec:csrfInput />
+</form>
 </div>
 
 <ssf:ifadapter>

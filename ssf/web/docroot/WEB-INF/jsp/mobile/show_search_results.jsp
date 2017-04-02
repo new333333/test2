@@ -76,7 +76,8 @@
 	      value="<ssf:escapeQuotes>${ss_searchText}</ssf:escapeQuotes>"/><input 
 	      type="submit" name="searchBtn" value="<ssf:nlt tag="button.search"/>"/>
 	    <input type="hidden" name="scope" value="${ss_searchScope}"/>
-	  </form>
+			<sec:csrfInput />
+		</form>
 	</div>
 
 <c:if test="${!empty ssFolderEntries}">

@@ -107,6 +107,7 @@ var ss_wikiLinkUrl = "<ssf:url
     accessibilityText="wiki.findPage"
     /> 
 <input type="hidden" name="searchTitle" id="searchTitle"/>
+  <sec:csrfInput />
 </form>
 </div>
 

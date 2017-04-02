@@ -84,6 +84,7 @@ var urlToView = "${ss_upload_file_url}";
 <body onLoad="saveImageUrl(urlToView);">
 <form id="form0" name="form0" method="post" enctype="multipart/form-data" style="display:block;">
 <input id="inputFile" name="file1" type="file" style="width:250px;" onChange="passBackUrl()" />
+	<sec:csrfInput />
 </form>
 </body>
 </html>

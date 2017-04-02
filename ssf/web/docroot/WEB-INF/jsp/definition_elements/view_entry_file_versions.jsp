@@ -173,4 +173,5 @@ function ss_selectFileVersions(formName, cbObj) {
     </div>
   </c:if>
 </c:if>
+  <sec:csrfInput />
 </form>

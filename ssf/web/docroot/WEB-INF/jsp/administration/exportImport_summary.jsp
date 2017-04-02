@@ -71,7 +71,8 @@
 </c:if>
 <input type="submit" class="ss_submit" name="closeBtn" onClick="ss_buttonSelect('close');"
   value="<ssf:nlt tag="button.close" text="Close"/>">
-  
+
+  <sec:csrfInput />
 </form>
 </ssf:form>
 </div>

@@ -355,7 +355,8 @@
     <!-- This form is used for logging out. -->
     <!-- The value of the action attribute will be filled in at runtime. -->
 	<form name="logoutForm" id="logoutForm" method="post" >
-	</form> 
+		<sec:csrfInput />
+	</form>
 	
 	<%@ include file="/WEB-INF/jsp/forum/GenericLoginPage.jsp"%>
 	<%@ include file="/WEB-INF/jsp/forum/MicroFocusLoginPage.jsp"%>

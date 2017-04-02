@@ -96,5 +96,6 @@
 			<button type="button" class="gwt-Button teamingButton" style=""
 				id="loginCancelBtn"></button>
 		</div>
+		<sec:csrfInput />
 	</form>
 </div>

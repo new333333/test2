@@ -54,6 +54,7 @@
 			<div class="copyright">
 				<span class="copyright">&copy; <ssf:nlt tag="loginDlg.copyRightText" /></span>
 			</div>
-		</div>		
+		</div>
+		<sec:csrfInput />
 	</form>
 </div>

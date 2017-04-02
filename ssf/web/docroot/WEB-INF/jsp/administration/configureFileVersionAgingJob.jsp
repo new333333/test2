@@ -111,6 +111,7 @@ function ss_checkIfNumberValid(s) {
 <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
 		onClick="return handleCloseBtn();" />
 </div>
+	<sec:csrfInput />
 </form>
 
 </ssf:form>

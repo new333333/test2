@@ -158,7 +158,8 @@
 			    <input type="hidden" name="_componentId" value="">
 			    <input type="hidden" name="_returnView" value="binder"/>
 			  </div>
-		    </form>
+					<sec:csrfInput />
+				</form>
 		  </div>
 		  </c:if>
 		  <c:if test="${!empty ssBinderConfig}">
@@ -187,7 +188,8 @@
 			    <input type="hidden" name="_componentId" value="">
 			    <input type="hidden" name="_returnView" value="binder"/>
 			  </div>
-		    </form>
+					<sec:csrfInput />
+				</form>
 		  </div>
 		  </c:if>
 		  <!-- End of dashboard "add penlet" form -->

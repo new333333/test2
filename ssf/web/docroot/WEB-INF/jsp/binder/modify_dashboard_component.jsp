@@ -57,6 +57,7 @@
 <input type="hidden" name="_scope" value="${ssDashboard.scope}"/>
 <input type="hidden" name="_returnView" value="${ssDashboard.returnView}"/>
 </div>
+	<sec:csrfInput />
 </form>
 </div>
 
@@ -128,6 +129,7 @@
 	<input type="submit" class="ss_submit" name="_deleteComponent" value="<ssf:nlt tag="button.delete"/>"/>
 </div>
 </div>
+	<sec:csrfInput />
 </form>
 </div>
 

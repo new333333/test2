@@ -165,6 +165,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
   <span id="ss_changeOwnerMenuOkSpan${renderResponse.namespace}" 
     class="ss_bold"><ssf:nlt tag="general.request.succeeded"/></span>
 </div>
+  <sec:csrfInput />
 </form>
 </c:if>
 </td>
@@ -182,6 +183,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
   	onClick="return handleCloseBtn();" 
     value="<ssf:nlt tag="button.close" text="Close"/>">
 <% } %>
+  <sec:csrfInput />
 </form>
 </td>
 </tr>
@@ -222,6 +224,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
   <label for="no"><ssf:nlt tag="general.no"/></label>&nbsp;&nbsp;&nbsp;
   <input type="submit" class="ss_submit" name="inheritanceBtn"
    value="<ssf:nlt tag="button.apply" text="Apply"/>">
+    <sec:csrfInput />
   </form>
   </div>
   </ssf:box>
@@ -493,7 +496,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
  onClick="ss_startSpinner();"
  value="<ssf:nlt tag="button.saveChanges" />">
 </c:if>
-
+  <sec:csrfInput />
 
 </form>
 </c:if>
@@ -538,6 +541,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
   	onClick="return handleCloseBtn();" 
     value="<ssf:nlt tag="button.close" text="Close"/>">
 <% } %>
+  <sec:csrfInput />
 </form>
 </div>
 </div>

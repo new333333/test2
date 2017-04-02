@@ -136,6 +136,7 @@ var ss_tagConfirmNoUnderscore = '<ssf:nlt tag="tags.noUnderscoreAllowed" />';
 			
 		<input type="submit" value="ok" style="height:10px; width:10px; margin-left: -8000px;"
   		  onClick="ss_tagAdd('${ss_tagViewNamespace}', '${ss_tagDivNumber}', '${ssBinder.id}', '${ss_tagObject.entityType}', '${ss_tagObject.id}');return false;"/>
+		 <sec:csrfInput />
 	</form>
   </div>
 
