@@ -254,6 +254,7 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
     name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" 
     onClick="ss_cancelButtonCloseWindow();return false;"/>
 </div>
+	<sec:csrfInput />
 
 </form>  
 

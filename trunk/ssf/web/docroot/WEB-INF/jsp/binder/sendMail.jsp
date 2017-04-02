@@ -168,6 +168,7 @@
 		<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>" onClick="ss_cancelButtonCloseWindow();return false;">
 	</div>
 </div>
+	<sec:csrfInput />
 </form>
 </ssf:form>
 

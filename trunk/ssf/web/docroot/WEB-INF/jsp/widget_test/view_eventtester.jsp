@@ -143,5 +143,6 @@ This one has a duration
 	<br>
 	<hr>
 	<input type="submit" class="ss_submit" name="OK" value="OK">
+<sec:csrfInput />
 </form>
 

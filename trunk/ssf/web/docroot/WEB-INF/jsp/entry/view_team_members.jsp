@@ -163,6 +163,7 @@ ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initSho
 	<input type="hidden" name="entry_width">
 	<input type="hidden" name="entry_top">
 	<input type="hidden" name="entry_left">
+	<sec:csrfInput />
 </form>
 
 <c:if test="${!empty ssEntryIdToBeShown && !empty ss_useDefaultViewEntryPopup}">

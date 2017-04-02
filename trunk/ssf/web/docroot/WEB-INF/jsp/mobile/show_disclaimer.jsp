@@ -72,7 +72,8 @@
 		    	action="view_ws_listing" 
 		    	actionUrl="false" 
 		    	binderId="${ssUser.workspaceId}"/>';return false;"/>
-	  </form>
+			<sec:csrfInput />
+		</form>
 	</div>
   </div>
  </div>

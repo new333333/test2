@@ -79,6 +79,7 @@
 				  </c:forEach>
 				  </select><input type="submit" class="ss_submit" name="changeStateBtn" 
 				   value="<ssf:nlt tag="button.ok" text="OK"/>">
+						<sec:csrfInput />
 				  </form>
 			  </c:if>
 	  		</c:if>

@@ -499,6 +499,7 @@ function ss_resizeIframeArea() {
 	  <input class="ss_tinyButton" style="border: 0px; font-size: 11px;" type="button" name="clearAllBtn" value="<ssf:nlt tag="button.deselectAll"/>" 
 	    onclick="clearAllCheckboxes();"/>
 	</div>
+		<sec:csrfInput />
 	</form>
 
 	<div id ="diff" class="ss_diff_content" style="display:none;">

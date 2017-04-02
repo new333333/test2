@@ -74,7 +74,8 @@ function ss_saveFolderId(id, type, clickObj) {
     singleItem="true"
     clickRoutine="ss_saveFolderId"
     accessibilityText="entry.Folder"
-    /> 
+    />
+  <sec:csrfInput />
 </form>
 </body>
 </html>

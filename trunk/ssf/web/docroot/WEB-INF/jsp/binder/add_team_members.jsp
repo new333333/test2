@@ -120,6 +120,7 @@
   onClick="ss_buttonSelect('okBtn');ss_submitFindForm('form1');">
 <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel"/>" 
   onClick="ss_buttonSelect('closeBtn');ss_submitFindForm('form1');">
+  <sec:csrfInput />
 
 </form>
 </div>

@@ -95,6 +95,7 @@
 </td>
 </tr>
 </table>
+   <sec:csrfInput />
 
 </form>
 </fieldset>

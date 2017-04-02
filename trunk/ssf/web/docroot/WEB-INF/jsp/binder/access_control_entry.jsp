@@ -128,6 +128,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 					  <input type="button" class="ss_submit" name="closeBtn" 
 						value="<ssf:nlt tag="button.close" text="Close"/>"
 						onClick="ss_cancelButtonCloseWindow();return false;"/>
+						<sec:csrfInput />
 					</form>
 				</td>
 			</tr>
@@ -399,6 +400,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 			 value="<ssf:nlt tag="button.saveChanges" />">
 			</c:if>
 			</c:if>
+					<sec:csrfInput />
 			</form>
 
 	<div class="ss_italic ss_small margintop3">[<ssf:nlt tag="access.superUser">
@@ -420,6 +422,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 		  <input type="button" class="ss_submit" name="closeBtn" style="margin-top: 15px;" 
 			value="<ssf:nlt tag="button.close" text="Close"/>"
 			onClick="ss_cancelButtonCloseWindow();return false;"/>
+			<sec:csrfInput />
 		</form>
 </div>
 

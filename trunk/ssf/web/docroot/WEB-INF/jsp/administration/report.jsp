@@ -126,6 +126,7 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
     <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" 
       onclick="ss_cancelButtonCloseWindow(); return false;">
   </div>
+  <sec:csrfInput />
 </form>
 <br>
 </td></tr></table>

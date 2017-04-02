@@ -61,7 +61,8 @@ ss_createOnResizeObj("ss_setEditableSize", ss_setEditableSize);
 		<input
 		  type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" 
 		  onClick="ss_cancelButtonCloseWindow();return false;"/>
-		</form>
+    <sec:csrfInput />
+</form>
 	</div>
 </div>
 

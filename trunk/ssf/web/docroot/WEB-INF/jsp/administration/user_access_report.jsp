@@ -364,6 +364,7 @@ function ss_selectUser${renderResponse.namespace}(id, obj)
 							<img src="<html:imagesPath/>pics/spinner_small.gif" align="absmiddle" border="0" >
 						</div>
 					</div>
+					<sec:csrfInput />
 				</form>
 
 				<div id="accessReportDiv1" class="margintop3" style="display: none;"><ssf:nlt tag="administration.report.userAccess.header2" /></div>

@@ -125,6 +125,7 @@
 			<div class="margintop3 marginbottom1" style="margin-left: 5px;">
 		   		<input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="administration.create.report" />">
 			</div>
+		<sec:csrfInput />
 	</form>
 	</div>
    <div class="ss_buttonBarRight" style="margin-top: 10px;">

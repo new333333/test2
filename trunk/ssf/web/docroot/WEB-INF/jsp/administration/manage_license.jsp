@@ -182,6 +182,7 @@
 		<input type="submit" class="ss_submit" name="updateBtn" value="<ssf:nlt tag="button.update_license"/>">
 		<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
 		  onClick="return handleCloseBtn();"/>
+    <sec:csrfInput />
 	</form>
   </div>
 </ssf:form>

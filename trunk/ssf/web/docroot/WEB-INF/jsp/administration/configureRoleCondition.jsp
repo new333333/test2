@@ -218,6 +218,7 @@
 	<br/>
 	<br/>		
 	<input type="submit" class="ss_submit" name="addCondition" value="<ssf:nlt tag="button.add" text="Add"/>">
+	<sec:csrfInput />
 </form>
 </ssf:expandableArea>
 <br>
@@ -263,6 +264,7 @@
 		  <input type="submit" class="ss_submit" name="deleteCondition" 
 		    value="<ssf:nlt tag="button.delete" />">
 		  <input type="hidden" name="conditionIdToBeDeleted" value="${condition.id}"/>
+			<sec:csrfInput />
 	  </form>
 	</td>
 </tr>
@@ -335,6 +337,7 @@
 	  onClick="showReIndexWarning();" value="<ssf:nlt tag="button.apply"/>">
 	<input type="submit" class="ss_submit" onClick="ss_toggleShowDiv('modifyConditionDiv${condition.id}');return false;" 
 	  value="<ssf:nlt tag="button.cancel"/>">
+	<sec:csrfInput />
 </form>
 	</div>
 </td>
@@ -351,6 +354,7 @@
 
 	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
 		  onClick="return handleCloseBtn();"/>
+	<sec:csrfInput />
 </form>
 </div>
 </ssf:form>

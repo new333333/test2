@@ -131,6 +131,7 @@ function ss_checkForm(obj) {
 	   onClick="ss_buttonSelect('cancelBtn');">
 
 </fieldset>
+	<sec:csrfInput />
 
 </form>
 </ssf:form>

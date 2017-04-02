@@ -168,6 +168,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <script type="text/javascript">
 document.${renderResponse.namespace}fm.onsubmit=function() { return ss_selectAllIfNoneSelected.call(this,"id_");};
 </script>
+	<sec:csrfInput />
 </form>
 <br>
 </td></tr></table>
@@ -284,6 +285,7 @@ ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initSho
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>" onclick="return handleCloseBtn();">
 </div>
+	<sec:csrfInput />
 </form>
 </div>
 </c:if>
@@ -307,6 +309,7 @@ ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initSho
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 </div>
 
+	<sec:csrfInput />
 </form>
 
 </c:if>
@@ -317,6 +320,7 @@ ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initSho
 
 <div style="visibility: hidden;">
   <form id="deleteForm" method="post" >
+		<sec:csrfInput />
   </form>
 </div>
 

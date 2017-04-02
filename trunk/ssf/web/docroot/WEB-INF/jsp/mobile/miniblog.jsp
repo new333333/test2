@@ -70,7 +70,8 @@
         <input id="micro-blog-clear" type="reset" value="<ssf:nlt tag="button.clear"/>" name="ClearBlog"
           onclick="ss_clearStatusMobile('micro-blog-text');return false;"/>
       </div>
-    </form>
+		<sec:csrfInput />
+	</form>
   </div>
 
 

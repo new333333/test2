@@ -84,6 +84,7 @@
 					</ul>
 	
 				  </ssf:menu>
+						<sec:csrfInput />
 			</form></td>
 	      </tr>
 	    </tbody></table>

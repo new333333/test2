@@ -359,6 +359,7 @@
 
 
 	</c:if>
+	<sec:csrfInput />
 
 </form>
 

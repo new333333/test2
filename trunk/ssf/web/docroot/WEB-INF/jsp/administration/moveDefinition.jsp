@@ -67,6 +67,7 @@ function ${wsTreeName}_showId(forum, obj, action) {
 
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
+	<sec:csrfInput />
 </form>
 </div>
 </div>

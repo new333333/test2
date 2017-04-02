@@ -189,6 +189,7 @@
 	</c:forEach>		
 
 	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
+	<sec:csrfInput />
 </form>
 </fieldset>
 </div>
@@ -279,6 +280,7 @@
 <div style="padding:10px;">
   <span class="ss_bold"><ssf:nlt tag="administration.configure_roles.warning"/></span>
 </div>
+	<sec:csrfInput />
 </form>
 </fieldset>
 </div>
@@ -367,6 +369,7 @@
 <div style="padding:10px;">
   <span class="ss_bold"><ssf:nlt tag="administration.configure_roles.warning"/></span>
 </div>
+	<sec:csrfInput />
 </form>
 </fieldset>
 </div>
@@ -441,6 +444,7 @@
 <div style="padding:10px;">
   <span class="ss_bold"><ssf:nlt tag="administration.configure_roles.warning"/></span>
 </div>
+	<sec:csrfInput />
 </form>
 </fieldset>
 </div>
@@ -456,6 +460,7 @@
 
 	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
 		  onClick="return handleCloseBtn();"/>
+	<sec:csrfInput />
 </form>
 </div>
 </ssf:form>

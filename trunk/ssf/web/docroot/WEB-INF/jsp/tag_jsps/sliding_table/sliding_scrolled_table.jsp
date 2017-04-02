@@ -293,6 +293,7 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 </div>
 <form class="ss_style ss_form" name="ss_columnPositionForm" id="ss_columnPositionForm" >
 <input type="hidden" name="column_positions">
+	<sec:csrfInput />
 </form>
 <div id="ss_info_popup" class="ss_style ss_sliding_table_info_popup"
   style="z-index: <%= slidingTableInfoZ %>;"></div>

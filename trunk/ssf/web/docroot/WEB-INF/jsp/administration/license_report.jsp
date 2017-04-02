@@ -170,6 +170,7 @@
 									</div>
 							   	</div>
 							   	<div id="ss_endPopup" class="ss_calPopupDiv"></div>
+								<sec:csrfInput />
 							</form>
 			
 				<c:if test="${not empty ssLicenseKey}">

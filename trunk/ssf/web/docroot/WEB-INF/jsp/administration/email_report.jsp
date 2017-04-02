@@ -483,6 +483,7 @@ function ss_selectUser${renderResponse.namespace}(id, obj)
 					<span><input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>" 
 							onclick="return handleCloseBtn();"></span>
 				  </div>
+				<sec:csrfInput />
 			  </form>
 			</ssf:form>
 		</div>

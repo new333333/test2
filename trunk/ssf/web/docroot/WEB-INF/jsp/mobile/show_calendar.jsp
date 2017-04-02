@@ -314,6 +314,7 @@ Date nextDate = calendarNextDate.getTime();
 				</div>
 			</div>
 		</div>
+			<sec:csrfInput />
 		</form>
     </div>
 

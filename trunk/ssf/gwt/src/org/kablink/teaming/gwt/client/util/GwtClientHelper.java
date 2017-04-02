@@ -757,7 +757,7 @@ public class GwtClientHelper {
 					public void onFailure(Throwable caught) {
 						// No!  Did we get an RpcTokenException on the initial
 						// try of the RPC request?
-						if ((!(httpRequestInfo.isRetry()))&& (caught instanceof RpcTokenException)) {
+						if ((!(httpRequestInfo.isRetry())) && (caught instanceof RpcTokenException)) {
 							// Yes!  Reset the RPC service and try it
 							// again!  This may happen, for instance,
 							// when dealing with a session timeout on
@@ -771,9 +771,7 @@ public class GwtClientHelper {
 									executeCommand(cmd, httpRequestInfo, callback);
 								}
 							});
-						}
-						
-						else {
+						} else {
 							// No, this isn't the initial try or it's
 							// not an RpcTokenException!  Simply tell
 							// the callback about the error.
@@ -1785,12 +1783,12 @@ public class GwtClientHelper {
 	 */
 	public static void jsClickWidgetAsync(final Widget w){
 		deferCommand(
-			new ScheduledCommand() {
-				@Override
-				public void execute() {
-					jsClickWidget(w);
-				}
-			});
+				new ScheduledCommand() {
+					@Override
+					public void execute() {
+						jsClickWidget(w);
+					}
+				});
 	}
 
 	/**
@@ -2868,5 +2866,13 @@ public class GwtClientHelper {
 	public static boolean validateOSBI(OnSelectBinderInfo osbi) {
 		// Always use the initial form of the method.
 		return validateOSBI(osbi, true);
+	}
+
+	public static String join(Iterable<String> strings) {
+		StringBuilder builder = new StringBuilder();
+		for (String str : strings) {
+			builder.append(str).append(',');
+		}
+		return builder.toString();
 	}
 }

@@ -191,6 +191,7 @@ function ss_checkIfQuotaValid(s) {
 		<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
 		  onClick="ss_cancelButtonCloseWindow();return false;">
 	</div>
+	<sec:csrfInput />
 
 </form>
 </div>

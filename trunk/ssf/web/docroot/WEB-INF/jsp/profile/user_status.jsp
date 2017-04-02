@@ -95,6 +95,7 @@ if ( !( GwtUIHelper.isGwtUIActive( request ) ) )
     onclick="ss_setReturnUrl();return true;"
     />
     <input type="hidden" name="spring-security-redirect" value=""/>
+    <sec:csrfInput />
   </form>
  </ssf:sidebarPanel>  
 </c:if>

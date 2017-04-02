@@ -195,6 +195,7 @@ function setItemToDelete(id) {
 <div style="padding-top:10px;">
   <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"/>
 </div>
+	<sec:csrfInput />
 
 </form>
 </ssf:form>

@@ -190,6 +190,7 @@ function ss_showModifyDiv(id) {
 	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
 		  onClick="return handleCloseBtn();"/>
   </div>
+	<sec:csrfInput />
 
 </form>
 </div>

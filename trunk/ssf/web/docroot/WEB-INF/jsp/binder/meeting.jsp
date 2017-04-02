@@ -200,6 +200,7 @@
 					</div>
 				</fieldset>
 			</div>
+				<sec:csrfInput />
 			</form>
 			<a class="ss_linkButton ss_bold ss_smallprint" href="javascript:;"
 				  onClick="ss_startMeeting(ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:'schedule_meeting'}), 'startMeetingForm', this.parentNode);"
@@ -211,6 +212,7 @@
 				  onSubmit="return ss_onSubmit(this);" name="${renderResponse.namespace}fm">
 					<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>" 
 					onClick="ss_cancelButtonCloseWindow();return false;">
+					<sec:csrfInput />
 				</form>
 			</div>
 			<script type="text/javascript">

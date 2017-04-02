@@ -438,6 +438,7 @@ function ss_checkForAllUsersGroup() {
   
   <input type="hidden" name="modifyId" id="modifyId" value="" />
   <input type="hidden" name="modifyFSLId" id="modifyFSLId" value="" />
+	<sec:csrfInput />
 </form>
 </div>
 </ssf:form>

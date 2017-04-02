@@ -181,6 +181,7 @@ name="value" value="${ssBinder.title}"/></ssf:nlt></span>
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">
 &nbsp;&nbsp;&nbsp;
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
+	<sec:csrfInput />
 
 </form>
 <br>
@@ -210,6 +211,7 @@ function ${renderResponse.namespace}_showId(forum, obj) {
 	 <input type="submit" class="ss_submit" name="copyBtn" value="<ssf:nlt tag="button.ok" />">
 &nbsp;&nbsp;&nbsp;
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
+	<sec:csrfInput />
 
 </form>
 </c:if>
@@ -230,6 +232,7 @@ function ${renderResponse.namespace}_showId(forum, obj) {
 	 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">
 &nbsp;&nbsp;&nbsp;
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
+	<sec:csrfInput />
 
 </form>
 </c:if>

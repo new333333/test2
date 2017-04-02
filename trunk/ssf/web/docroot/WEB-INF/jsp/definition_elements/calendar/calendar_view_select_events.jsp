@@ -65,5 +65,6 @@
 				<option value="activity"><ssf:nlt tag="calendar.navi.mode.alt.physical.byActivity"/></option>
 			</select>
 		</span>
+		<sec:csrfInput />
 	</form>
 </div>

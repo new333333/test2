@@ -51,6 +51,7 @@
   value="<ssf:nlt tag="button.close" text="Close"/>">
 <input type="hidden" name="_returnView" value="binder"/>
 </div>
+  <sec:csrfInput />
 </form>
 </div>
 
@@ -108,6 +109,7 @@
 <form method="post">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 <input type="hidden" name="_returnView" value="binder"/>
+  <sec:csrfInput />
 </form>
 </div>
 

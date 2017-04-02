@@ -228,6 +228,7 @@
                   <input type="submit" class="ss_submit" name="closeBtn"
                          value="<ssf:nlt tag="button.close" text="Close"/>">
                 </div>
+                <sec:csrfInput />
               </form>
             </c:if>
             <c:if test="${!ssSimpleUrlChangeAccess}">
@@ -278,6 +279,7 @@
                   <ssf:nlt tag="general.no" text="no"/>&nbsp;&nbsp;&nbsp;
                   <input type="submit" class="ss_submit" name="inheritanceBtn"
                          value="<ssf:nlt tag="button.apply" text="Apply"/>">
+                  <sec:csrfInput />
                 </form>
               </fieldset>
               <br>
@@ -442,6 +444,7 @@
                                              value="<ssf:nlt tag="button.apply" text="Apply"/>"></td>
                     </tr>
                   </table>
+                  <sec:csrfInput />
                 </form>
               </fieldset>
               <br>
@@ -829,6 +832,7 @@
                       <input type="submit" class="ss_submit" name="closeBtn"
                              value="<ssf:nlt tag="button.close" text="Close"/>">
                     </div>
+                    <sec:csrfInput />
 
                   </form>
 

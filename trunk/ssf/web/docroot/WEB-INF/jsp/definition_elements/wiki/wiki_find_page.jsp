@@ -90,7 +90,8 @@ function ss_loadWikiEntryId${renderResponse.namespace}(id) {
 	         src="<html:rootPath/>images/pics/masthead/masthead_printer.png" /></a>&nbsp;&nbsp;
 	       <ssf:showHelp className="ss_actions_bar13_pane_none" guideName="user" pageId="entry" />
 	     </c:if>
-	    </form>
+				<sec:csrfInput />
+			</form>
 	  </c:if>
 </div>
 </c:if>

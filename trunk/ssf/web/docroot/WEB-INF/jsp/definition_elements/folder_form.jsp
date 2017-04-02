@@ -150,6 +150,7 @@
 			<input type="submit" class="ss_submit" name="cancelBtn" 
   				value="<ssf:nlt tag="button.cancel" text="Cancel"/>"  onClick="ss_buttonSelect('cancelBtn');">
 		</div>
+		<sec:csrfInput />
 	</form>
   </ssf:form>
 </div>

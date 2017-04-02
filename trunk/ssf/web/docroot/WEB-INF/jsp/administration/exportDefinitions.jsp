@@ -58,6 +58,7 @@
 <script type="text/javascript">
 document.${renderResponse.namespace}fm.onsubmit=function() { return ss_selectAllIfNoneSelected.call(this,"id_");};
 </script>
+	<sec:csrfInput />
 </form>
 <br>
 </td></tr></table>

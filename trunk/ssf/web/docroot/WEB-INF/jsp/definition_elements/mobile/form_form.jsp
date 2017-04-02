@@ -96,7 +96,8 @@
 	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 	  configElement="<%= item %>" 
 	  configJspStyle="${ssConfigJspStyle}" />
-	</form>  
+		<sec:csrfInput />
+	</form>
   </c:otherwise>  
   
 </c:choose>

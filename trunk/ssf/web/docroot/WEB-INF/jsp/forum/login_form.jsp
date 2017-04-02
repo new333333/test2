@@ -175,6 +175,7 @@ boolean isMobile = (org.kablink.util.BrowserSniffer.is_mobile(request, userAgent
 <c:if test="${!empty ssUrl}">
 	<input type="hidden" name="spring-security-redirect" value="${ssUrl}"/>
 </c:if>
+	<sec:csrfInput />
 </form>
 
 <script type="text/javascript">

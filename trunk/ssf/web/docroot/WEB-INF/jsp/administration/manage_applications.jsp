@@ -135,6 +135,7 @@ function ${renderResponse.namespace}_onsub(obj) {
 	</fieldset>
 	
 	<br><input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
+	<sec:csrfInput />
 </form>
 </ssf:expandableArea>
 <br/>
@@ -197,7 +198,7 @@ function ${renderResponse.namespace}_onsub(obj) {
 <br/>
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
 <input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete"/>">
- 
+	<sec:csrfInput />
 </form>
 </div>
 
@@ -220,6 +221,7 @@ function ${renderResponse.namespace}_onsub(obj) {
 <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
 		  onClick="return handleCloseBtn();"/>
 </div>
+	<sec:csrfInput />
 </form>
 </div>
 

@@ -84,5 +84,6 @@ function <%= wsTreeName %>_showId(id, obj) {
 <br>
 
 </td></tr></table>
+  <sec:csrfInput />
 </form>
 

@@ -337,6 +337,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 	</div>
 </c:if>
 <input type="hidden" name="btnClicked"/>
+	<sec:csrfInput />
 </form>
 <br>
 </td></tr></table>
@@ -421,6 +422,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
  value="<ssf:nlt tag="button.close" text="Close"/>" onClick="return handleCloseBtn();">
 </div>
 <input type="hidden" name="btnClicked"/>
+	<sec:csrfInput />
 </form>
 <br>
 </td>

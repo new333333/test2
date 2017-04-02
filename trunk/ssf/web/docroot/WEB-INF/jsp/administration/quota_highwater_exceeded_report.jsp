@@ -109,7 +109,8 @@ var ssReportURL="<ssf:url action="quota_report" actionUrl="true"><ssf:param
 		<div class="margintop3 marginbottom1" style="margin-left: 5px;">
 			<input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="administration.create.report" />">
 		</div>
-	</div>	
+	</div>
+	<sec:csrfInput />
 </form>
 
 </td></tr></table>

@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.mainmenu;
 
 import java.util.Set;
 
+import com.google.gwt.user.client.Cookies;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -371,12 +372,14 @@ public class ImportIcalByFileDlg extends DlgBox implements EditSuccessfulHandler
 		FlowPanel uploadPanel = new FlowPanel();
 		m_uploadForm.setWidget(uploadPanel);
 		fp.add(m_uploadForm);
-		
+
+		GwtClientHelper.consoleLog("Cookie names: " + GwtClientHelper.join(Cookies.getCookieNames()));
 		// ...create the hidden input parameters for the form's URL...
 		Hidden hi;
 		hi = new Hidden(); hi.setName("folderId");  hi.setValue(m_folderInfo.getBinderId()); uploadPanel.add(hi);
-		hi = new Hidden(); hi.setName("action");    hi.setValue("__ajax_request"          ); uploadPanel.add(hi);
-		hi = new Hidden(); hi.setName("operation"); hi.setValue("uploadICalendarFileGWT"  ); uploadPanel.add(hi);
+		hi = new Hidden(); hi.setName("action");    hi.setValue("__ajax_request"); uploadPanel.add(hi);
+		hi = new Hidden(); hi.setName("operation"); hi.setValue("uploadICalendarFileGWT"); uploadPanel.add(hi);
+		hi = new Hidden(); hi.setName("_csrf"); hi.setValue(Cookies.getCookie("XSRF-TOKEN")); uploadPanel.add(hi);
 		
 		// ...create the file input widget...
 		m_fileInput = new FileUpload();

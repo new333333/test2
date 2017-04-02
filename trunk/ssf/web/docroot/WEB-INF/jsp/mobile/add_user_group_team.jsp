@@ -82,7 +82,8 @@ function ss_submitSelectForm${ssElementName}(url) {
 		    type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
 		  <input 
 		    type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"/>
-		  </form>
+				<sec:csrfInput />
+			</form>
 		</div>
 
 	  <div class="marginbottom2">
@@ -113,7 +114,8 @@ function ss_submitSelectForm${ssElementName}(url) {
 			  </a>
 			</div>
 		  </c:forEach>
-	    </form>
+				<sec:csrfInput />
+			</form>
 	  </div>
 
   <c:if test="${!empty ss_prevPage || !empty ss_nextPage}">

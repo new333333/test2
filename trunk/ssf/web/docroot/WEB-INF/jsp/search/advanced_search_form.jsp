@@ -40,6 +40,7 @@
 	method="post" onSubmit="return ss_prepareAdditionalSearchOptions(this);" id="ss_advSearchForm">
 
 	<%@ include file="/WEB-INF/jsp/search/advanced_search_form_common.jsp" %>
+	<sec:csrfInput />
 
 </form>
 

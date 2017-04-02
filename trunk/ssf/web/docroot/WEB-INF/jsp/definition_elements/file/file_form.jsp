@@ -70,6 +70,7 @@
 				  entry="${ssDefinitionEntry}" />
 			</div>
 		</div>
+		<sec:csrfInput />
 	</form>
 	
 </div>

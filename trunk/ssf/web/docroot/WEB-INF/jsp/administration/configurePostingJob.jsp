@@ -225,6 +225,7 @@ ${alias.binder.title}&nbsp;&nbsp<span  class="ss_smallprint ss_light">(${alias.b
 <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
 		onClick="return handleCloseBtn();" />
 </div>
+	<sec:csrfInput />
 </form>
 <div class="ss_style ss_popupMenu" style="visibility:hidden; display:block" name="${renderResponse.namespace}_modifyAliasDiv" id="${renderResponse.namespace}_modifyAliasDiv">
 <form class="ss_style ss_form" 
@@ -246,6 +247,7 @@ ${alias.binder.title}&nbsp;&nbsp<span  class="ss_smallprint ss_light">(${alias.b
   <input type="submit" value="<ssf:nlt tag="button.cancel"/>"
   onClick="ss_cancelPopupDiv('${renderResponse.namespace}_modifyAliasDiv');return false;">  
 </div>
+	<sec:csrfInput />
 </form>
 </div>
 </ssf:form>

@@ -99,6 +99,7 @@
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
 </div>
 </div>
+	<sec:csrfInput />
 </form>
 </c:if>
 
@@ -122,6 +123,7 @@
 &nbsp;&nbsp;&nbsp;
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"/>
 
+	<sec:csrfInput />
 </form>
 </c:if>
 </ssf:form>

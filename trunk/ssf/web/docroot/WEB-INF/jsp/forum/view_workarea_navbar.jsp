@@ -206,6 +206,7 @@ if (typeof ss_workarea_showId == "undefined")
 		id="gwtSimpleSearchForm"
 		name="gwtSimpleSearchForm">
 	<input type="hidden" id="gwtSimpleSearchText" name="searchText" value="" />
+	<sec:csrfInput />
 </form>
 
 <div id="ss_aboutBoxDiv" style="position:absolute; display:none;">

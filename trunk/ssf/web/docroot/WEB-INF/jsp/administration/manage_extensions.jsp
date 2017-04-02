@@ -168,6 +168,7 @@ function ss_checkForFileSelected() {
 <input type="submit" class="ss_submit" name="addBtn" onclick="return ss_checkForFileSelected();" value="<ssf:nlt tag="button.add" text="Add"/>">
 </div>
 </div>
+	<sec:csrfInput />
 </form>
 
 </ssf:expandableArea>
@@ -185,6 +186,7 @@ function ss_checkForFileSelected() {
 	  action="<ssf:url action="site_administration" actionUrl="false"/>">
 		<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
 		  onClick="return handleCloseBtn();"/>
+		<sec:csrfInput />
 	</form>
 </div>
 </div>

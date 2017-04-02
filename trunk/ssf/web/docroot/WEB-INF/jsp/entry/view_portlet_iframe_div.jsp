@@ -113,4 +113,5 @@
 	<input type="hidden" name="entry_width">
 	<input type="hidden" name="entry_top">
 	<input type="hidden" name="entry_left">
+  <sec:csrfInput />
 </form>

@@ -105,6 +105,7 @@ function ss_clickGoToEntry_${renderResponse.namespace}(id) {
 								width="60px" 
 								singleItem="true"/> 
 							</c:if>
+								<sec:csrfInput />
 						  </form>
 						 </td>				
 					</tr>

@@ -59,6 +59,7 @@
 					  <a href="javascript: ;" 
 					    onclick="ss_toolbarPopupUrl('', 'footerToolbarOptionWnd'); ss_submitParentForm(this);return false; "
 					  ><span><ssf:nlt tag="toolbar.menu.addMeeting"/></span></a>
+						<sec:csrfInput />
 					</form>
 			  </c:if>
 			</li>

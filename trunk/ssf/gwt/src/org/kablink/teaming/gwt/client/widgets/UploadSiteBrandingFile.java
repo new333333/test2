@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import com.google.gwt.user.client.Cookies;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.GwtBrandingFileInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -220,7 +221,8 @@ public class UploadSiteBrandingFile {
 		Hidden hi;
 		hi = new Hidden(); hi.setName("action");    hi.setValue("__ajax_request"                 ); uploadPanel.add(hi);
 		hi = new Hidden(); hi.setName("operation"); hi.setValue(m_descriptor.getUploadOperation()); uploadPanel.add(hi);
-		
+		hi = new Hidden(); hi.setName("_csrf"); hi.setValue(Cookies.getCookie("XSRF-TOKEN")); uploadPanel.add(hi);
+
 		// ...create the file <INPUT> widget...
 		m_fileUpload = new FileUpload();
 		m_fileUploadId = ("uploadSiteBranding_input_" + m_descriptor.getUploadId());

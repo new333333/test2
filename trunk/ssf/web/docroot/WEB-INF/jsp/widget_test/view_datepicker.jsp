@@ -130,4 +130,5 @@ This test page shows datepickers for the current date and an unspecified date.
 	<br>
 	<hr>
 	<input type="submit" class="ss_submit" name="OK" value="OK">
+	<sec:csrfInput />
 </form>

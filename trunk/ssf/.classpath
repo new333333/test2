@@ -203,6 +203,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-core-4.1.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-ldap-4.1.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-openid-4.1.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-security-taglibs-4.1.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-web-4.1.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-tx-4.3.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-web-4.3.0.RELEASE.jar"/>

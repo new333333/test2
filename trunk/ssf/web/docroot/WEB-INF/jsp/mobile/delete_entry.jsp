@@ -59,7 +59,8 @@
   	        <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
   	        <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
   	      </div>
-        </form>
+					<sec:csrfInput />
+				</form>
       </div>
 	</div>
   </div>

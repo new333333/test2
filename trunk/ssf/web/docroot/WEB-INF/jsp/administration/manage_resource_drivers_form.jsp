@@ -505,6 +505,7 @@
 	  <input type="submit" class="ss_submit" name="${deleteButtonName}" style="margin-left:20px;"
 	    value="<ssf:nlt tag="button.delete"/>" onClick="return confirmDelete();">
 	</c:if>
+	<sec:csrfInput />
 </form>
 </fieldset>
 </div>
