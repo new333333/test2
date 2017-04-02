@@ -10688,9 +10688,10 @@ public class GwtServerHelper {
 				}
 				
 				// ...and write it to the folder.
-				folder.setProperty(
-					ObjectKeys.BINDER_PROPERTY_FILTERS,
-					globalFiltersMap);
+				bs.getBinderModule().setProperty(folder.getId(),
+						ObjectKeys.BINDER_PROPERTY_FILTERS,
+						globalFiltersMap);
+
 			}
 
 			// Do we need to save the personal filters?
