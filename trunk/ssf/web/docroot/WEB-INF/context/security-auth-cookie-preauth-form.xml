@@ -64,12 +64,37 @@
 		<property name="filterProcessesUrl" value="/s/portalLogout"/>
     </bean>
 
-    <security:http use-expressions="true" entry-point-ref="authenticationProcessingFilterEntryPoint" authentication-manager-ref="_authenticationManager">
+	<!-- ============================== CSRF protection ============================ -->
+	<bean id="crsfHeaderFilter" class="org.kablink.teaming.spring.security.CsrfHeaderFilter" />
+
+	<!--Provides a way to not force checking of Cross Site "forgery on all requests -->
+	<bean id="csrfSecurityRequestMatcher" class="org.kablink.teaming.spring.security.CsrfSecurityRequestMatcher">
+		<property name="enabled" value="${csrf.enable}"/>
+		<property name="ignoredPaths">
+			<list>
+				<value>.*\.rpc$</value>
+				<value>/s/portalLogin</value>
+				<value>/s/portalLogout</value>
+				<value>^/ws/.*</value>
+			</list>
+		</property>
+		<property name="ignoredMethods">
+			<array>
+				<value>GET</value>
+				<value>HEAD</value>
+				<value>TRACE</value>
+				<value>OPTIONS</value>
+			</array>
+		</property>
+	</bean>
+
+	<security:http use-expressions="true" entry-point-ref="authenticationProcessingFilterEntryPoint" authentication-manager-ref="_authenticationManager">
         <security:csrf disabled="true"/>
     	<security:custom-filter position="FORM_LOGIN_FILTER" ref="authenticationProcessingFilter"/>
 		<security:custom-filter position="PRE_AUTH_FILTER" ref="requestCookiePreAuthenticatedProcessingFilter"/>
 		<security:custom-filter position="LOGOUT_FILTER" ref="_logoutFilter"/>
-		
+		<security:custom-filter after="CSRF_FILTER" ref="crsfHeaderFilter"/>
+
         <security:session-management session-fixation-protection="newSession" />
         
         <security:intercept-url pattern="/**" access="isAuthenticated() or isAnonymous()" />
