@@ -33,10 +33,6 @@
     </bean>
 
     <!-- ============================== CSRF protection ============================ -->
-    <bean id="filterMultipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-        <property name="maxUploadSize" value="100000000" />
-    </bean>
-
     <bean id="crsfHeaderFilter" class="org.kablink.teaming.spring.security.CsrfHeaderFilter" />
 
     <!--Provides a way to not force checking of Cross Site "forgery on all requests -->
@@ -59,7 +55,6 @@
             </array>
         </property>
     </bean>
-
 
     <security:http use-expressions="true" realm="Novell" entry-point-ref="authenticationProcessingFilterEntryPoint" authentication-manager-ref="_authenticationManager">
     	<security:headers>
