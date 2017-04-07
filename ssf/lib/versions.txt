@@ -140,7 +140,6 @@ Oracle Database 12c Release 1 (12.1.0.1) JDBC Driver for use with JDK 7 (ojdbc7.
 opensaml 1.0.1 (SAML implementation; used by WSS4J)
 oro 2.0.8 (needed by velocity)
 OWASP Java HTML Sanitizer 20160827.1
-POI 2.5-final (for ssfs)
 Portals Bridges 1.0
 Portlet API 2.0 (2.0 refers to specification version, not library version, so we keep in in the file name)
 PostgreSQL JDBC Driver 9.4.1210 (postgresql-9.4.1210.jre7.jar renamed to postgresql-jre7.jar; JDBC 4.1 compliant)
