@@ -34,7 +34,7 @@
     <properties>
         <spring.version>4.3.0.RELEASE</spring.version>
         <spring.security.version>4.1.0.RELEASE</spring.security.version>
-        <tomcat.version>8.0.43</tomcat.version>
+        <tomcat.version>8.0.33</tomcat.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <build>
