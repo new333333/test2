@@ -171,7 +171,7 @@ tcllib 1.11.1 (for installer)
 tika-core 1.8
 tika-parsers 1.8
 TestNG 6.8
-Tomcat 8.0.33 (Also includes catalina.jar, tomcat-dbcp.jar, Servlet 3.1/JSP 2.3, and websocket 1.1; Skipping 8.0.35 due to bug https://bz.apache.org/bugzilla/show_bug.cgi?id=59566)
+Tomcat 8.0.43 (Also includes catalina.jar, tomcat-dbcp.jar, Servlet 3.1/JSP 2.3, and websocket 1.1; Skipping 8.0.35 due to bug https://bz.apache.org/bugzilla/show_bug.cgi?id=59566)
 Trove 3.0.1
 unoil.jar (from OpenOffice 2.0)
 Velocity 1.7
