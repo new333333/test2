@@ -3155,7 +3155,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		reply.put("ssShare",        	share                                                                                                       );
 		reply.put("ssSharedEntity",		sharedEntity                                                                                                );
 		reply.put("ssShareExpiration",	EmailHelper.getShareExpiration(notify.getLocale(), notify.getTimeZone(), share)                             );
-		reply.put("ssSharer",        	NLT.get("share.notify.sharer", new String[]{visitor.getUserTitle(user)}, visitor.getNotifyDef().getLocale()));
+		reply.put("ssSharer",        	NLT.get("share.notify.sharer", new String[]{visitor.getUserTitle(user), sharedEntity.getTitle()}, visitor.getNotifyDef().getLocale()));
 		reply.put("ssProduct",       	(Utils.checkIfFilr() ? "Filr" : "Vibe")                                                                     );
 		reply.put("user",           	user                                                                                                        );
 		
@@ -3170,7 +3170,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		// ...and return it.
 		return reply;
 	}
-	
+
 	/*
 	 * Returns a VelocityContext to use for share notification emails. 
 	 */
@@ -3185,7 +3185,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		reply.put("ssShare",        	share                                                                                                       );
 		reply.put("ssSharedEntity",		sharedEntity                                                                                                );
 		reply.put("ssShareExpiration",	EmailHelper.getShareExpiration(notify.getLocale(), notify.getTimeZone(), includeTZInExpiration, share)      );
-		reply.put("ssSharer",        	NLT.get("share.notify.sharer", new String[]{visitor.getUserTitle(user)}, visitor.getNotifyDef().getLocale()));
+		reply.put("ssSharer",        	NLT.get("share.notify.sharer", new String[]{visitor.getUserTitle(user), sharedEntity.getTitle()}, visitor.getNotifyDef().getLocale()));
 		reply.put("ssProduct",       	(Utils.checkIfFilr() ? "Filr" : "Vibe")                                                                     );
 		reply.put("user",           	user                                                                                                        );
 		reply.put("ssSignin",			NLT.get("share.notify.signin")				   		);
