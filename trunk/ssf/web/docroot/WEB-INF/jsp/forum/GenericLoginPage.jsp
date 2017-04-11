@@ -83,7 +83,7 @@
 					<div>
 						<input id="acceptTermsCheckBox" type="checkbox"
 							style="float: left;" /> <label id="acceptTermsAnchor"
-							style="position: absolute; margin-top: -2px;">I accept <span
+							style="font-size:12px !important; margin-top: -2px;">I accept <span
 							style="cursor: pointer; color: #135c8f; text-decoration: underline;">terms
 								and conditions</span></label>
 					</div>
