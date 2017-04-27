@@ -2236,7 +2236,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					row.put(ReportModule.EXTERNAL_USER_FIRSTNAME,principal.getFirstName());
 					row.put(ReportModule.EXTERNAL_USER_LASTNAME, principal.getLastName());
 					row.put(ReportModule.EXTERNAL_USER_EMAIL, principal.getEmailAddress());
-					row.put(ReportModule.EXTERNAL_USER_CREATION_DATE, principal.getCreation());
+					row.put(ReportModule.EXTERNAL_USER_CREATION_DATE, (principal.getCreation()!=null ? principal.getCreation().getDate() : ""));
 					row.put(ReportModule.EXTERNAL_USER_TERMS_ACCEPT_DATE, principal.getTermsAndConditionsAcceptDate());
 					report.add(row);
 				}
