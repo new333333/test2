@@ -131,13 +131,6 @@ public class ViewFileController extends SAbstractController {
 			response.getOutputStream().flush();
 			
 		}
-		else if ( viewType.equalsIgnoreCase( "executeJspResults" ) )
-		{
-			String fullPath;
-			
-			fullPath = ServletRequestUtils.getStringParameter( request, "fullPath", ""); 
-			streamExecuteJspResults( request, response, fileId, fullPath );
-		}
 		else {
 			String strBinderId = ServletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 			String strEntryId = ServletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
@@ -353,52 +346,6 @@ public class ViewFileController extends SAbstractController {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * 
-	 */
-	private void streamExecuteJspResults( HttpServletRequest request, HttpServletResponse response, String fileName, String fullPath )
-		throws Exception
-	{
-		int n;
-		byte[] buf = new byte[1024];
-		
-		java.io.InputStream in = null;
-		try {
-			OutputStream out;
-			File tmpFile;
-
-			tmpFile = new File( fullPath );
-			in = new FileInputStream( tmpFile );
-			// in = TempFileUtil.openTempFile( fileName );
-			
-			response.setHeader( "Cache-Control", "private" );
-			out = response.getOutputStream();
-			while( (n = in.read(buf, 0, buf.length)) > 0 )
-			{
-				out.write( buf, 0, n );
-			}
-			in.close();
-			in = null;
-			
-		} catch( Exception e ) {
-			response.getOutputStream().print( NLT.get( "file.error" ) + ": " + e.getLocalizedMessage() );
-		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch(Exception e) {}
-			}
-		}
-
-		try
-		{
-			response.getOutputStream().flush();
-		}
-		catch(Exception ignore)
-		{
-		}
 	}
 	
 	private void streamZipFile(HttpServletRequest request,
