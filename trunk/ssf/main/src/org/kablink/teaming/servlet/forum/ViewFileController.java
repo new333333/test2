@@ -191,6 +191,11 @@ public class ViewFileController extends SAbstractController {
 					if (ca != null && ca.getValue() instanceof FileAttachment) fileId = ((FileAttachment)ca.getValue()).getId();
 				}
 			}
+			if(entity == null) {
+				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+				return null;
+			}
+				
 			if (!fileId.equals("")) topAtt = (FileAttachment)entity.getAttachment(fileId);
 			if (topAtt == null) {
 				//See if there is a title included
