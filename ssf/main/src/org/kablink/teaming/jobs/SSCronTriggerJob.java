@@ -71,11 +71,19 @@ public abstract class SSCronTriggerJob extends SSStatefulJob {
 				//jobDetail.addJobListener(getDefaultCleanupListener());
 				scheduler.addJob(jobDetail, true);
 		 	} else {
+		 		boolean changed = false;
 		 		//update data if necessary
 		 		if (!jobDetail.getJobDataMap().equals(info.getDetails())) {
-			 		jobDetail.setJobDataMap((JobDataMap)info.getDetails());	 			
-		 			scheduler.addJob(jobDetail, true);
+			 		jobDetail.setJobDataMap((JobDataMap)info.getDetails());
+			 		changed = true;
 		 		}
+				// To migrate existing non-durable job to durable one after Vibe upgrade. 
+		 		if (!jobDetail.isDurable()) {
+			 		jobDetail.setDurability(true); // Required for Quartz 2.x.
+			 		changed = true;
+		 		}
+		 		if(changed)
+		 			scheduler.addJob(jobDetail, true);
 		 	}
   			CronTrigger trigger = (CronTrigger)scheduler.getTrigger(triggerKey(job.getTriggerName(), job.getTriggerGroup()));
   			//see if stopped
@@ -175,11 +183,18 @@ public abstract class SSCronTriggerJob extends SSStatefulJob {
 		}
 		CronJobDescription(Long zoneId, String jobName, String jobGroup, String jobDescription, boolean durability) {
 			this(zoneId, jobName, jobGroup, jobDescription);
-			this.durability = durability;
+			// 05/12/2017 JK (bug #1038755) - No longer allow application to set the durability. 
+			// Quartz 2.x throws SchedulerException("Jobs added with no trigger must be durable.")
+			// exception when attempting to save a job with durability set to false when there's no
+			// associated trigger in the database. However, if you try to create a trigger before 
+			// creating associated job, it throws an error saying that associated job isn't found. 
+			// So, basically, you're stuck, and the only option seems to be to create all jobs
+			// with durability set to true whether you want it or not. So, here we go.
+			//this.durability = durability;
 		}
 		CronJobDescription(Long zoneId, String jobName, String jobGroup, String jobDescription, boolean durability, int priority) {
 			this(zoneId, jobName, jobGroup, jobDescription);
-			this.durability = durability;
+			//this.durability = durability;
 			this.priority = priority;
 		}
 		protected Long getZoneId() {
