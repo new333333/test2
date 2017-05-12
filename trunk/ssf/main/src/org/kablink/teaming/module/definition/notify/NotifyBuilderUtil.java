@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.module.definition.notify;
 
+import java.io.File;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +46,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
+import org.apache.velocity.runtime.RuntimeConstants;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
@@ -124,6 +126,7 @@ public class NotifyBuilderUtil implements InitializingBean {
 			zoneVE.setProperty("file.resource.loader.cache",                     ve.getProperty("file.resource.loader.cache")                                 );
 			zoneVE.setProperty("file.resource.loader.modificationCheckInterval", SPropsUtil.getString("velocity.engine.modification.check.interval", "60")    );
 			zoneVE.setProperty("file.resource.loader.path",                      (customPath + "," + EmailTemplatesHelper.getEmailTemplatesDefaultPath(false)));
+			zoneVE.setProperty(RuntimeConstants.RUNTIME_LOG, customPath + File.separator + "velocity.log");
 			try {
 				zoneVE.init();
 				
