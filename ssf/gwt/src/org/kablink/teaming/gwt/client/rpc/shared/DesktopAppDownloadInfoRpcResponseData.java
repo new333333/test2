@@ -44,7 +44,6 @@ public class DesktopAppDownloadInfoRpcResponseData implements IsSerializable, Vi
 	private FileDownloadInfo	m_mac;		//
 	private FileDownloadInfo	m_win32;	//
 	private FileDownloadInfo	m_win64;	//
-	private FileDownloadInfo	m_winXP;	//
 	private String 				m_macHelpUrl;
 	private String 				m_winHelpUrl;
 
@@ -130,7 +129,6 @@ public class DesktopAppDownloadInfoRpcResponseData implements IsSerializable, Vi
 	public FileDownloadInfo getMac()   {return m_mac;  }
 	public FileDownloadInfo getWin32() {return m_win32;}
 	public FileDownloadInfo getWin64() {return m_win64;}
-	public FileDownloadInfo getWinXP() {return m_winXP;}
 
 	public String getMacHelpUrl() {
 		return m_macHelpUrl;
@@ -148,7 +146,6 @@ public class DesktopAppDownloadInfoRpcResponseData implements IsSerializable, Vi
 	public void setMac(  FileDownloadInfo mac)   {m_mac   = mac;  }
 	public void setWin32(FileDownloadInfo win32) {m_win32 = win32;}
 	public void setWin64(FileDownloadInfo win64) {m_win64 = win64;}
-	public void setWinXP(FileDownloadInfo winXP) {m_winXP = winXP;}
 
 	public void setMacHelpUrl(String macHelpUrl) {
 		this.m_macHelpUrl = macHelpUrl;

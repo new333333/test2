@@ -355,7 +355,6 @@ public class GwtDesktopApplicationsHelper {
 			appDownloadInfo.setMac(  buildDesktopAppInfo_Local(baseFilePath, baseUrl, (isFilr ? MACOS_TAIL_FILR : MACOS_TAIL_VIBE), JSON_TAIL)   );
 			appDownloadInfo.setWin32(buildDesktopAppInfo_Local(baseFilePath, baseUrl, (isFilr ? WIN32_TAIL_FILR : WIN32_TAIL_VIBE), JSON_TAIL)   );
 			appDownloadInfo.setWin64(buildDesktopAppInfo_Local(baseFilePath, baseUrl, (isFilr ? WIN64_TAIL_FILR : WIN64_TAIL_VIBE), JSON_TAIL)   );
-			appDownloadInfo.setWinXP(buildDesktopAppInfo_Local(baseFilePath, baseUrl, (isFilr ? WINXP_TAIL_FILR : WINXP_TAIL_VIBE), JSON_XP_TAIL));
 			appDownloadInfo.setMacHelpUrl(PropsUtil.getString(isFilr ? MAC_QUICKSTART_URL_FILR : MAC_QUICKSTART_URL_VIBE));
 			appDownloadInfo.setWinHelpUrl(PropsUtil.getString(isFilr ? WINDOWS_QUICKSTART_URL_FILR : WINDOWS_QUICKSTART_URL_VIBE));
 		}
@@ -381,7 +380,6 @@ public class GwtDesktopApplicationsHelper {
 				appDownloadInfo.setMac(  buildDesktopAppInfo_Remote(baseUrl, (isFilr ? MACOS_TAIL_FILR : MACOS_TAIL_VIBE), JSON_TAIL)   );
 				appDownloadInfo.setWin32(buildDesktopAppInfo_Remote(baseUrl, (isFilr ? WIN32_TAIL_FILR : WIN32_TAIL_VIBE), JSON_TAIL)   );
 				appDownloadInfo.setWin64(buildDesktopAppInfo_Remote(baseUrl, (isFilr ? WIN64_TAIL_FILR : WIN64_TAIL_VIBE), JSON_TAIL)   );
-				appDownloadInfo.setWinXP(buildDesktopAppInfo_Remote(baseUrl, (isFilr ? WINXP_TAIL_FILR : WINXP_TAIL_VIBE), JSON_XP_TAIL));
 				appDownloadInfo.setMacHelpUrl(PropsUtil.getString(isFilr ? MAC_QUICKSTART_URL_FILR : MAC_QUICKSTART_URL_VIBE));
 				appDownloadInfo.setWinHelpUrl(PropsUtil.getString(isFilr ? WINDOWS_QUICKSTART_URL_FILR : WINDOWS_QUICKSTART_URL_VIBE));
 			}
