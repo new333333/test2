@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class table="SS_SharedEntity" name="org.kablink.teaming.domain.SharedEntity">
+    <id unsaved-value="null" name="id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+	 <many-to-one class="org.kablink.teaming.domain.User" name="referer" />
+    <property name="zoneId" access="field"/>
+	<property name="accessType" index="access_shared"/>
+    <property name="accessId" index="access_shared"/>
+	<property  name="sharedDate" index="access_shared"/>
+	 
+      <any name="entity" id-type="java.lang.Long" meta-type="string">
+        <meta-value class="org.kablink.teaming.domain.FolderEntry" value="folderEntry"/>
+        <meta-value class="org.kablink.teaming.domain.User" value="user"/>
+        <meta-value class="org.kablink.teaming.domain.Group" value="group"/>
+        <meta-value class="org.kablink.teaming.domain.Folder" value="folder"/>
+        <meta-value class="org.kablink.teaming.domain.Workspace" value="workspace"/>
+        <meta-value class="org.kablink.teaming.domain.ProfileBinder" value="profileBinder"/>
+        <meta-value class="org.kablink.teaming.domain.TemplateBinder" value="template"/>
+        <column name="entityType"  length="16" index="entity_shared"/>
+        <column name="entityId" index="entity_shared"/>
+      </any>
+
+  </class>
+</hibernate-mapping>

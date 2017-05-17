@@ -1,0 +1,118 @@
+#*
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
+ * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
+ * http://www.opensource.org/licenses/cpal_1.0. The CPAL is based on the Mozilla Public License Version 1.1
+ * but Sections 14 and 15 have been added to cover use of software over a computer network and provide for
+ * limited attribution for the Original Developer. In addition, Exhibit A has been modified to be
+ * consistent with Exhibit B.
+ * 
+ * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND,
+ * either express or implied. See the CPAL for the specific language governing rights and limitations
+ * under the CPAL.
+ * 
+ * The Original Code is ICEcore. The Original Developer is SiteScape, Inc. All portions of the code
+ * written by SiteScape, Inc. are Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
+ * 
+ * 
+ * Attribution Information
+ * Attribution Copyright Notice: Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
+ * Attribution Phrase (not exceeding 10 words): [Powered by ICEcore]
+ * Attribution URL: [www.icecore.com]
+ * Graphic Image as provided in the Covered Code [web/docroot/images/pics/powered_by_icecore.png].
+ * Display of Attribution Information is required in Larger Works which are defined in the CPAL as a
+ * work which combines Covered Code or portions thereof with code not governed by the terms of the CPAL.
+ * 
+ * 
+ * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
+ * are trademarks of SiteScape, Inc.
+ *#
+#if ($ssVisitor.isHtml())
+ #parse("style.vm")
+ 
+ <div style="#ss_eWrapper()">
+  #parse("showAvatar.vm")
+
+    <div style="#ss_eFolderBreadcrumb()">
+      <span> ${ssVisitor.getNLT('notify.forum.label')} </span>
+      #if ($ssVisitor.Entity.ParentBinder.ParentBinder)
+	    <a href="$ssVisitor.getPermaLink($ssVisitor.Entity.ParentBinder.ParentBinder)"
+	      title="$esc.html(${ssVisitor.Entity.ParentBinder.ParentBinder.PathName})"
+	    >$esc.html(${ssVisitor.Entity.ParentBinder.ParentBinder.Title})</a>
+	    / 
+	  #end
+	  <a href="$ssVisitor.getPermaLink($ssVisitor.Entity.ParentBinder)"
+	    title="$esc.html(${ssVisitor.Entity.ParentBinder.PathName})"
+	  >$esc.html(${ssVisitor.Entity.ParentBinder.Title})</a>
+    </div>
+    ${ssVisitor.NotifyDef.setVariable('folderPathShown', 'true')}
+  
+  ## Show the entry
+  $ssVisitor.visit()
+	
+  #set ($replies = ${ssVisitor.getParam("org.kablink.teaming.notify.params.replies")})
+  #if ($replies && !$replies.isEmpty())
+	<div style="#ss_eLabel()">
+	  ${ssVisitor.getNLT("__entry_replies")}
+	</div>
+	#foreach ($selection in $replies)
+		$ssVisitor.setParam("org.kablink.teaming.notify.params.showAvatar", false)
+		$ssVisitor.setParam("org.kablink.teaming.notify.params.showAvatarNew", false)
+		<div style="#ss_eChild()">
+		  ## Show this reply
+		  $ssVisitor.visit($selection)
+		</div>
+	#end
+  #end
+ </div>
+
+ ${ssVisitor.NotifyDef.setVariable('folderPathShown', 'true')}
+ #set ($relatedEntries = ${ssVisitor.getParam("org.kablink.teaming.notify.params.relatedEntries")})
+ #if ($relatedEntries && !$relatedEntries.isEmpty())
+  <div style="#ss_eRelated()">
+    #foreach ($selection in $relatedEntries)
+	  $ssVisitor.setParam("org.kablink.teaming.notify.params.showAvatar", false)
+	  $ssVisitor.setParam("org.kablink.teaming.notify.params.showAvatarNew", false)
+      #if (!$selection.ParentEntry)
+	    <div style="#ss_eLabel2()">
+	      $ssVisitor.getNLT("email.relatedEntry")
+	    </div>
+	    <div>
+		  ## Show this top entry
+		  $ssVisitor.visit($selection)
+	    </div>
+	  #else
+	    <div style="#ss_eChild()">
+		  ## Show this entry
+		  $ssVisitor.visit($selection)
+	    </div>
+	  #end
+	#end
+  </div>
+ #end
+
+#else
+  #if (!$ssVisitor.Entity.ParentEntry)
+    #ss_printLn("$ssVisitor.getNLT('notify.forum.label') (${ssVisitor.Entity.ParentBinder.PathName})")
+  #end
+  $ssVisitor.visit()
+  ${ssVisitor.NotifyDef.setVariable('folderPathShown', 'true')}
+  #set ($replies = ${ssVisitor.getParam("org.kablink.teaming.notify.params.replies")})
+  #if ($replies && !$replies.isEmpty())
+    #ss_printLn("")
+    #ss_printLn("$ssVisitor.getNLT('__entry_replies')")
+    #foreach ($selection in $replies)
+      #ss_printLn("")
+      $ssVisitor.visit($selection)
+    #end
+  #end
+ #set ($relatedEntries = ${ssVisitor.getParam("org.kablink.teaming.notify.params.relatedEntries")})
+ #if ($relatedEntries && !$relatedEntries.isEmpty())
+    #foreach ($selection in $relatedEntries)
+      #ss_printLn("")
+      #ss_printLn("")
+      #ss_printLn($ssVisitor.getNLT("email.relatedEntry"))
+      #ss_printLn("")
+      $ssVisitor.visit($selection)
+    #end
+  #end
+#end

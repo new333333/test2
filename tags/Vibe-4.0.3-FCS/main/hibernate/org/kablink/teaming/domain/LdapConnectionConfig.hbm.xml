@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+    <typedef name="encrypted" class="org.jasypt.hibernate.type.EncryptedStringType">
+      <param name="encryptorRegisteredName">hibernateStringEncryptor</param>
+    </typedef>
+  <class table="SS_LdapConnectionConfig" name="org.kablink.teaming.domain.LdapConnectionConfig">
+    <!--<cache usage="read-write"/>-->
+    <id unsaved-value="null" name="id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <property name="zoneId" access="field"/>
+    <property name="url"/>
+    <property name="userIdAttribute"/>
+    <property name="mappings" type="org.kablink.teaming.domain.AuthenticationMappingsUserType"/>
+    <property name="userSearches" type="org.kablink.teaming.domain.AuthenticationSearchInfoUserType"/>
+    <property name="groupSearches" type="org.kablink.teaming.domain.AuthenticationSearchInfoUserType"/>
+    <property name="principal"/>
+    <property name="credentials" type="encrypted"/>
+    <property name="position"/>
+    <property name="ldapGuidAttribute"/>
+	<property name="importUsersAsExternalUsers" access="field"/>
+  </class>
+</hibernate-mapping>

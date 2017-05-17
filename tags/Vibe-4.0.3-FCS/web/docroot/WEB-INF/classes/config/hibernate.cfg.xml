@@ -1,0 +1,291 @@
+<!DOCTYPE hibernate-configuration PUBLIC
+	"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory name="ssf">
+		
+		<!-- +++++++++++++++++++++++++++++++++ General properties ++++++++++++++++++++++++++++++++ -->
+		<!-- Set the JNDI location of the SiteScape datasource. -->
+		<property name="hibernate.connection.datasource">jdbc/SiteScapePool</property>
+		<!-- Use the SIteScape connection provider to lookup JNDI datasource
+		     because it works across multiple J2EE servers. -->
+		<property name="hibernate.connection.provider_class">org.kablink.util.dao.hibernate.DSConnectionProvider</property>
+		<!-- Use the SIteScape SQL dialect because it will automatically detect 
+		     the proper SQL dialect based on your connection URL. -->
+		<property name="hibernate.dialect">org.kablink.util.dao.hibernate.DynamicDialect</property>
+		<!-- Need this for bulk Delete statements -->
+		<property name="hibernate.query.factory_class">org.hibernate.hql.ast.ASTQueryTranslatorFactory</property>
+		<!-- Other miscellaneous Hibernate properties. -->
+		<!-- Need to set this to 0, or hibernate tries to load are classes that are non-lazy and defeats the usefullness of the secondary cache -->
+		<property name="hibernate.max_fetch_depth">0</property>
+		<property name="hibernate.statement_cache.size">20</property>
+		<!-- By default, the JDBC batch size is set to zero to workaround for a hanging bug
+		     in the Oracle driver. If you are not using Oracle database, you will want to
+		     set this property to non-zero value (20 is recommended) to improve performance.  -->
+		<property name="hibernate.jdbc.batch_size">0</property>
+		<property name="hibernate.jdbc.use_scrollable_resultset">true</property>
+		<property name="hibernate.bytecode.use_reflection_optimizer">true</property>
+		
+		<!-- +++++++++++++++++++++++++++++++++ Cache properties +++++++++++++++++++++++++++++++++++ -->
+		<!-- Use EhCache as second-level cache in a single server environment -->
+		<property name="hibernate.cache.provider_class">net.sf.ehcache.hibernate.EhCacheProvider</property>
+		<!-- Ehcache configuration file --> 
+		<property name="net.sf.ehcache.configurationResourceName">/config/ehcache-hibernate.xml</property>
+		<!-- memcached cache entry timeout in seconds -->
+		<property name="hibernate.memcached.cacheTimeSeconds">3600</property>
+		<!-- memcached cache entry timeout in seconds for the org.kablink.teaming.domain.Principal region -->
+		<property name="hibernate.memcached.org.kablink.teaming.domain.Principal.cacheTimeSeconds">300</property>
+		<!-- memcached operation timeout in milliseconds -->
+		<property name="hibernate.memcached.operationTimeout">2000</property>
+		<!-- Disable query cache -->
+ 		<property name="hibernate.cache.use_query_cache">false</property>
+ 		<!-- Enable second-level cache -->
+ 		<property name="hibernate.cache.use_second_level_cache">true</property>
+ 		<property name="hibernate.cache.use_minimal_puts">true</property>
+ 		<property name="hibernate.cache.use_structured_entries">false</property>
+ 		
+ 		<!-- +++++++++++++++++++++++++++++++ Logging & Statistics +++++++++++++++++++++++++++++++ -->
+ 		<!-- Do not set the following property to true on a production system since it significantly affects performance -->
+		<property name="hibernate.show_sql">false</property>
+		<property name="hibernate.generate_statistics">false</property>
+		
+		<!-- ++++++++++++++++++++++++++++++++++ Mapping files +++++++++++++++++++++++++++++++++++ -->
+		<!-- sitescape mappings -->
+		<mapping resource="org/kablink/teaming/security/accesstoken/impl/TokenInfo.hbm.xml"/>
+		<mapping resource="org/kablink/teaming/security/function/Function.hbm.xml"/>
+		<mapping resource="org/kablink/teaming/security/function/FunctionCondition.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/security/function/WorkAreaFunctionMembership.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Attachment.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/AuditTrail.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/BasicAudit.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Binder.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/ChangeLog.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/CustomAttribute.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Dashboard.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Definition.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/DeletedBinder.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/EmailAddress.hbm.xml"/> 
+	    <mapping resource="org/kablink/teaming/domain/Event.hbm.xml"/> 
+	    <mapping resource="org/kablink/teaming/domain/FolderEntry.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/IndexingJournal.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/IndexNode.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/LdapConnectionConfig.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/LibraryEntry.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/LicenseStats.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/LoginAudit.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/MobileDevice.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Membership.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/NotifyStatus.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/PostingDef.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Principal.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Ratings.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/ResourceDriver.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/SeenMap.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/SharedEntity.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/ShareItem.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/SharingAudit.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/SimpleName.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Subscription.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Tag.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/UserProperties.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Visits.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/WorkflowResponse.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/WorkflowState.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/WorkflowHistory.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/ZoneConfig.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/ZoneInfo.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Extensions.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/EmailLog.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/BinderQuota.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/FolderEntryStats.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/BinderState.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/KeyShieldConfig.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/NetFolderConfig.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/ProxyIdentity.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/AntiVirusConfig.hbm.xml"/>
+	    
+	    <!-- jbpms -->
+	    <mapping resource="org/jbpm/graph/action/Script.hbm.xml"/>
+	    
+	    <!-- hql queries and type defs -->
+   		<mapping resource="org/jbpm/db/hibernate.queries.hbm.xml"/>
+   		
+	    <!-- graph.def mapping files -->
+	    <mapping resource="org/jbpm/graph/def/ProcessDefinition.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/def/Node.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/def/Transition.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/def/Event.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/def/Action.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/def/SuperState.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/def/ExceptionHandler.hbm.xml"/>
+	    <mapping resource="org/jbpm/instantiation/Delegation.hbm.xml"/>
+	
+		<!-- graph.node mapping files -->
+	    <mapping resource="org/jbpm/graph/node/StartState.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/node/EndState.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/node/ProcessState.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/node/Decision.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/node/Fork.hbm.xml"/>
+    	<mapping resource="org/jbpm/graph/node/Join.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/node/State.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/node/TaskNode.hbm.xml"/>
+	
+	    <!-- context.def mapping files -->
+	    <mapping resource="org/jbpm/context/def/ContextDefinition.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/def/VariableAccess.hbm.xml"/>
+	
+   		<!-- taskmgmt.def mapping files -->
+	    <mapping resource="org/jbpm/taskmgmt/def/TaskMgmtDefinition.hbm.xml"/>
+	    <mapping resource="org/jbpm/taskmgmt/def/Swimlane.hbm.xml"/>
+	    <mapping resource="org/jbpm/taskmgmt/def/Task.hbm.xml"/>
+	    <mapping resource="org/jbpm/taskmgmt/def/TaskController.hbm.xml"/>
+		
+	    <!-- module.def mapping files -->
+	    <mapping resource="org/jbpm/module/def/ModuleDefinition.hbm.xml"/>
+	
+	    <!-- bytes mapping files -->
+	    <mapping resource="org/jbpm/bytes/ByteArray.hbm.xml"/>
+
+   		<!-- file.def mapping files -->
+	    <mapping resource="org/jbpm/file/def/FileDefinition.hbm.xml"/>
+		
+   		<!-- scheduler.def mapping files -->
+	    <mapping resource="org/jbpm/scheduler/def/CreateTimerAction.hbm.xml"/>
+	    <mapping resource="org/jbpm/scheduler/def/CancelTimerAction.hbm.xml"/>
+
+	    <!-- graph.exe mapping files -->
+	    <mapping resource="org/jbpm/graph/exe/Comment.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/exe/ProcessInstance.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/exe/Token.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/exe/RuntimeAction.hbm.xml"/>
+	    
+	    <!-- module.exe mapping files -->
+	    <mapping resource="org/jbpm/module/exe/ModuleInstance.hbm.xml"/>
+	        
+	    <!-- context.exe mapping files -->
+	    <mapping resource="org/jbpm/context/exe/ContextInstance.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/exe/TokenVariableMap.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/exe/VariableInstance.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/exe/variableinstance/ByteArrayInstance.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/exe/variableinstance/DateInstance.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/exe/variableinstance/DoubleInstance.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/exe/variableinstance/HibernateLongInstance.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/exe/variableinstance/HibernateStringInstance.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/exe/variableinstance/LongInstance.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/exe/variableinstance/NullInstance.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/exe/variableinstance/StringInstance.hbm.xml"/>
+			
+	    <!-- msg.db mapping files -->
+	    <mapping resource="org/jbpm/msg/Message.hbm.xml"/>
+	    <mapping resource="org/jbpm/msg/db/TextMessage.hbm.xml"/>
+	    <mapping resource="org/jbpm/command/ExecuteActionCommand.hbm.xml"/>
+	    <mapping resource="org/jbpm/command/ExecuteNodeCommand.hbm.xml"/>
+	    <mapping resource="org/jbpm/command/SignalCommand.hbm.xml"/>
+	    <mapping resource="org/jbpm/command/TaskInstanceEndCommand.hbm.xml"/>
+	
+	    <!-- taskmgmt.exe mapping files -->
+	    <mapping resource="org/jbpm/taskmgmt/exe/TaskMgmtInstance.hbm.xml"/>
+	    <mapping resource="org/jbpm/taskmgmt/exe/TaskInstance.hbm.xml"/>
+	    <mapping resource="org/jbpm/taskmgmt/exe/PooledActor.hbm.xml"/>
+	    <mapping resource="org/jbpm/taskmgmt/exe/SwimlaneInstance.hbm.xml"/>
+	
+	    <!-- scheduler.exe mapping files -->
+	    <mapping resource="org/jbpm/scheduler/exe/Timer.hbm.xml"/>	
+	    	    
+		<!-- logging support that we don't use -->
+	    <mapping resource="org/jbpm/logging/log/ProcessLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/logging/log/MessageLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/logging/log/CompositeLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/log/ActionLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/log/NodeLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/log/ProcessInstanceCreateLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/log/ProcessInstanceEndLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/log/ProcessStateLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/log/SignalLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/log/TokenCreateLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/log/TokenEndLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/graph/log/TransitionLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/log/VariableLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/log/VariableCreateLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/log/VariableDeleteLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/log/VariableUpdateLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/log/variableinstance/ByteArrayUpdateLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/log/variableinstance/DateUpdateLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/log/variableinstance/DoubleUpdateLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/log/variableinstance/HibernateLongUpdateLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/log/variableinstance/HibernateStringUpdateLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/log/variableinstance/LongUpdateLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/context/log/variableinstance/StringUpdateLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/taskmgmt/log/TaskLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/taskmgmt/log/TaskCreateLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/taskmgmt/log/TaskAssignLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/taskmgmt/log/TaskEndLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/taskmgmt/log/SwimlaneLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/taskmgmt/log/SwimlaneCreateLog.hbm.xml"/>
+	    <mapping resource="org/jbpm/taskmgmt/log/SwimlaneAssignLog.hbm.xml"/> 
+	    
+		<!-- +++++++++++++++++++++++++++++++++ Cache mappings +++++++++++++++++++++++++++++++++++ -->
+ 		<!--<class-cache class="org.kablink.teaming.domain.Attachment" usage="read-write"/>-->
+ 		<!--<class-cache class="org.kablink.teaming.domain.Binder" usage="read-write"/>-->
+ 		<class-cache class="org.kablink.teaming.domain.BinderQuota" usage="read-write"/>
+ 		<!--<class-cache class="org.kablink.teaming.domain.CustomAttribute" usage="read-write"/>-->
+ 		<class-cache class="org.kablink.teaming.domain.Dashboard" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.Definition" usage="read-write"/>
+ 		<!--<class-cache class="org.kablink.teaming.domain.EmailAddress" usage="read-write"/>-->
+ 		<class-cache class="org.kablink.teaming.domain.Event" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.ExtensionInfo" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.FolderEntry" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.IndexNode" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.LdapConnectionConfig" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.Membership" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.MobileDevice" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.PostingDef" usage="read-write"/>
+ 		<!--<class-cache class="org.kablink.teaming.domain.Principal" usage="nonstrict-read-write"/>-->
+ 		<class-cache class="org.kablink.teaming.domain.ShareItem" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.SimpleName" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.Subscription" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.Tag" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.WorkflowResponse" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.WorkflowState" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.ZoneConfig" usage="nonstrict-read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.ZoneInfo" usage="nonstrict-read-write"/>
+ 		<class-cache class="org.kablink.teaming.security.accesstoken.impl.TokenInfo" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.security.function.Function" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.security.function.Condition" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.security.function.WorkAreaFunctionMembership" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.BinderState" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.ResourceDriverConfig" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.KeyShieldConfig" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.NetFolderConfig" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.ProxyIdentity" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.AntiVirusConfig" usage="read-write"/>
+ 		
+ 		<!--<collection-cache collection="org.kablink.teaming.domain.FileAttachment.fileVersions" usage="read-write"/>-->
+ 		<!--<collection-cache collection="org.kablink.teaming.domain.Binder.binders" usage="read-write"/>-->
+ 		<!--<collection-cache collection="org.kablink.teaming.domain.Binder.customAttributes" usage="read-write"/>-->
+ 		<collection-cache collection="org.kablink.teaming.domain.Binder.workflowAssociations" usage="read-write"/>
+ 		<!--<collection-cache collection="org.kablink.teaming.domain.Binder.attachments" usage="read-write"/>-->
+ 		<collection-cache collection="org.kablink.teaming.domain.Binder.events" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.Binder.definitions" usage="read-write"/>
+ 		<!--<collection-cache collection="org.kablink.teaming.domain.CustomAttribute.values" usage="read-write"/>-->
+ 		<!--<collection-cache collection="org.kablink.teaming.domain.FolderEntry.customAttributes" usage="read-write"/>-->
+ 		<!--<collection-cache collection="org.kablink.teaming.domain.FolderEntry.attachments" usage="read-write"/>-->
+ 		<collection-cache collection="org.kablink.teaming.domain.FolderEntry.events" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.FolderEntry.replies" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.FolderEntry.workflowStates" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.FolderEntry.workflowResponses" usage="read-write"/>
+ 		<!--<collection-cache collection="org.kablink.teaming.domain.Principal.customAttributes" usage="nonstrict-read-write"/>-->
+ 		<!--<collection-cache collection="org.kablink.teaming.domain.Principal.attachments" usage="nonstrict-read-write"/>-->
+ 		<collection-cache collection="org.kablink.teaming.domain.Principal.events" usage="nonstrict-read-write"/>
+ 		<!--<collection-cache collection="org.kablink.teaming.domain.Principal.emailAddresses" usage="nonstrict-read-write"/>-->
+ 		<collection-cache collection="org.kablink.teaming.domain.UserPrincipal.memberOf" usage="nonstrict-read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.Group.members" usage="nonstrict-read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.ApplicationPrincipal.memberOf" usage="nonstrict-read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.ApplicationGroup.members" usage="nonstrict-read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.security.function.Function.operationNames" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.security.function.Function.conditionalClauses" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.security.function.WorkAreaFunctionMembership.memberIds" usage="read-write"/>
+ 		
+	</session-factory>
+</hibernate-configuration>

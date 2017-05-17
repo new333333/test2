@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_photoEntry" caption="__definition_default_photo_entry" type="1" nextId="37" definitionType="1" databaseId="402883c6115753d80111578720900010"> 
+  <item name="entryForm" caption="__entry_form_definition" type="form" id="1"> 
+    <properties/>  
+    <item name="entryFormForm" caption="__form" id="2"> 
+      <properties> 
+        <property name="name" value="form1"/>  
+        <property name="type" value="form"/> 
+      </properties>  
+      <item name="title" caption="__title" type="data" id="3"> 
+        <properties> 
+          <property name="name" value="title"/>  
+          <property name="caption" value="__title"/>  
+          <property name="width" value="60"/>  
+          <property name="inline" caption="__inline" type="boolean" value="false"> 
+            <help>ihelp.designers.mark_as_inline</help> 
+          </property>  
+          <property name="generated" value=""/>  
+          <property name="itemSource" value=""/> 
+        </properties> 
+      </item>  
+      <item name="guestName" caption="__guestName" type="data" category="entryData" display="form" id="31"> 
+        <properties> 
+          <property name="caption" value="__guest.default.caption"/>  
+          <property name="name" value="_guestName"/>  
+          <property name="width" value=""/>  
+          <property name="required" value="false"/> 
+        </properties> 
+      </item>
+      <item name="captcha" caption="__captcha" multipleAllowed="false" type="data" dataType="text" category="commonEntryData" display="form" id="36">
+        <properties>
+          <property name="caption" value="__captcha"/>
+          <property name="name" value="_captcha"/>
+          <property name="guestOnly" value="true"/>
+        </properties>
+      </item>  
+      <item name="description" caption="__description" type="data" id="4"> 
+        <properties> 
+          <property name="name" value="description"/>  
+          <property name="caption" value="__description"/>  
+          <property name="height" value=""/>  
+          <property name="required" value=""/> 
+        </properties> 
+      </item>  
+      <item name="graphic" caption="__graphic" type="data" id="22"> 
+        <properties> 
+          <property name="name" value="photo"/>  
+          <property name="caption" value="__photo"/>  
+          <property name="width" value=""/>  
+          <property name="maxWidth" value=""/>  
+          <property name="maxHeight" value=""/>  
+          <property name="storage" value=""/> 
+        </properties> 
+      </item>  
+      <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" id="29"> 
+        <properties> 
+          <property name="name" value="ss_attachFile"/>  
+          <property name="caption" value="__attach_files"/>  
+          <property name="width" value="60"/>  
+          <property name="number" value=""/>  
+          <property name="storage" value=""/>  
+          <property name="hide" value="true"/> 
+        </properties> 
+      </item>  
+      <item name="sendMail" caption="__sendMail" category="entryData" id="30"> 
+        <properties> 
+          <property name="name" value="_sendMail"/>  
+          <property name="caption" value="__sendMail"/> 
+        </properties> 
+      </item>  
+      <item name="entryFormButtons" caption="__form_buttons" id="6"> 
+        <properties> 
+          <property name="alignment" value=""/> 
+        </properties>  
+        <item name="okButton" caption="__ok_button" id="7"> 
+          <properties> 
+            <property name="caption" value="__ok"/>  
+            <property name="onClick" value=""/> 
+          </properties> 
+        </item>  
+        <item name="cancelButton" caption="__cancel_button" id="8"> 
+          <properties> 
+            <property name="caption" value="__cancel"/>  
+            <property name="onClick" value=""/> 
+          </properties> 
+        </item> 
+      </item> 
+    </item> 
+  </item>  
+  <item name="entryView" caption="__entry_view_definition" id="9"> 
+    <properties> 
+      <property name="type" value="entryView"/> 
+    </properties>  
+    <item name="titleView" caption="__title" id="10"> 
+      <properties> 
+        <property name="caption" value="__title"/> 
+      </properties> 
+    </item>  
+    <item name="entrySignatureView" caption="__entry_signature" id="11"> 
+      <properties> 
+        <property name="caption" value=""/> 
+      </properties> 
+    </item>  
+    <item name="descriptionView" caption="__description" id="12"> 
+      <properties> 
+        <property name="caption" value="__description"/> 
+      </properties> 
+    </item>  
+    <item name="entryDataItem" caption="__entry_data_item" id="23" formItem="graphic"> 
+      <properties> 
+        <property name="name" value="photo"/>  
+        <property name="caption" value=""/> 
+      </properties> 
+    </item>  
+    <item name="entryWorkflow" caption="__entry_workflow" category="entryViewData" id="27"> 
+      <properties> 
+        <property name="caption" value="__entry_workflow"/> 
+      </properties> 
+    </item>  
+    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="32"> 
+      <properties> 
+        <property name="caption" value=""/>  
+        <property name="tabTitle" value="comments"/> 
+      </properties> 
+    </item> 
+  </item>  
+  <item name="entryBlogView" caption="__entry_blog_view_definition" id="16"> 
+    <properties> 
+      <property name="type" value="blog"/> 
+    </properties>  
+    <item name="titleBlogView" caption="__title" id="17"> 
+      <properties> 
+        <property name="caption" value="__title"/> 
+      </properties> 
+    </item>  
+    <item name="descriptionBlogView" caption="__description" id="18"> 
+      <properties> 
+        <property name="caption" value="__description"/> 
+      </properties> 
+    </item>  
+    <item name="entryBlogDataItem" caption="__entry_data_item" id="24" formItem="graphic"> 
+      <properties> 
+        <property name="name" value="photo"/>  
+        <property name="caption" value="__photo"/> 
+      </properties> 
+    </item>  
+    <item name="entryBlogWorkflow" caption="__entry_workflow" category="blogEntryViewData" id="28"> 
+      <properties> 
+        <property name="caption" value="__entry_workflow"/> 
+      </properties> 
+    </item>  
+    <item name="entryBlogAttachments" caption="__entry_attachments" category="blogEntryViewData" display="view" id="34"> 
+      <properties> 
+        <property name="caption" value="__entry_attachments"/> 
+      </properties> 
+    </item>  
+    <item name="entryBlogComments" caption="__entry_blog_comments" category="blogEntryViewData" display="view" id="35"> 
+      <properties> 
+        <property name="caption" value="__entry_comments"/> 
+      </properties> 
+    </item> 
+  </item>  
+  <properties> 
+    <property name="name" value="_photoEntry"/>  
+    <property name="caption" value="__definition_default_photo_entry"/>  
+    <property name="family" value="photo"/>  
+    <property name="replyStyle" value="402883c6115753d801115777f284000b"/> 
+  </properties>  
+  <export-mappings>
+    <export definitionId="402883c6115753d801115777f284000b">_comment</export>
+  </export-mappings>
+</definition>

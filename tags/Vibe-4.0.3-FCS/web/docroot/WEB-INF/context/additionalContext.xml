@@ -1,0 +1,177 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-4.3.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.1.xsd">
+
+	<!-- ============================== Modules ============================= -->
+
+	<bean id="folderModuleTarget" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.folder.impl.BaseFolderModule">
+		<property name="definitionModule"><ref bean="definitionModule"/></property>
+		<property name="fileModule"><ref bean="fileModule"/></property>
+    	<property name="binderModule"><ref bean="binderModule"/></property>
+		<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+		<property name="runAsyncManager"><ref bean="runAsyncManager"/></property>
+	</bean>
+
+	<bean id="licenseModuleTarget" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.license.impl.BaseLicenseModule">
+		<property name="reportModule"><ref bean="reportModule"/></property>
+	</bean>
+
+	<!--  Initialize the zone and checks dependencies -->
+	<bean id="zoneModule" parent="moduleTransactionProxy">
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.zone.impl.BaseZoneModule" depends-on="nlt, zoneConfig, binderAccessUtils, sPropsUtil" >
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+				<property name="templateModule"><ref bean="templateModule"/></property>
+				<property name="adminModule"><ref bean="adminModule"/></property>
+				<property name="definitionModule"><ref bean="definitionModule"/></property>
+				<property name="profileModule"><ref bean="profileModule"/></property>
+				<property name="binderModule"><ref bean="binderModule"/></property>
+				<property name="ldapModule"><ref bean="ldapModule"/></property>
+				<property name="zoneClassManager"><ref bean="zoneClassManager"/></property>
+				<property name="scheduleModules">
+					<list>
+					<ref bean="folderModule"/>
+					<ref bean="licenseModule"/>
+					<ref bean="mailModule"/>
+					<ref bean="workflowModule"/>
+					<ref bean="sharingModule"/>
+					</list>
+				</property>
+			</bean>
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
+				<prop key="zoneExists">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="adminModuleTarget" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.admin.impl.BaseAdminModule">
+		<property name="mailModule"><ref bean="mailModule"/></property>
+		<property name="definitionModule"><ref bean="definitionModule"/></property>
+		<property name="folderModule"><ref bean="folderModule"/></property>
+		<property name="workspaceModule"><ref bean="workspaceModule"/></property>
+		<property name="binderModule"><ref bean="binderModule"/></property>
+		<property name="dashboardModule"><ref bean="dashboardModule"/></property>
+		<property name="fileModule"><ref bean="fileModule"/></property>
+		<property name="icalModule"><ref bean="icalModule"/></property>
+		<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+		<property name="reportModule"><ref bean="reportModule"/></property>
+		<property name="extensionManager"><ref bean="extensionManager" /></property>
+	</bean>
+	
+	<!-- ============================== Services ============================= -->
+
+	<bean id="archiveStore" class="org.kablink.teaming.repository.archive.impl.NullArchiveStore">
+	</bean>
+	
+	<bean id="licenseManager" class="org.kablink.teaming.license.impl.NullLicenseManager"/>
+	
+	<bean id="objectCache" class="org.kablink.teaming.objcache.impl.NullObjCache">
+ 	</bean>
+	
+	<!-- ============================== Document Converter ============================ -->
+
+	<!-- View file as HTML manager implementation -->
+    <bean id="htmlConverterManager" class="org.kablink.teaming.docconverter.impl.HtmlConverterManagerImpl">
+    	<!-- Options 1=OpenOffice conversion implementation -->
+    	<property name="active"><value>1</value></property>
+    	<property name="openOfficeConverter"><ref bean="htmlOpenOfficeConverter"/></property>
+    </bean>
+    
+    <bean id="textConverterManager" class="org.kablink.teaming.docconverter.impl.TextConverterManagerImpl">
+    	<!-- Options 1=OpenOffice, 2=Stellent conversion implementation -->
+    	<property name="active"><value>1</value></property>
+    	<property name="openOfficeConverter"><ref bean="textOpenOfficeConverter"/></property>
+    </bean>
+    
+    <bean id="textStreamConverterManager" class="org.kablink.teaming.docconverter.impl.TextStreamConverterManagerImpl">
+    	<!-- Options 1=Tika -->
+    	<property name="active"><value>1</value></property>
+    	<property name="tikaConverter"><ref bean="textTikaConverter"/></property>
+    </bean>
+    
+    <bean id="imageConverterManager" class="org.kablink.teaming.docconverter.impl.ImageConverterManagerImpl">
+    	<!-- Options 1=OpenOffice, 2=Stellent conversion implementation -->
+    	<property name="active"><value>1</value></property>
+    	<property name="openOfficeConverter"><ref bean="imageOpenOfficeConverter"/></property>
+    </bean>
+    
+	<!-- ============================== Relevance Engine ============================ -->
+    
+    <!--  Relevance manager integration. -->
+    <bean id="relevanceEngineImpl" class="org.kablink.teaming.relevance.impl.RelevanceEngine" />
+    <bean id="relevanceManager" class="org.kablink.teaming.relevance.impl.RelevanceManagerImpl">
+        <property name="relevanceEngine"><ref bean="relevanceEngineImpl"/></property>
+    </bean>
+        
+    <!-- ============================= File Integration Service ============================ -->
+    
+	<bean id="resourceDriverManager" class="org.kablink.teaming.fi.connection.impl.NullResourceDriverManager"/>
+    
+    <bean id="fiAdapter" class="org.kablink.teaming.repository.fi.impl.NullFIRepositorySessionFactoryAdapter"/>
+	
+    <!-- ============================= Presence Service    ============================ -->
+	<bean id="presenceServiceImpl" class="org.kablink.teaming.presence.impl.PresenceManagerImpl">
+		<property name="jabberServer"><value>${presence.service.server.address}</value></property>
+		<property name="jabberServerPort"><value>${presence.service.server.port}</value></property>
+		<property name="enabled"><value>${presence.service.enable}</value></property>
+	</bean>
+
+    <!-- ============================= Conferencing Service    ============================ -->
+    <!-- ============================= This has been discintinued    ============================ -->
+	<bean id="conferencingModuleImpl" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.conferencing.impl.ConferencingModuleImpl">
+		<property name="conferencingURL"><value></value></property>
+		<property name="enabled"><value>false</value></property>
+	</bean>
+
+	<!-- =========================== Timer-based scheduler for non-stateful jobs ====================== -->
+	<bean id="timer" class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean" depends-on="sessionFactory">
+		<property name="scheduledExecutorTasks">
+			<list>
+				<!-- Extension hot-deploy listener -->
+				<bean class="org.springframework.scheduling.concurrent.ScheduledExecutorTask">	
+					<!-- period between invocations (ms) 5mins -->
+					<property name="period" value="300000" />
+					<!-- Do not execute this task until after this much time (2 mins) passes after server start.
+					     This is to prevent the extension deployer and anything it deploys from interfering with 
+					     the server startup process carried out by the main thread, for example, zone upgrade 
+					     procedure, etc. -->
+					<property name="delay" value="120000" />
+					<property name="runnable" ref="extDeployer" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- ============================== Security related beans ============================== -->
+
+	<bean id="authenticationModule" parent="baseTransactionProxy" depends-on="sPropsUtil">
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.authentication.impl.BaseAuthenticationProviderModule">
+				<property name="zoneModule"><ref bean="zoneModule"/></property>
+			</bean>
+		</property>
+	</bean>
+	
+	<!-- <bean id="cache" class="org.kablink.teaming.cache.impl.NullCache"/>-->
+	
+	<!-- =============================== KeyShield Support ============================== -->
+	<bean id="keyShieldModule" class="org.kablink.teaming.module.keyshield.impl.NullKeyShieldModule"/>		
+	
+	<!-- ============================= ProxyIdentity Support ============================ -->
+	<bean id="proxyIdentityModule" class="org.kablink.teaming.module.proxyidentity.impl.NullProxyIdentityModule"/>		
+	
+	<!-- =============================== Anti-virus scanning for files ============================== -->		
+	<bean id="antiVirusManager" class="org.kablink.teaming.antivirus.impl.NullAntiVirusManager"/>		
+	
+	<bean id="antiVirusModule" class="org.kablink.teaming.module.antivirus.impl.NullAntiVirusModule"/>	
+
+</beans>

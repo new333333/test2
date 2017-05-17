@@ -1,0 +1,50 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-4.3.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.1.xsd">
+	    
+
+    <!-- ============================== Form-based authentication ============================ -->
+    
+    <bean id="authenticationProcessingFilter" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
+		<property name="authenticationManager" ref="_authenticationManager"/>
+		<property name="filterProcessesUrl" value="/s/portalLogin"/>
+		<property name="authenticationSuccessHandler" ref="authenticationSuccessHandler" />
+		<property name="authenticationFailureHandler" ref="authenticationFailureHandler" />
+		<property name="sessionAuthenticationStrategy" ref="sessionAuthenticationStrategy" />
+		<property name="authenticationDetailsSource" ref="authenticationDetailsSource" />
+		<property name="usernameParameter" value="j_username"/>
+		<property name="passwordParameter" value="j_password"/>
+    </bean>
+
+	<bean id="sessionAuthenticationStrategy" class="org.kablink.teaming.spring.security.web.authentication.session.SessionFixationProtectionStrategy">
+	    <property name="alwaysCreateSession"><value>true</value></property>
+	    <property name="migrateSessionAttributes"><value>false</value></property>
+	    <property name="retainedAttributes">
+	        <list>
+	            <!-- This attribute is used to retain/pass redirect target URL information across multiple sessions,
+	                 which is needed for authentication protocol such as OpenID. -->
+	            <value>filr-redirect-after-successful-login</value>
+	        </list>
+	    </property>
+	</bean>
+    
+    <bean id="authenticationSuccessHandler" class="org.kablink.teaming.spring.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler" >
+		<property name="defaultTargetUrl" value="/a/"/>    
+		<property name="targetUrlParameter" value="spring-security-redirect"/>
+    </bean>
+    
+    <bean id="authenticationFailureHandler" class="org.kablink.teaming.spring.security.SimpleUrlAuthenticationFailureHandler">
+		<property name="defaultFailureUrl" value="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login"/>
+    </bean>
+  	
+    <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+    	<constructor-arg value="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login"/>    	
+    </bean>
+	
+</beans>

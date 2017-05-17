@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="testTransitionOnVariable" caption="Transition on Variable" type="2" nextId="68" definitionType="2" databaseId="402883c50b906d3b010b90725d420002">
+  <item name="workflowProcess" caption="__workflow_process" id="1" canBeDeleted="false" multipleAllowed="false">
+    <item name="state" caption="__state" canBeDeleted="true" multipleAllowed="true" id="2" x="153" y="61">
+      <properties>
+        <property name="name" caption="__data_name" type="text" unique="//item[@name='state']" value="start">
+          <help>__help_data_name</help>
+        </property>
+        <property name="caption" caption="__caption" type="text" value="Start"/>
+        <property name="description" caption="__description" type="textarea"/>
+      </properties>
+      <item name="transitions" caption="__transitions" id="3">
+        <item name="transitionManual" caption="__transitionManual" type="transition" id="38">
+          <properties>
+            <property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" value="state1"/>
+          </properties>
+          <item name="variable" caption="__workflow_variable" id="39">
+            <properties>
+              <property name="name" caption="__workflow_variable_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" value="manualStart1"/>
+              <property name="value" caption="__workflow_variable_value" type="text" value="true"/>
+            </properties>
+          </item>
+        </item>
+        <item name="transitionManual" caption="__transitionManual" type="transition" id="53">
+          <properties>
+            <property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" value="state3"/>
+          </properties>
+          <item name="variable" caption="__workflow_variable" id="54">
+            <properties>
+              <property name="name" caption="__workflow_variable_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" value="manualStart3"/>
+              <property name="value" caption="__workflow_variable_value" type="text" value="true"/>
+            </properties>
+          </item>
+        </item>
+      </item>
+      <item name="accessControls" caption="__accessControls" id="4">
+        <item name="readAccess" caption="__readAccess" id="5">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="modifyAccess" caption="__modifyAccess" id="6">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="deleteAccess" caption="__deleteAccess" id="7">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="transitionOutAccess" caption="__transitionOutAccess" id="8">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="transitionInAccess" caption="__transitionInAccess" id="9">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+      </item>
+      <item name="notifications" caption="__notifications" id="10"/>
+    </item>
+    <item name="state" caption="__state" canBeDeleted="true" multipleAllowed="true" id="11" x="203" y="126">
+      <properties>
+        <property name="name" caption="__data_name" type="text" unique="//item[@name='state']" value="state1">
+          <help>__help_data_name</help>
+        </property>
+        <property name="caption" caption="__caption" type="text" value="State1"/>
+        <property name="description" caption="__description" type="textarea"/>
+      </properties>
+      <item name="transitions" caption="__transitions" id="12">
+        <item name="transitionOnVariable" caption="__transition_on_variable" type="transition" id="40">
+          <properties>
+            <property name="name" caption="__transition_on_variable_name" type="text" value="manualStart1"/>
+            <property name="value" caption="__transition_on_variable_value" type="text" value="true"/>
+            <property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" value="state2"/>
+          </properties>
+        </item>
+      </item>
+      <item name="accessControls" caption="__accessControls" id="13">
+        <item name="readAccess" caption="__readAccess" id="14">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="modifyAccess" caption="__modifyAccess" id="15">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="deleteAccess" caption="__deleteAccess" id="16">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="transitionOutAccess" caption="__transitionOutAccess" id="17">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="transitionInAccess" caption="__transitionInAccess" id="18">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+      </item>
+      <item name="notifications" caption="__notifications" id="19"/>
+    </item>
+    <item name="state" caption="__state" canBeDeleted="true" multipleAllowed="true" id="20" x="208" y="201">
+      <properties>
+        <property name="name" caption="__data_name" type="text" unique="//item[@name='state']" value="state2">
+          <help>__help_data_name</help>
+        </property>
+        <property name="caption" caption="__caption" type="text" value="State2"/>
+        <property name="description" caption="__description" type="textarea"/>
+      </properties>
+      <item name="transitions" caption="__transitions" id="21">
+        <item name="transitionOnVariable" caption="__transition_on_variable" type="transition" id="41">
+          <properties>
+            <property name="name" caption="__transition_on_variable_name" type="text" value="manualStart"/>
+            <property name="value" caption="__transition_on_variable_value" type="text" value="false"/>
+            <property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" value="end"/>
+          </properties>
+        </item>
+      </item>
+      <item name="accessControls" caption="__accessControls" id="22">
+        <item name="readAccess" caption="__readAccess" id="23">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="modifyAccess" caption="__modifyAccess" id="24">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="deleteAccess" caption="__deleteAccess" id="25">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="transitionOutAccess" caption="__transitionOutAccess" id="26">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="transitionInAccess" caption="__transitionInAccess" id="27">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+      </item>
+      <item name="notifications" caption="__notifications" id="28"/>
+      <item name="onEntry" caption="__onEntry" canBeDeleted="true" multipleAllowed="false" id="42">
+        <item name="variable" caption="__workflow_variable" id="43">
+          <properties>
+            <property name="name" caption="__workflow_variable_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" value="manualStart"/>
+            <property name="value" caption="__workflow_variable_value" type="text" value="false"/>
+          </properties>
+        </item>
+      </item>
+    </item>
+    <item name="state" caption="__state" canBeDeleted="true" multipleAllowed="true" id="44" x="71" y="126">
+      <properties>
+        <property name="name" caption="__data_name" type="text" unique="//item[@name='state']" value="state3">
+          <help>__help_data_name</help>
+        </property>
+        <property name="caption" caption="__caption" type="text" value="State3"/>
+        <property name="description" caption="__description" type="textarea"/>
+      </properties>
+      <item name="transitions" caption="__transitions" id="45">
+        <item name="transitionOnVariable" caption="__transition_on_variable" type="transition" id="55">
+          <properties>
+            <property name="name" caption="__transition_on_variable_name" type="text" value="manualStart3"/>
+            <property name="value" caption="__transition_on_variable_value" type="text" value="true"/>
+            <property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" value="state4"/>
+          </properties>
+        </item>
+      </item>
+      <item name="accessControls" caption="__accessControls" id="46">
+        <item name="readAccess" caption="__readAccess" id="47">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="modifyAccess" caption="__modifyAccess" id="48">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="deleteAccess" caption="__deleteAccess" id="49">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="transitionOutAccess" caption="__transitionOutAccess" id="50">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="transitionInAccess" caption="__transitionInAccess" id="51">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+      </item>
+      <item name="notifications" caption="__notifications" id="52"/>
+      <item name="onExit" caption="__onExit" canBeDeleted="true" multipleAllowed="false" id="65">
+        <item name="variable" caption="__workflow_variable" id="66">
+          <properties>
+            <property name="name" caption="__workflow_variable_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" value="manualStart3"/>
+            <property name="value" caption="__workflow_variable_value" type="text" value="false"/>
+          </properties>
+        </item>
+      </item>
+    </item>
+    <item name="state" caption="__state" canBeDeleted="true" multipleAllowed="true" id="56" x="47" y="187">
+      <properties>
+        <property name="name" caption="__data_name" type="text" unique="//item[@name='state']" value="state4">
+          <help>__help_data_name</help>
+        </property>
+        <property name="caption" caption="__caption" type="text" value="State4"/>
+        <property name="description" caption="__description" type="textarea"/>
+      </properties>
+      <item name="transitions" caption="__transitions" id="57">
+        <item name="transitionOnVariable" caption="__transition_on_variable" type="transition" id="67">
+          <properties>
+            <property name="name" caption="__transition_on_variable_name" type="text" value="manualStart3"/>
+            <property name="value" caption="__transition_on_variable_value" type="text" value="false"/>
+            <property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" value="end"/>
+          </properties>
+        </item>
+      </item>
+      <item name="accessControls" caption="__accessControls" id="58">
+        <item name="readAccess" caption="__readAccess" id="59">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="modifyAccess" caption="__modifyAccess" id="60">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="deleteAccess" caption="__deleteAccess" id="61">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="transitionOutAccess" caption="__transitionOutAccess" id="62">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="transitionInAccess" caption="__transitionInAccess" id="63">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+      </item>
+      <item name="notifications" caption="__notifications" id="64"/>
+    </item>
+    <item name="state" caption="__state" canBeDeleted="true" multipleAllowed="true" id="29" x="101" y="266">
+      <properties>
+        <property name="name" caption="__data_name" type="text" unique="//item[@name='state']" value="end">
+          <help>__help_data_name</help>
+        </property>
+        <property name="caption" caption="__caption" type="text" value="End"/>
+        <property name="description" caption="__description" type="textarea"/>
+      </properties>
+      <item name="transitions" caption="__transitions" id="30"/>
+      <item name="accessControls" caption="__accessControls" id="31">
+        <item name="readAccess" caption="__readAccess" id="32">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="modifyAccess" caption="__modifyAccess" id="33">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="deleteAccess" caption="__deleteAccess" id="34">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="transitionOutAccess" caption="__transitionOutAccess" id="35">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+        <item name="transitionInAccess" caption="__transitionInAccess" id="36">
+          <properties>
+            <property name="folderDefault" caption="__folderDefault" type="checkbox" default="true"/>
+            <property name="entryCreator" caption="__entryCreator" type="checkbox"/>
+            <property name="userGroupAccess" caption="__userGroup" type="userGroupSelect"/>
+          </properties>
+        </item>
+      </item>
+      <item name="notifications" caption="__notifications" id="37"/>
+    </item>
+    <properties>
+      <property name="initialState" caption="__initialState" type="itemSelect" path="//item[@name='state']" value="start"/>
+      <property name="endState" caption="__endState" type="itemSelect" path="//item[@name='state']" multipleAllowed="true" value=""/>
+      <property name="endState" caption="__endState" type="itemSelect" path="//item[@name='state']" multipleAllowed="true" value="end"/>
+    </properties>
+  </item>
+  <properties>
+    <property name="name" caption="__name" type="text" value="testTransitionOnVariable"/>
+    <property name="caption" caption="__caption" type="text" value="Transition on Variable"/>
+  </properties>
+</definition>

@@ -1,0 +1,383 @@
+<?xml version="1.0"?>
+
+<project name="ssf" basedir="." default="compile">
+
+	<property name="docs.api.dir" value="docs/api" />
+
+	<target name="init">
+		<property environment="env" />
+		<property name="project.dir" value="." />
+		<property file="app.server.${user.name}.properties" />
+		<property file="app.server.properties" />
+  		<property file="build.${user.name}.properties" />
+  		<property file="build.properties" />
+		<property file="release.${user.name}.properties" />
+		<property file="release.properties" />
+		<property name="temp.dir" value="${basedir}/temp" />
+		<pathconvert targetos="unix" property="temp.dir.path">
+			<path>
+				<pathelement location="${temp.dir}"/>
+			</path>
+		</pathconvert>
+		<path id="project.classpath">
+			<pathelement path="${classpath}" />
+			<fileset dir="lib" includes="*.jar" />
+		</path>
+		<path id="project.sourcepath">
+			<pathelement path="${sourcepath}" />
+		</path>
+		<taskdef classpathref="project.classpath" resource="net/sf/antcontrib/antcontrib.properties" />
+	</target>
+
+	<!-- Do NOT run the following target on its own. When executed on its own, 
+	     it may very well be deploying an artifact built for different portal. 
+	     So when in doubt, ALWAYS run either "clean-build-and-full-deploy" or 
+	     "build-and-full-deploy", which will re-build correct artifacts before 
+	     deploying them. -->
+	<target name="full-deploy-internal" depends="init">
+		<if>
+			<equals arg1="${portal.type}" arg2="liferay" />
+			<then>				
+				<ant dir="liferay" target="full-deploy" inheritAll="false" />
+			</then>
+			<elseif>
+				<equals arg1="${portal.type}" arg2="jbossportal" />
+				<then>				
+					<ant dir="jboss-portal" target="full-deploy" inheritAll="false" />
+				</then>
+			</elseif>
+			<elseif>
+				<equals arg1="${portal.type}" arg2="standalone" />
+				<then>				
+					<ant dir="standalone" target="full-deploy" inheritAll="false" />
+				</then>
+			</elseif>
+			<elseif>
+				<equals arg1="${portal.type}" arg2="liferay-light" />
+				<then>				
+					<ant dir="liferay-light" target="full-deploy" inheritAll="false" />
+				</then>
+			</elseif>
+		</if>
+	</target>
+	
+	<target name="build" depends="init">
+		<antcall target="compile" />
+		<antcall target="jar" />
+		<ant dir="${portal.type}" target="build" inheritAll="false" />
+		<!--<ant dir="samples" target="build" inheritAll="false" />-->
+	</target>
+
+	<target name="build-all-portal-types" depends="init">
+		<antcall target="compile" />
+		<antcall target="jar" />
+		<ant dir="standalone" target="build" inheritAll="false" />
+		<!--<ant dir="liferay-light" target="build" inheritAll="false" />-->
+		<!-- No longer supported portal types 
+		<ant dir="liferay" target="build" inheritAll="false" />
+		<ant dir="jbossportal" target="build" inheritAll="false" />
+		-->
+	</target>
+
+	<target name="clean-build" depends="clean,build" />
+	
+	<target name="clean-build-and-full-deploy" depends="clean-build,full-deploy-internal"/>
+	
+	<target name="build-and-full-deploy" depends="build,full-deploy-internal"/>
+	
+	<target name="clean" depends="init">
+		<delete dir="${temp.dir}" />
+		<delete dir="${docs.api.dir}" />
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="gwt-unitCache" />
+		</delete>
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="lucene-contrib" />
+		</delete>
+		
+		<ant dir="util" target="clean" inheritAll="false"/>
+		<ant dir="util-search" target="clean" inheritAll="false"/>
+		<ant dir="commons-httpclient-contrib" target="clean" inheritAll="false"/>
+		<ant dir="indexer-lucene" target="clean" inheritAll="false"/>
+		<ant dir="as-common" target="clean" inheritAll="false"/>
+		<ant dir="as-shared" target="clean" inheritAll="false"/>
+		<ant dir="tomcat" target="clean" inheritAll="false"/>
+		<ant dir="liquibase" target="clean" inheritAll="false"/>
+
+		<if>
+			<equals arg1="${build.applets}" arg2="true" />
+			<then>				
+				<ant dir="applets" target="clean" inheritAll="false"/>
+			</then>
+		</if>
+
+		<ant dir="main-minimum" target="clean" inheritAll="false"/>
+		<ant dir="main" target="clean" inheritAll="false"/>
+		<ant dir="rest-lib" target="clean" inheritAll="false"/>
+		<ant dir="slide-webdavclient" target="clean" inheritAll="false"/>
+		<ant dir="portal-module" target="clean" inheritAll="false"/>
+		<!--<ant dir="liferay" target="clean" inheritAll="false"/>
+		<ant dir="liferay-light" target="clean" inheritAll="false" />
+		<ant dir="jboss-portal" target="clean" inheritAll="false"/>-->
+		<ant dir="taglib" target="clean" inheritAll="false"/>
+		<ant dir="gwt" target="clean" inheritAll="false"/>
+
+		<ant dir="tools" target="clean" inheritAll="false"/>
+		
+		<ant dir="samples" target="clean" inheritAll="false"/>
+			
+		<ant dir="web" target="clean" inheritAll="false"/>
+
+		<ant dir="war" target="clean" inheritAll="false"/>
+		
+		<!--<ant dir="ssfs" target="clean" inheritAll="false"/>-->
+		
+		<ant dir="ssr" target="clean" inheritAll="false"/>
+		<ant dir="simple-url" target="clean" inheritAll="false"/>		
+		<ant dir="mobile" target="clean" inheritAll="false"/>		
+		<ant dir="rest" target="clean" inheritAll="false"/>		
+		<ant dir="webdav" target="clean" inheritAll="false"/>		
+	</target>
+
+	<target name="compile" depends="init">
+		<ant dir="util" target="compile" inheritall="false"/>
+		<ant dir="util-search" target="compile" inheritall="false"/>
+		<ant dir="commons-httpclient-contrib" target="compile" inheritall="false"/>
+		<ant dir="indexer-lucene" target="compile" inheritall="false"/>			
+		<ant dir="as-common" target="compile" inheritall="false"/>
+		<ant dir="as-shared" target="compile" inheritall="false"/>
+		<ant dir="tomcat" target="compile" inheritall="false"/>
+		<ant dir="liquibase" target="compile" inheritall="false"/>
+
+		<ant dir="main" target="compile-common" inheritall="false"/>
+
+		<if>
+			<equals arg1="${build.applets}" arg2="true" />
+			<then>				
+				<ant dir="applets" target="compile" inheritall="false"/>
+			</then>
+		</if>
+
+		<ant dir="main-minimum" target="compile" inheritall="false"/>
+		<ant dir="main" target="compile" inheritall="false"/>
+		<ant dir="rest-lib" target="compile" inheritall="false"/>
+		<ant dir="slide-webdavclient" target="compile" inheritall="false"/>
+
+		<ant dir="portal-module" target="compile" inheritall="false"/>
+		<!--<ant dir="liferay" target="compile" inheritall="false"/>
+		<ant dir="liferay-light" target="compile" inheritall="false"/>
+		<ant dir="jboss-portal" target="compile" inheritall="false"/>-->
+		<ant dir="taglib" target="compile" inheritall="false"/>
+		<ant dir="gwt" target="compile" inheritall="false"/>
+		
+		<ant dir="simple-url" target="compile" inheritall="false"/>
+
+		<ant dir="mobile" target="compile" inheritall="false"/>
+
+		<ant dir="rest" target="compile" inheritall="false"/>
+
+		<ant dir="tools" target="compile" inheritall="false"/>
+		
+		<ant dir="samples" target="compile" inheritall="false"/>
+	</target>
+
+	<target name="jar" depends="init">
+		<ant dir="util" target="jar" inheritall="false"/>
+		<ant dir="util-search" target="jar" inheritall="false"/>
+		<ant dir="commons-httpclient-contrib" target="jar" inheritall="false"/>
+		<ant dir="indexer-lucene" target="jar" inheritall="false"/>
+		<ant dir="as-common" target="jar" inheritall="false"/>
+		<ant dir="as-shared" target="jar" inheritall="false"/>
+		<ant dir="tomcat" target="jar" inheritall="false"/>
+		<ant dir="liquibase" target="jar" inheritall="false"/>
+
+		<if>
+			<equals arg1="${build.applets}" arg2="true" />
+			<then>				
+				<ant dir="applets" target="jar" inheritall="false"/>
+			</then>
+		</if>
+
+		<ant dir="main" target="compile-common" inheritall="false"/>
+		<ant dir="main-minimum" target="jar" inheritall="false"/>
+		<ant dir="main" target="jar" inheritall="false"/>
+		<ant dir="rest-lib" target="jar" inheritall="false"/>
+		<ant dir="slide-webdavclient" target="jar" inheritall="false"/>
+		<ant dir="portal-module" target="jar" inheritall="false"/>
+		<!--<ant dir="liferay" target="jar" inheritall="false"/>
+		<ant dir="liferay-light" target="jar" inheritall="false"/>
+		<ant dir="jboss-portal" target="jar" inheritall="false"/>-->
+		<ant dir="taglib" target="jar" inheritall="false"/>
+		<ant dir="gwt" target="jar" inheritall="false"/>
+
+		<ant dir="tools" target="jar" inheritall="false"/>
+		
+		<ant dir="web" target="war" inheritall="false"/>
+
+		<ant dir="war" target="war" inheritall="false"/>
+		
+		<!--<ant dir="ssfs" target="war" inheritall="false"/>-->
+		
+		<ant dir="ssr" target="war" inheritall="false"/>
+		
+		<ant dir="simple-url" target="war" inheritall="false"/>
+		
+		<ant dir="mobile" target="war" inheritall="false"/>
+
+		<ant dir="rest" target="war" inheritall="false"/>
+
+		<ant dir="webdav" target="war" inheritall="false"/>
+	</target>
+
+	<target name="deploy" depends="init">
+		<ant dir="util" target="deploy" inheritall="false"/>
+		<ant dir="util-search" target="deploy" inheritall="false"/>
+		<ant dir="commons-httpclient-contrib" target="deploy" inheritall="false"/>
+		<ant dir="indexer-lucene" target="deploy" inheritall="false"/>
+		<ant dir="as-common" target="deploy" inheritall="false"/>
+		<ant dir="as-shared" target="deploy" inheritall="false"/>
+		<ant dir="tomcat" target="deploy" inheritall="false"/>
+
+		<if>
+			<equals arg1="${build.applets}" arg2="true" />
+			<then>				
+				<ant dir="applets" target="deploy" inheritall="false"/>
+			</then>
+		</if>
+
+		<ant dir="main-minimum" target="deploy" inheritall="false"/>
+		<ant dir="main" target="deploy" inheritall="false"/>
+		<ant dir="rest-lib" target="deploy" inheritall="false"/>
+		<ant dir="slide-webdavclient" target="deploy" inheritall="false"/>
+		<ant dir="portal-module" target="deploy" inheritall="false"/>
+		<!--<ant dir="liferay" target="deploy" inheritall="false"/>
+		<ant dir="jboss-portal" target="deploy" inheritall="false"/>-->
+		<ant dir="taglib" target="deploy" inheritall="false"/>
+		<ant dir="gwt" target="deploy" inheritall="false"/>
+
+		<!-- Do NOT deploy tools archive -->
+		<!--<ant dir="tools" target="deploy" />-->
+		
+		<ant dir="web" target="deploy" inheritall="false"/>
+		
+		<!--<ant dir="ssfs" target="deploy" inheritall="false"/>-->
+		
+		<ant dir="ssr" target="deploy" inheritall="false"/>
+		
+		<ant dir="simple-url" target="deploy" inheritall="false"/>
+		
+		<ant dir="mobile" target="deploy" inheritall="false"/>
+		
+		<ant dir="rest" target="deploy" inheritall="false"/>
+		
+		<ant dir="webdav" target="deploy" inheritall="false"/>
+	</target>
+
+	<target name="java2html" depends="init">
+		<delete dir="${docs.api.dir}" />
+
+		<ant dir="util" target="java2html" inheritAll="false"/>
+		<ant dir="util-search" target="java2html" inheritAll="false"/>
+		<ant dir="commons-httpclient-contrib" target="java2html" inheritAll="false"/>
+		<ant dir="indexer-lucene" target="java2html" inheritAll="false"/>
+		<ant dir="as-common" target="java2html" inheritAll="false"/>
+		<ant dir="as-shared" target="java2html" inheritAll="false"/>
+		<ant dir="tomcat" target="java2html" inheritAll="false"/>
+		<ant dir="liquibase" target="java2html" inheritAll="false"/>
+
+		<if>
+			<equals arg1="${build.applets}" arg2="true" />
+			<then>				
+				<ant dir="applets" target="java2html" inheritAll="false"/>
+			</then>
+		</if>
+
+		<ant dir="main-minimum" target="java2html" inheritAll="false"/>
+		<ant dir="main" target="java2html" inheritAll="false"/>
+		<ant dir="rest-lib" target="java2html" inheritAll="false"/>
+		<ant dir="slide-webdavclient" target="java2html" inheritAll="false"/>
+		<ant dir="portal-module" target="java2html" inheritAll="false"/>
+		<!--<ant dir="liferay" target="java2html" inheritAll="false"/>
+		<ant dir="liferay-light" target="java2html" inheritAll="false"/>
+		<ant dir="jboss-portal" target="java2html" inheritAll="false"/>-->
+		<ant dir="taglib" target="java2html" inheritAll="false"/>
+		<ant dir="gwt" target="java2html" inheritAll="false"/>
+		<ant dir="tools" target="java2html" inheritAll="false"/>
+		<ant dir="simple-url" target="java2html" inheritAll="false"/>
+		<ant dir="mobile" target="java2html" inheritAll="false"/>
+		<ant dir="rest" target="java2html" inheritAll="false"/>
+	</target>
+
+	<target name="javadoc" depends="init">
+		<delete dir="${javadoc.combined.dir}" />
+
+		<ant dir="util" target="javadoc" inheritAll="false"/>
+		<ant dir="util-search" target="javadoc" inheritAll="false"/>
+		<ant dir="commons-httpclient-contrib" target="javadoc" inheritAll="false"/>
+		<ant dir="indexer-lucene" target="javadoc" inheritAll="false"/>
+		<ant dir="as-common" target="javadoc" inheritAll="false"/>
+		<ant dir="as-shared" target="javadoc" inheritAll="false"/>
+		<ant dir="tomcat" target="javadoc" inheritAll="false"/>
+		<ant dir="liquibase" target="javadoc" inheritAll="false"/>
+		
+		<if>
+			<equals arg1="${build.applets}" arg2="true" />
+			<then>				
+				<ant dir="applets" target="javadoc" inheritAll="false"/>
+			</then>
+		</if>
+
+		<ant dir="main-minimum" target="javadoc" inheritAll="false"/>
+		<ant dir="main" target="javadoc" inheritAll="false"/>
+		<ant dir="rest-lib" target="javadoc" inheritAll="false"/>
+		<ant dir="slide-webdavclient" target="javadoc" inheritAll="false"/>
+		<ant dir="portal-module" target="javadoc" inheritAll="false"/>
+		<!--<ant dir="liferay" target="javadoc" inheritAll="false"/>
+		<ant dir="liferay-light" target="javadoc" inheritAll="false"/>
+		<ant dir="jboss-portal" target="javadoc" inheritAll="false"/>-->
+		<ant dir="taglib" target="javadoc" inheritAll="false"/>
+		<ant dir="gwt" target="javadoc" inheritAll="false"/>
+		<ant dir="tools" target="javadoc" inheritAll="false"/>
+		<ant dir="simple-url" target="javadoc" inheritAll="false"/>
+		<ant dir="mobile" target="javadoc" inheritAll="false"/>
+		<ant dir="rest" target="javadoc" inheritAll="false"/>
+	</target>
+
+
+	<target name="javadoc-combined" depends="init">
+		<delete dir="${docs.api.dir}" />
+		<mkdir dir="${docs.api.dir}" />
+		<javadoc
+			additionalparam="-J-Xmx128m"
+			classpathref="project.classpath"
+			destdir="${docs.api.dir}"
+			packagenames="*.*"
+			sourcepathref="project.sourcepath"
+			stylesheetfile="tools/javadoc.css"
+		/>	</target>
+	
+	<!-- This will not run properly unless you've already deployed -->
+	<target name="precompile-jsp">
+  		<ant dir="web" target="precompile-jsp" />
+	</target>
+
+	<target name="tcpmon" description="Run Apache Axis tcpmon utility">
+		<java classname="org.apache.axis.utils.tcpmon" fork="true" failonerror="true">
+			<arg value="8079"/> 		<!-- Listen port tcpmon is monitoring -->
+			<arg value="localhost"/>	<!-- Target host to forward to --> 
+			<arg value="8080"/>			<!-- Target port to forward to -->
+			<classpath>
+				<pathelement location="lib/axis.jar" />
+				<pathelement location="lib/axis-ant.jar" />
+			</classpath>
+		</java>
+	</target>
+
+	<target name="unit-test" description="Run unit tests">
+  		<ant dir="main" target="unit-test" />
+	</target>
+	
+	<target name="unit-test-report" description="Generate unit test reports">
+  		<ant dir="main" target="unit-test-report" />
+	</target>
+</project>

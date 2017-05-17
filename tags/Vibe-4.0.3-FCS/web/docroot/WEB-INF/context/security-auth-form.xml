@@ -1,0 +1,64 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-4.3.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.1.xsd">
+	    
+    <!-- ============================== Form-based authentication ============================ -->
+    
+    <import resource="security-auth-form-common.xml"/>
+        
+    <bean id="_logoutFilter" class="org.kablink.teaming.spring.security.LogoutFilter" depends-on="sPropsUtil">
+		<constructor-arg value="/redirect/vibe?user.logout=true"/>
+		<constructor-arg>
+			<list>
+				<bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler"/>
+			</list>
+		</constructor-arg>
+		<property name="filterProcessesUrl" value="/s/portalLogout"/>
+    </bean>
+
+    <!-- ============================== CSRF protection ============================ -->
+    <bean id="crsfHeaderFilter" class="org.kablink.teaming.spring.security.CsrfHeaderFilter" />
+
+    <!--Provides a way to not force checking of Cross Site "forgery on all requests -->
+    <bean id="csrfSecurityRequestMatcher" class="org.kablink.teaming.spring.security.CsrfSecurityRequestMatcher">
+        <property name="enabled" value="${csrf.enable}"/>
+        <property name="ignoredPaths">
+            <list>
+                <value>.*\.rpc$</value>
+                <value>/s/portalLogin</value>
+                <value>/s/portalLogout</value>
+                <value>^/ws/.*</value>
+            </list>
+        </property>
+        <property name="ignoredMethods">
+            <array>
+                <value>GET</value>
+                <value>HEAD</value>
+                <value>TRACE</value>
+                <value>OPTIONS</value>
+            </array>
+        </property>
+    </bean>
+
+    <security:http use-expressions="true" entry-point-ref="authenticationProcessingFilterEntryPoint" authentication-manager-ref="_authenticationManager">
+        <security:csrf disabled="true"/>
+    	<security:custom-filter position="FORM_LOGIN_FILTER" ref="authenticationProcessingFilter"/>
+    	
+		<security:custom-filter position="LOGOUT_FILTER" ref="_logoutFilter"/>
+        <security:custom-filter after="CSRF_FILTER" ref="crsfHeaderFilter"/>
+
+        <security:session-management session-fixation-protection="newSession" />
+        
+        <security:intercept-url pattern="/**" access="isAuthenticated() or isAnonymous()" />
+
+        <security:anonymous granted-authority="ROLE_ANONYMOUS" username="guest"  />
+
+    </security:http>
+    
+</beans>

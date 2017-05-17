@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+
+<project name="samples-rest-client" basedir="." default="build">
+	<property name="project.dir" value="../.." />
+	<import file="${project.dir}/build-common.xml"/>
+	
+	<!-- This overrides the imported definition -->
+	<path id="project.classpath">
+		<fileset dir="lib" includes="**" />
+	</path>
+
+	<target name="clean-libraries">
+		<delete dir="lib"/>
+	</target>
+	
+	<target name="clean-all" >
+		<antcall target="clean"/>
+		<antcall target="clean-libraries"/>
+	</target>
+	
+	<target name="copy-libraries">
+		<mkdir dir="lib"/>
+		<!-- Copy REST client and shared libraries -->
+		<copy file="${project.dir}/rest-client/kablink-teaming-rest-client.jar" todir="lib"/>
+		<copy file="${project.dir}/rest-lib/kablink-teaming-rest-lib.jar" todir="lib"/>
+		<!-- Copy 3rd party libraries needed by the Vibe REST -->
+		<copy todir="lib">
+			<fileset dir="${project.dir}/lib"
+				includes="${libraries.restclient}" />
+		</copy>
+		<!-- Copy additional libraries needed by the sample -->
+		<copy file="${project.dir}/util/kablink-teaming-util.jar" todir="lib"/>
+		<copy todir="lib">
+			<fileset dir="${project.dir}/lib">
+				<include name="junit.jar" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="build">
+		<antcall target="copy-libraries"/>
+		<antcall target="compile"/>
+	</target>
+	
+	<target name="clean-build">
+		<antcall target="clean-all"/>
+		<antcall target="build"/>
+	</target>
+	
+	<target name="run-test" depends="build">
+		<junit printsummary="true" haltonfailure="true" haltonerror="true">
+			<classpath>
+				<pathelement path="${classes.dir}" />
+				<fileset dir="lib"
+					includes="**" />
+			</classpath>
+			
+			<formatter type="plain" usefile="false"/>
+			<!--<formatter type="brief" usefile="false"/>-->
+			<!--<formatter type="xml"/>-->
+
+			<!-- Single test -->
+			<!--<test name="org.kablink.teaming.samples.client.rest.v1.ApiTest" />-->
+			
+			<!-- Multiple tests -->
+			<batchtest>
+				<fileset dir="${classes.dir}" 
+					includes="**/*Test.class" />
+			</batchtest>
+		</junit>
+	</target>
+		
+</project>

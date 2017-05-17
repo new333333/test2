@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" node="Principal" table="SS_Principals" name="org.kablink.teaming.domain.Principal">
+    <!--<cache usage="read-write"/>-->
+    <id unsaved-value="null" name="id" type="long" node="@id">
+      <generator class="native">
+      	<param name="sequence">ss_principal_id_sequence</param>
+      </generator>
+    </id>
+    <discriminator type="string" column="type" length="16"/>
+    <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
+    <map inverse="true" access="field" cascade="all,delete-orphan" batch-size="4" lazy="true" name="customAttributes">
+      <!--<cache usage="read-write"/>-->
+      <key column="principal"/>
+      <map-key type="string" column="name"/>
+      <one-to-many class="org.kablink.teaming.domain.CustomAttribute"/>
+    </map>
+    <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="attachments">
+      <!--<cache usage="read-write"/>-->
+      <key column="principal"/>
+      <one-to-many class="org.kablink.teaming.domain.Attachment"/>
+    </set>
+    <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="events">
+      <!--<cache usage="read-write"/>-->
+      <key column="principal" on-delete="cascade"/>
+      <one-to-many class="org.kablink.teaming.domain.Event"/>
+    </set>
+    <property name="zoneId" index="internal_principal,type_principal"/>
+    <property name="type" update="false" insert="false" index="type_principal"/> 
+    <property name="workspaceId"/>
+    <property name="internalId" length="32" index="internal_principal"/>
+    <property name="deleted"/>
+    <property name="disabled"/>
+	<property name="logVersion"/>
+	<property name="emailAddress" length="24" access="field"/>
+    <map lazy="true" inverse="true" access="field" cascade="all,delete-orphan" batch-size="4" name="emailAddresses">
+      <!--<cache usage="read-write"/>-->
+      <key column="principal" on-delete="cascade"/>
+      <map-key type="string" column="type"/>
+      <one-to-many class="org.kablink.teaming.domain.EmailAddress"/>
+    </map>
+    <property name="name" length="128"/>
+    <property name="foreignName" length="255" />
+    <property name="typelessDN" length="255" index="typelessDN_principal"/>
+    <property name="ldapGuid" length="128" index="ldapGuid_principal"/>
+    <property name="objectSid" length="128" index="objectSid_principal"/>
+    <property name="samAccountName" length="128"/>
+    <property name="domainName" length="255" />
+    <property name="netbiosName" length="16" />
+	<property name="theme" length="64"/>
+    <properties name="nameKey" unique="true" update="false" insert="false">
+      <property name="zoneId" update="false" insert="false"/>
+      <property name="name" update="false" insert="false"/>
+    </properties>
+    <properties name="foreignKey" unique="true" update="false" insert="false">
+      <property name="zoneId" update="false" insert="false"/>
+      <property name="foreignName" update="false" insert="false"/>
+    </properties>
+    <many-to-one name="parentBinder"/>
+    <component name="description">
+ <!-- use length to force medium blog in mysql -->
+      <property name="HDescription"   length="2000000" column="description_text" type="org.kablink.teaming.dao.util.SSClobStringType"/>
+      <property name="HFormat" column="description_format"/>
+    </component>
+    <property name="title" access="field" length="255"/>
+    <property name="normalTitle" length="255"/>
+    <property name="iconName" access="field" length="64"/>    
+    <property name="definitionType"/>
+ 	<property name="entryDefId" access="field" index="entryDef_principal">
+ 		<column name="entryDef" sql-type="char(32)"/>
+ 	</property>
+ 	<property name="termsAndConditionsAcceptDate"/>
+    <component name="creation" node="creation" class="org.kablink.teaming.domain.HistoryStamp">
+      <property name="date" column="creation_date" type="timestamp"/>
+      <many-to-one class="org.kablink.teaming.domain.UserPrincipal" embed-xml="false" node="Principal" name="principal">
+        <column name="creation_principal"/>
+      </many-to-one>
+    </component>
+    <component name="modification" node="modification" class="org.kablink.teaming.domain.HistoryStamp">
+      <property name="date" column="modification_date" type="timestamp"/>
+      <many-to-one class="org.kablink.teaming.domain.UserPrincipal" embed-xml="false" node="Principal" name="principal">
+        <column name="modification_principal"/>
+      </many-to-one>
+    </component>
+	<component name="identityInfo" class="org.kablink.teaming.domain.IdentityInfo" access="field">
+	  <property name="internal" not-null="true"/>
+	  <property name="fromLdap" not-null="true"/>
+	  <property name="fromLocal" not-null="true"/>
+	  <property name="fromOpenid" not-null="true"/>
+	</component>
+  	<subclass dynamic-update="true" name="org.kablink.teaming.domain.UserPrincipal">
+	  	<property name="diskQuota" access="field"/>
+	  	<property name="fileSizeLimit" access="field"/>
+	  	<property name="downloadEnabled" access="field"/>
+	  	<property name="webAccessEnabled" access="field"/>
+	  	<property name="adHocFoldersEnabled" access="field"/>
+        <property name="adHocFoldersLastModified" access="field"/>
+        <property name="memberOfLastModified" access="field"/>
+	    <bag inverse="true" access="field" cascade="all" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
+	      <!--<cache usage="read-write"/>-->
+	      <key column="userId"/>
+	      <many-to-many fetch="join" node="Group" class="org.kablink.teaming.domain.Group" column="groupId" embed-xml="false"/>
+	    </bag>
+	    <subclass name="org.kablink.teaming.domain.Group" discriminator-value="group" dynamic-update="true">
+	      <bag inverse="false" access="field" cascade="all" lazy="true" table="SS_PrincipalMembership" name="members">
+	        <!--<cache usage="read-write"/>-->
+	        <key column="groupId"/>
+	        <many-to-many fetch="join" class="org.kablink.teaming.domain.UserPrincipal" column="userId"/>
+	      </bag>
+          <property name="membersLastModified" access="field"/>
+	      <property name="dynamic" access="field"/>
+	      <property name="ldapQuery" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
+	      <property name="ldapContainer" access="field"></property>
+		  <property name="groupType" access="field" type="short"/>
+	    </subclass>
+	    <subclass name="org.kablink.teaming.domain.User" node="User" discriminator-value="user" dynamic-update="true">
+	      <property name="displayStyle" length="16"/>
+	      <property name="firstLoginDate" column="loginDate"/>
+	      <property name="lastPasswordChange"/>
+	      <property name="firstName" access="field" length="64"/>
+	      <property name="lastName" access="field" length="64"/>
+	      <property name="middleName" access="field" length="64"/>
+	      <property name="organization" length="256"/>
+	      <property name="phone" length="128"/>
+	      <property name="zonName" length="100"/>
+	      <property name="skypeId" length="64"/>
+	      <property name="twitterId" length="64"/>
+	      <property name="status" length="256"/>
+	      <property name="statusDate"/>
+	      <property name="miniBlogId"/>
+	      <property name="maxGroupsQuota" access="field"/>
+	      <property name="maxGroupsFileSizeLimit" access="field"/>
+	      <property name="diskSpaceUsed" access="field"/>
+	      <property name="password" access="field" length="128"/>
+		  <property name="pwdenc" access="field" length="32"/>
+		  <property name="timeZone" access="field" length="80"/>
+		  <property name="locale" access="field" length="32"/>
+		  <property name="digestSeed"/>
+		  <property name="extProvState" access="field" type="short"/>
+		  <property name="extProvSeed"/>
+		  <property name="workspacePreDeleted" access="field"/>
+	    </subclass>
+  	</subclass>
+  	<subclass dynamic-update="true" name="org.kablink.teaming.domain.ApplicationPrincipal">
+	    <bag inverse="true" access="field" cascade="all" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
+	      <!--<cache usage="read-write"/>-->
+	      <key column="userId"/>
+	      <many-to-many fetch="join" node="ApplicationGroup" class="org.kablink.teaming.domain.ApplicationGroup" column="groupId" embed-xml="false"/>
+	    </bag>
+	    <subclass name="org.kablink.teaming.domain.ApplicationGroup" discriminator-value="applicationGroup" dynamic-update="true">
+	      <bag inverse="false" access="field" cascade="all" lazy="true" table="SS_PrincipalMembership" name="members">
+	        <!--<cache usage="read-write"/>-->
+	        <key column="groupId"/>
+	        <many-to-many fetch="join" class="org.kablink.teaming.domain.ApplicationPrincipal" column="userId"/>
+	      </bag>
+	    </subclass>
+	    <subclass name="org.kablink.teaming.domain.Application" node="Application" discriminator-value="application" dynamic-update="true">
+	      <property name="postUrl" length="256"/>
+		  <property name="timeout" access="field"/>
+		  <property name="trusted" access="field"/>
+		  <property name="maxIdleTime" access="field"/>
+		  <property name="sameAddrPolicy" access="field"/>
+	    </subclass>
+  	</subclass>
+  </class>
+  <query name="find-User-Company"><![CDATA[from org.kablink.teaming.domain.User user where user.name=:userName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
+  <query name="find-User-Company-DeadOrAlive"><![CDATA[from org.kablink.teaming.domain.User user where user.name=:userName and user.zoneId=:zoneId]]></query>
+  <query name="find-Principal-Company"><![CDATA[from org.kablink.teaming.domain.Principal user where user.name=:userName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
+  
+  <query name="find-User-By-LdapGuid-Company"><![CDATA[from org.kablink.teaming.domain.User user where user.ldapGuid=:ldapGuid and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
+  <query name="find-Principal-id-By-LdapGuid-Company"><![CDATA[select p.id from org.kablink.teaming.domain.Principal p where p.ldapGuid=:ldapGuid and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
+  <query name="find-User-By-ForeignName"><![CDATA[from org.kablink.teaming.domain.User user where user.foreignName=:foreignName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
+  
+  <query name="find-Principal-id-By-Name"><![CDATA[select p.id from org.kablink.teaming.domain.Principal p where p.name=:name and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
+  <query name="find-Principal-id-By-ForeignName"><![CDATA[select p.id from org.kablink.teaming.domain.Principal p where p.foreignName=:foreignName and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
+  <query name="find-Principal-id-By-ObjectSid"><![CDATA[select p.id from org.kablink.teaming.domain.Principal p where p.objectSid=:objectSid and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
+  <query name="find-Principal-id-By-Domain-Sam"><![CDATA[select p.id from org.kablink.teaming.domain.Principal p where p.domainName=:domainName and p.samAccountName=:samAccountName and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
+  <query name="find-Principal-id-By-TypelessDN"><![CDATA[select p.id from org.kablink.teaming.domain.Principal p where p.typelessDN=:typelessDN and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
+  
+  <query name="find-User-id-By-Name"><![CDATA[select p.id from org.kablink.teaming.domain.User p where p.name=:name and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
+  <query name="find-User-id-By-ForeignName"><![CDATA[select p.id from org.kablink.teaming.domain.User p where p.foreignName=:foreignName and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
+  <query name="find-User-id-By-ObjectSid"><![CDATA[select p.id from org.kablink.teaming.domain.User p where p.objectSid=:objectSid and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
+  <query name="find-User-id-By-Domain-Sam"><![CDATA[select p.id from org.kablink.teaming.domain.User p where p.domainName=:domainName and p.samAccountName=:samAccountName and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
+  <query name="find-User-id-By-TypelessDN"><![CDATA[select p.id from org.kablink.teaming.domain.User p where p.typelessDN=:typelessDN and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
+  
+</hibernate-mapping>

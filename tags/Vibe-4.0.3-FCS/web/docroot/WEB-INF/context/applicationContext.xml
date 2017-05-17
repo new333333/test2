@@ -1,0 +1,1669 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-4.3.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.1.xsd">
+
+	<!-- =========================== Basic Infrastructural Beans ========================== -->
+
+	<!-- Configurer that replaces ${...} placeholders with the raw values from ssf 
+	     properties file(s) that are accessed through rawSsfProperties bean. -->
+	<bean id="propertyPlaceholderConfigurer" 
+		class="org.kablink.teaming.spring.beans.factory.config.PropertyPlaceholderConfigurer">	
+		<property name="rawSsfProperties"><ref bean="rawSsfProperties"/></property>
+		<!-- As explained above, this custom configurer gets properties values
+		     from rawSsfProperties bean, NOT from the properties file specified below.
+		     In other words, the following 'location' property is ignored,
+		     but is nevertheless present here to satisfy initialization requirement. -->
+		<property name="location"><value>config/ssf.properties</value></property>								
+	</bean>
+
+	<!-- Message source for this context, loaded from localized "messages_xx" files -->
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>/WEB-INF/messages/messages-ext</value>
+				<value>/WEB-INF/messages/messages</value>
+				<value>/WEB-INF/messages/help-messages-ext</value>
+				<value>/WEB-INF/messages/help-messages</value>
+			</list>
+		</property>	
+		<property name="defaultEncoding"><value>UTF-8</value></property>
+		<!-- The factory setting for this property is -1, which indicates to cache forever.
+		     Change it to a positive number (eg. 1) to enable automatic reloading, which
+		     should not be used in a production environment. -->
+		<!--<property name="cacheSeconds"><value>5</value></property>-->
+	</bean>
+
+	<!-- Default View Resolver -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="cache"><value>true</value></property>
+		<property name="viewClass"><value>org.springframework.web.servlet.view.JstlView</value></property>
+		<property name="prefix"><value>/WEB-INF/jsp/</value></property>
+		<property name="suffix"><value>.jsp</value></property>
+	</bean>
+	<!-- Enable this resolver to provide customized views
+	<bean id="customViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
+		<property name="order"><value>0</value></property>
+		<property name="location"><value>/WEB-INF/views.xml</value></property>
+	</bean>
+	-->
+
+	<!-- MultipartResolver implementation (uses Jakarta Commons FileUpload) -->
+	<bean id="multipartResolver" 
+		class="org.kablink.teaming.web.upload.MultipartResolverProgressListening">
+		
+		<!-- Maximum file size in bytes = Integer.MAX_VALUE = 0x7fffffff -->
+		<property name="maxUploadSize">
+			<value>${upload.multipart.resolver.max.upload.size}</value>
+		</property>
+		<!-- Maximum allowed in-memory size in bytes before uploads are written
+			 directly to disk. Keep it small so that we can handle large number
+			 of large files concurrently using small memory footprint. -->
+		<property name="maxInMemorySize">
+			<value>${upload.multipart.resolver.max.in.memory.size}</value>
+		</property>
+		<!-- Temporary directory where uploaded files get stored. Temporary
+			 files are automatically cleared upon completion of request so
+			 they'd better be moved or copied to somewhere else before they
+			 are gone. -->
+		<property name="uploadTempDir">
+			<value>${upload.multipart.resolver.upload.temp.dir}</value>
+		</property>	
+		<property name="defaultEncoding">
+			<value>${web.char.encoding}</value>
+		</property>
+
+	</bean>
+
+	<!-- Template for expressing dependencies on all modules.
+	     Do NOT ever add to this template any bean that is not a module. -->
+	<bean id="dependOnAllModulesTemplate" lazy-init="true" abstract="true">
+		<property name="templateModule"><ref bean="templateModule"/></property>
+		<property name="adminModule"><ref bean="adminModule"/></property>
+		<property name="authenticationModule"><ref bean="authenticationModule"/></property>
+		<property name="binderModule"><ref bean="binderModule"/></property>
+		<property name="definitionModule"><ref bean="definitionModule"/></property>
+		<property name="folderModule"><ref bean="folderModule"/></property>
+		<property name="netFolderModule"><ref bean="netFolderModule"/></property>
+		<property name="ldapModule"><ref bean="ldapModule"/></property>
+		<property name="profileModule"><ref bean="profileModule"/></property>
+		<property name="workflowModule"><ref bean="workflowModule"/></property>
+		<property name="workspaceModule"><ref bean="workspaceModule"/></property>
+		<property name="fileModule"><ref bean="fileModule"/></property>	
+		<property name="convertedFileModule"><ref bean="convertedFileModule"/></property>	
+		<property name="dashboardModule"><ref bean="dashboardModule"/></property>	
+		<property name="reportModule"><ref bean="reportModule"/></property>
+		<property name="resourceDriverModule"><ref bean="resourceDriverModule"/></property>
+		<property name="conferencingModule"><ref bean="conferencingModule"/></property>			
+		<property name="icalModule"><ref bean="icalModule"/></property>
+		<property name="rssModule"><ref bean="rssModule"/></property>
+		<property name="licenseModule"><ref bean="licenseModule"/></property>
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
+		<property name="sharingModule"><ref bean="sharingModule"/></property>
+		<property name="keyShieldModule"><ref bean="keyShieldModule"/></property>
+		<property name="proxyIdentityModule"><ref bean="proxyIdentityModule"/></property>
+	</bean>
+
+	<!-- Default lob handler.  Override this in applicationContext-ext.xml for specific databases -->
+  	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler">
+	</bean>
+	
+<!-- Oracle Lob handler
+	<bean id="oracleExtractor" class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor">
+	</bean>
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler">
+		<property name="nativeJdbcExtractor"><ref bean="oracleExtractor"/></property>
+	  </bean>
+
+ -->
+<!-- Postgress lob handler.  
+  	<bean id="lobHandler" class="org.kablink.util.jdbc.support.lob.PostgressLobHandler">
+	</bean>
+-->
+	<bean id="zoneInterceptor" class="org.kablink.teaming.dao.interceptor.ZoneInterceptor"/>
+
+	<!-- Hibernate session factory -->
+	<bean id="sessionFactory" class="org.kablink.teaming.spring.orm.hibernate3.LocalSessionFactoryBean" depends-on="sPropsUtil">
+		<property name="lobHandler"><ref bean="lobHandler"/></property>
+		<property name="configFiles">
+			<list>
+				<value>config/hibernate.cfg.xml</value>
+				<value>optional:config/hibernate-ext.cfg.xml</value>
+			</list>
+		</property>
+		<property name="entityInterceptor"><ref bean="zoneInterceptor"/></property>
+		
+		<!-- Hibernate properties are loaded from a separate file - hibernate.properties -->
+	</bean>
+	<bean id="hibernateConfiguration" class="org.kablink.teaming.util.HibernateConfigurationFactory">
+		<property name="sessionFactoryBean"><ref bean="&amp;sessionFactory"/></property>
+	</bean>
+	
+	<!-- To utilize Hibernate's statistics service, hibernate.generate_statistics
+	     property must be set to true in the hibernate.cfg.xml file. -->
+	<bean id="hibernateStatisticsService" class="org.hibernate.jmx.StatisticsService">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>
+	
+	<bean id="springContextUtil" class="org.kablink.teaming.util.SpringContextUtil" />
+	
+	<bean id="migrate34EncryptionKey" class="org.kablink.teaming.util.Migrate34EncryptionKey" depends-on="springContextUtil">
+		<property name="jdbcDao"><ref bean="jdbcDao"/></property>
+	</bean>
+
+	<bean id="dataSource" class="org.kablink.teaming.spring.jndi.JndiObjectFactoryBean">
+		<property name="jndiName"><value>java:comp/env/jdbc/SiteScapePool</value></property>
+	</bean>
+  
+	<bean id="performanceMonitorInterceptor" class="org.springframework.aop.interceptor.PerformanceMonitorInterceptor">
+	</bean>
+	
+	<bean id="invocationStatisticsInterceptor" class="org.kablink.teaming.util.aopalliance.InvocationStatisticsInterceptor">
+	</bean>
+	
+	<bean id="moduleEventListenerManagerInterceptor" class="org.kablink.teaming.module.interceptor.EventListenerManagerInterceptor">
+	</bean>
+	
+	<bean id="invocationLoggingInterceptor" class="org.kablink.teaming.util.aopalliance.InvocationLoggingInterceptor"/>
+	
+	<bean id="aopallianceWsLoggingInterceptor" class="org.kablink.teaming.util.aopalliance.WsLoggingInterceptor"/>
+	
+	<bean id="scheduler" class="org.kablink.teaming.spring.scheduling.quartz.SchedulerFactoryBean">
+		<property name="dataSource"><ref bean="dataSource"/></property>
+		<property name="autoStartup"><value>${org.quartz.auto.startup}</value></property>
+		<property name="startupDelay"><value>60</value></property>
+		<property name="schedulerName"><value>Sitescape</value></property>
+		<property name="quartzProperties">
+		<props>			
+			<prop key="org.quartz.threadPool.makeThreadsDaemons">true</prop>
+			<prop key="org.quartz.threadPool.threadCount">${org.quartz.threadPool.threadCount}</prop>
+			<prop key="org.quartz.threadPool.threadPriority">${org.quartz.threadPool.threadPriority}</prop>
+			<prop key="org.quartz.jobStore.tablePrefix">${org.quartz.jobStore.tablePrefix}</prop>
+			<prop key="org.quartz.plugin.triggHistory.class">org.quartz.plugins.history.LoggingJobHistoryPlugin</prop>
+			<prop key="org.quartz.jobStore.driverDelegateClass">${org.quartz.jobStore.driverDelegateClass}</prop>
+			<prop key="org.quartz.jobStore.selectWithLockSQL">${org.quartz.jobStore.selectWithLockSQL}</prop>
+			<prop key="org.quartz.scheduler.instanceId">${org.quartz.scheduler.instanceId}</prop>
+			<prop key="org.quartz.jobStore.isClustered">${org.quartz.jobStore.isClustered}</prop>
+		</props>
+		</property>
+		<property name="globalJobListeners">
+			<list>
+			<bean class="org.kablink.teaming.jobs.CleanupJobListener"/>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 
+	<bean id="scheduler" class="org.kablink.teaming.spring.scheduling.quartz.SchedulerFactoryBean">
+		<property name="autoStartup"><value>${org.quartz.auto.startup}</value></property>
+		<property name="startupDelay"><value>60</value></property>
+		<property name="schedulerName"><value>Sitescape</value></property>
+		<property name="quartzProperties">
+		<props>
+			<prop key="org.quartz.jobStore.class">org.quartz.simpl.RAMJobStore</prop>			
+			<prop key="org.quartz.threadPool.makeThreadsDaemons">true</prop>
+			<prop key="org.quartz.threadPool.threadCount">${org.quartz.threadPool.threadCount}</prop>
+			<prop key="org.quartz.threadPool.threadPriority">${org.quartz.threadPool.threadPriority}</prop>
+			<prop key="org.quartz.plugin.triggHistory.class">org.quartz.plugins.history.LoggingJobHistoryPlugin</prop>
+			<prop key="org.quartz.scheduler.instanceId">${org.quartz.scheduler.instanceId}</prop>
+		</props>
+		</property>
+		<property name="globalJobListeners">
+			<list>
+			<bean class="org.kablink.teaming.jobs.CleanupJobListener"/>
+			</list>
+		</property>
+	</bean>
+	-->
+
+	<!-- Local transaction manager. If using JTA, comment out this element -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>
+
+	<!-- JTA transaction manager. If using local transaction, comment out this element -->	
+	<!--<bean id="transactionManager" class="org.kablink.teaming.spring.transaction.jta.JtaTransactionManager" />-->
+
+	<bean id="baseTransactionProxy" parent="baseTransactionWithoutInterceptorsProxy" abstract="true">
+		<property name="preInterceptors">
+			<list>
+				<ref bean="invocationLoggingInterceptor"/>
+				<!--<ref bean="performanceMonitorInterceptor"/>-->
+				<ref bean="invocationStatisticsInterceptor"/>
+				<ref bean="indexSynchronizationManagerInterceptor"/>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Local transaction manager for JDBC. If using JTA, comment out this element -->
+	<bean id="jdbcTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource"><ref bean="dataSource"/></property>
+	</bean>
+
+	<bean id="baseTransactionWithoutInterceptorsProxy" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
+			abstract="true">
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<!-- Warning: When used with jta, specified isolation levels are ignored and ISOLATION_DEFAULT is used instead. -->
+		<property name="transactionAttributes">
+			<props>
+				<prop key="add*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="copy*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="modify*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="move*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="update*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="create*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="save*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
+				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="moduleTransactionProxy" parent="baseTransactionWithoutInterceptorsProxy" abstract="true">
+		<property name="preInterceptors">
+			<list>
+				<ref bean="invocationLoggingInterceptor"/>
+				<!--<ref bean="performanceMonitorInterceptor"/>-->
+				<ref bean="invocationStatisticsInterceptor"/>
+				<ref bean="moduleEventListenerManagerInterceptor"/>
+				<ref bean="indexSynchronizationManagerInterceptor"/>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="moduleNonTransactionProxy" class="org.springframework.aop.framework.ProxyFactoryBean" depends-on="sPropsUtil" abstract="true">
+		<property name="interceptorNames">
+			<list>
+				<value>invocationLoggingInterceptor</value>
+				<!--<value>performanceMonitorInterceptor</value>-->
+				<value>invocationStatisticsInterceptor</value>
+				<value>moduleEventListenerManagerInterceptor</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Transaction template for use with Hibernate -->
+	<bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="isolationLevelName"><value>ISOLATION_READ_COMMITTED</value></property>
+		<property name="propagationBehaviorName"><value>PROPAGATION_REQUIRED</value></property>
+	</bean>
+
+	<!-- Transaction template for use with JDBC -->
+	<bean id="jdbcTransactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+		<property name="transactionManager"><ref bean="jdbcTransactionManager"/></property>
+		<property name="isolationLevelName"><value>ISOLATION_READ_COMMITTED</value></property>
+		<property name="propagationBehaviorName"><value>PROPAGATION_REQUIRED</value></property>
+	</bean>
+
+	<bean id="modelProcessorManager" class="org.kablink.teaming.modelprocessor.ProcessorManager">
+		<property name="config">
+			<bean class="org.kablink.teaming.util.DefaultMergeableXmlClassPathConfigFiles">
+				<property name="configFiles">
+					<list>
+						<value>config/model-processor-mapping.xml</value>
+						<value>optional:config/model-processor-mapping-ext.xml</value>
+					</list>		
+				</property>
+				<property name="styleSheet"><value>/WEB-INF/xslt/model-processor-mapping.xslt</value></property>
+				<property name="validating"><value>true</value></property>
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="nlt" class="org.kablink.teaming.util.NLT"/>
+	
+	<bean id="definitionHelper" class="org.kablink.teaming.web.util.DefinitionHelper">
+		<property name="definitionModule"><ref bean="definitionModule"/> </property>
+		<property name="binderModule"><ref bean="binderModule"/> </property>
+		<property name="definitionBuilderConfig"><ref bean="definitionBuilderConfig"/></property>		
+	</bean>
+	
+	<!-- Current encryptor implementing latest algorithm required by the current version of product.
+	     NOTE: The requirement is different between Filr and Vibe. Consequently the current version
+	           of each product may use different encryptor and they each may or may not be using 
+	           different algorithm from the first generation encryptor.
+	     NOTE: This bean is made dependent upon the internal rawSsfProperties bean rather than the public 
+	           sPropsUtil bean because making this dependent upon sPropsUtil results in circular dependency.
+	           For the same reason we cannot use ${} substitution to pass property values of this bean
+	           since sPropsUtil is not in service yet. Instead, we pass the name of property to the bean
+	           and have the bean retrieve the value from the properties files. -->
+	<bean id="symmetricStringEncryptor" class="org.kablink.util.encrypt.ExtendedPBEStringEncryptorBean" depends-on="rawSsfProperties">
+    	<property name="algorithm"><value>${symmetric.string.encryptor.algorithm}</value></property>
+  	</bean>
+  	
+  	<!--  This is old encryptor implementing old algorithm. This encryptor is used in all versions of Vibe including Hudson.
+  	      Also Filr code prior to 1.0 release (that is, during development) also used this encryptor. -->
+	<bean id="symmetricStringEncryptor_firstGen" class="org.kablink.util.encrypt.ExtendedPBEStringEncryptorBean" depends-on="rawSsfProperties">
+    	<property name="algorithm"><value>PBEWithMD5AndDES</value></property>
+  	</bean>
+  	
+  	<!-- This encryptor simply wraps both new and old encryptors and used to encrypt/decrypt values
+  	     stored in the database declaratively through Hibernate mapping files.
+  	     NOTE: The Filr user passwords are NOT encrypted through this wrapper. -->
+  	<bean id="encryptorWrapperForHibernate" class="org.kablink.teaming.util.encrypt.HibernateEncryptor">
+  	    <constructor-arg><ref bean="symmetricStringEncryptor"/></constructor-arg>
+  	    <constructor-arg><ref bean="symmetricStringEncryptor_firstGen"/></constructor-arg>
+  	</bean>
+  	
+	<bean id="hibernateStringEncryptor"
+ 	   class="org.jasypt.hibernate.encryptor.HibernatePBEStringEncryptor">
+ 	   <property name="registeredName">
+ 	       <value>hibernateStringEncryptor</value>
+ 	   </property>
+ 	   <property name="encryptor">
+  	      <ref bean="encryptorWrapperForHibernate" />
+  	  </property>
+ 	 </bean>
+ 	 
+ 	 <!-- This bean deals with the ssf properties files at the base raw level and doesn't know or care
+ 	      anything about how to encrypt or decrypt values. If called, it will return raw value that
+ 	      may be encrypted and hence unusable by the caller. -->
+ 	 <bean id="rawSsfProperties" class="org.kablink.teaming.util.PropertiesClassPathConfigFiles" depends-on="migrate34EncryptionKey">
+		<property name="configFiles">
+			<list>
+				<value>config/ssf.properties</value>
+				<value>config/ssf-additional.properties</value>
+				<value>optional:config/ssf-ext.properties</value>
+			</list>		
+		</property>
+ 	 </bean>
+
+	<!-- This bean is the main one that applications interact with in order to retrieve values from the ssf
+	     properties files through convenience methods. This bean knows how to encrypt or decrypt values as necessary. -->
+	<bean id="sPropsUtil" class="org.kablink.teaming.util.SPropsUtil">
+		<property name="config">
+			<!-- This private bean wraps "rawSsfProperties" bean with the ability to handle data encryption and decryption. -->
+			<bean class="org.kablink.teaming.util.encrypt.EncryptedClassPathConfigFiles">
+				<property name="propertiesClassPathConfigFiles"><ref bean="rawSsfProperties"/></property>
+				<property name="encryptConfigFile"><value>optional:config/ssf-ext.properties</value></property>
+				<property name="encryptor"><ref bean="symmetricStringEncryptor"/></property>
+				<property name="encryptor_first_gen"><ref bean="symmetricStringEncryptor_firstGen"/></property>
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="zoneConfig" class="org.kablink.teaming.util.SZoneConfig">
+		<property name="configDocs">
+			<bean class="org.kablink.teaming.util.DefaultMergeableXmlClassPathConfigFiles">
+				<property name="configFiles">
+					<list>
+						<value>config/zone.cfg.xml</value>
+						<value>optional:config/zone-ext.cfg.xml</value>
+					</list>		
+				</property>
+				<property name="validating"><value>false</value></property>
+				<property name="styleSheet"><value>/WEB-INF/xslt/zone.cfg.xslt</value></property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="runAsyncManager" class="org.kablink.teaming.runasync.RunAsyncManager" depends-on="sPropsUtil" />
+
+	<!-- ========================= Portlet Common Infrastructural Beans ======================== -->
+	
+	<bean id="localeResolver" class="org.kablink.teaming.portletadapter.support.UserLocaleResolver" />	
+	
+	<!-- Portlet Parameter-based Mapping Interceptor -->
+	<bean id="portletParameterMappingInterceptor" class="org.springframework.web.portlet.handler.ParameterMappingInterceptor"/>
+
+	<!-- Template for the Portlet Mode - Parameter Handler Mapping Beans -->
+	<bean id="portletModeParameterHandlerMappingTemplate" class="org.springframework.web.portlet.handler.PortletModeParameterHandlerMapping" lazy-init="true" abstract="true">
+        <property name="order"><value>10</value></property>
+		<property name="applyWebRequestInterceptorsToRenderPhaseOnly"><value>false</value></property>
+		<property name="interceptors">
+			<list>
+				<ref bean="portletParameterMappingInterceptor"/>
+				<!-- Check user login -->
+				<ref bean="portletLoginCheckInterceptor"/>
+				<!-- Enable Open-Session-In-View pattern for Hibernate ORM.
+				     Put this before other interceptors that might interact
+				     with the database. --> 
+				<ref bean="openSessionInViewInterceptor"/>
+				<!-- Set up and resolve request context -->
+				<ref bean="portletInitRequestContextInterceptor"/>
+				<!-- Log context info upon exception -->
+				<ref bean="portletLogContextInfoUponExceptionInterceptor"/>
+				<!-- Synch user if necessary -->
+				<ref bean="portletUserSynchInterceptor"/>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Template for the Portlet Mode Handler Mapping Beans -->
+	<bean id="portletModeHandlerMappingTemplate" class="org.springframework.web.portlet.handler.PortletModeHandlerMapping" lazy-init="true" abstract="true">
+        <property name="order"><value>20</value></property>
+		<property name="applyWebRequestInterceptorsToRenderPhaseOnly"><value>false</value></property>
+		<property name="interceptors">
+			<list>
+				<!-- Check user login -->
+				<ref bean="portletLoginCheckInterceptor"/>
+				<!-- Enable Open-Session-In-View pattern for Hibernate ORM.
+				     Put this before other interceptors that might interact
+				     with the database. --> 
+				<ref bean="openSessionInViewInterceptor"/>
+				<!-- Set up and request context -->
+				<ref bean="portletInitRequestContextInterceptor"/>
+				<!-- Log context info upon exception -->
+				<ref bean="portletLogContextInfoUponExceptionInterceptor"/>
+				<!-- Synch user if necessary -->
+				<ref bean="portletUserSynchInterceptor"/>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Default Exception Handler Bean -->
+    <bean id="portletDefaultExceptionHandlerTemplate" class="org.springframework.web.portlet.handler.SimpleMappingExceptionResolver" lazy-init="true" abstract="true">
+		<property name="defaultErrorView"><value>common/defError</value></property>
+		<property name="exceptionMappings">
+			<props>
+				<prop key="org.kablink.teaming.exception.CheckedCodedException">common/defCodedError</prop>
+				<prop key="org.kablink.teaming.exception.UncheckedCodedException">common/defCodedError</prop>
+				<prop key="org.kablink.teaming.module.file.WriteFilesException">common/defCodedError</prop>
+				<prop key="org.kablink.teaming.module.binder.impl.WriteEntryDataException">common/defCodedError</prop>
+				<prop key="org.kablink.teaming.lucene.LuceneException">common/defCodedError</prop>
+				<prop key="org.kablink.teaming.web.util.CloseWrapperException">common/defCodedErrorClose</prop>
+				<prop key="org.kablink.teaming.web.util.ExportException">common/noRenderError</prop>
+				<prop key="org.kablink.teaming.context.request.NoContextUserException">common/noContextUserError</prop>
+				<prop key="javax.portlet.PortletSecurityException">common/notAuthorized</prop>
+				<prop key="javax.portlet.UnavailableException">common/notAvailable</prop>
+				<prop key="com.novell.teaming.search.journal.JournalException">common/defCodedError</prop>
+				<prop key="org.kablink.teaming.antivirus.VirusDetectedException">common/defCodedError</prop>
+			</props>
+		</property>  
+	</bean>
+
+	<!-- Used for open-session-in-view pattern -->
+	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<!--<property name="singleSession"><value>false</value></property>-->
+	</bean>
+	
+	<bean id="portletLoginCheckInterceptor" class="org.kablink.teaming.web.portlet.handler.LoginCheckInterceptor"/>
+		
+	<bean id="portletInitRequestContextInterceptor" class="org.kablink.teaming.web.portlet.handler.InitRequestContextInterceptor">
+		<property name="resolve"><value>true</value></property>
+	</bean>
+		
+	<bean id="portletLogContextInfoUponExceptionInterceptor" class="org.kablink.teaming.web.portlet.handler.LogContextInfoInterceptor"/>
+		
+	<bean id="portletUserSynchInterceptor" class="org.kablink.teaming.web.portlet.handler.UserSynchInterceptor" depends-on="sPropsUtil">
+		<property name="profileDao"><ref bean="profileDao"/></property>
+		<property name="profileModule"><ref bean="profileModule"/></property>
+	</bean>	
+
+	<bean id="portletUrlToStringHelper" class="org.kablink.teaming.portletadapter.PortletUrlToStringHelper"/>
+
+	<!-- ========================= Servlet Common Infrastructural Beans ======================== -->
+
+	<bean id="simpleUrlHandlerMappingTemplate" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping" lazy-init="true" abstract="true">
+		<property name="interceptors">
+			<list>
+				<!-- We do not need LoginCheckInterceptor here, because
+				     1. Under Liferay, the login filter will redirect unauthenticated 
+				     user to Liferay's login page.
+				     1. Under JBoss Portal, all servlets require authentication first.
+				     So in both cases, by the time these handlers are executed, we
+				     can safely assume that the user has already been authenticated. -->
+				<!-- Enable Open-Session-In-View pattern for Hibernate ORM.
+				     Put this before other interceptors that might interact
+				     with the database. --> 
+				<ref bean="openSessionInViewInterceptor"/>
+				<!-- Set up and resolve RequestContext -->
+				<ref bean="initRequestContextInterceptor"/>
+				<!-- Log context info upon exception -->
+				<ref bean="logContextInfoUponExceptionInterceptor"/>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="initRequestContextInterceptor" class="org.kablink.teaming.web.servlet.handler.InitRequestContextInterceptor">
+		<property name="resolve"><value>true</value></property>
+	</bean>
+
+	<bean id="logContextInfoUponExceptionInterceptor" class="org.kablink.teaming.web.servlet.handler.LogContextInfoInterceptor"/>
+
+	<!-- ============================ Indexing/Search Service =========================== -->
+	
+	<bean id="luceneSessionFactory" class = "org.kablink.teaming.search.local.LocalLuceneSessionFactory" depends-on="sPropsUtil">
+		<property name="luceneProviderManager">
+			<bean class="org.kablink.teaming.lucene.LuceneProviderManager" 
+				depends-on="sPropsUtil" init-method="initialize" destroy-method="close">
+				<property name="indexRootDirPath"><value>${data.luceneindex.root.dir}/lucene</value></property>
+				<property name="mbeanNamePrefix"><value>Vibe:type=Indexing,</value></property>
+			</bean>
+		</property>
+	</bean>
+		
+	<bean id="indexSynchronizationManager" class="org.kablink.teaming.search.IndexSynchronizationManager">
+		<property name="luceneSessionFactory"><ref bean="luceneSessionFactory"/></property>
+	</bean>
+	
+	<bean id="indexSynchronizationManagerInterceptor" class="org.kablink.teaming.search.interceptor.IndexSynchronizationManagerInterceptor">
+	</bean>	
+	
+	<!-- ============================== Document Converter ============================ -->
+
+	<bean id="converterCommon" abstract="true">
+        <property name="fileModule"><ref bean="fileModule"/></property>
+    </bean>
+	
+	<!--  OpenOffice converter for 'view file as HTML' functionality
+			% C:\Program Files\OpenOffice.org 2.0\program\soffice.exe "-accept=socket,port=8100;urp;"
+	 -->
+    <bean id="htmlOpenOfficeConverter" class="org.kablink.teaming.docconverter.impl.HtmlOpenOfficeConverter" parent="converterCommon">
+        <property name="host"><value>localhost</value></property>
+        <property name="port"><value>8100</value></property>
+    </bean>
+    
+    <bean id="textOpenOfficeConverter" class="org.kablink.teaming.docconverter.impl.TextOpenOfficeConverter" parent="converterCommon">
+		<property name="host"><value>localhost</value></property>
+        <property name="port"><value>8100</value></property>
+        <property name="nullTransform"><value>config/null.xslt</value></property>
+        <property name="excludedExtensions"><value>jpg,jpeg,gif,tiff,png,exe,mpeg,mov,bmp,exe,wav,wma,mpa,mp3,mpg,mp4,swf,ogg,m4a,flv,bin</value></property>
+    </bean>
+    
+    <bean id="textTikaConverter" class="org.kablink.teaming.docconverter.impl.TextTikaConverter" depends-on="sPropsUtil">
+        <property name="excludedExtensions"><value>gif,tiff,png,exe,mpeg,mov,bmp,exe,wav,wma,mpa,mp3</value></property>
+    </bean>
+    
+    <bean id="imageOpenOfficeConverter" class="org.kablink.teaming.docconverter.impl.ImageOpenOfficeConverter" parent="converterCommon">
+        <property name="host"><value>localhost</value></property>
+        <property name="port"><value>8100</value></property>
+    </bean>
+
+	<bean id="openOfficeHelper" class = "org.kablink.teaming.docconverter.util.OpenOfficeHelper" depends-on="sPropsUtil,zoneModule" />
+	
+    <!-- ============================== RSS Generator ============================ -->
+	
+	<bean id="rssModule" parent="moduleNonTransactionProxy">
+		<property name="target">
+		    <bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.rss.impl.RssModuleImpl">
+		    	<property name="rssRootDir"><value>${data.root.dir}/rss</value></property>
+		    </bean>
+		</property>
+		<!--<property name="proxyInterfaces">
+			<value>org.kablink.teaming.module.rss.RssModule</value>
+		</property>-->
+	</bean>
+	
+    <!-- ============================== ical Converter ============================ -->
+	
+	<bean id="icalModule" parent="moduleNonTransactionProxy">
+		<property name="target">
+		    <bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.ical.impl.IcalModuleImpl">	
+		    	<property name="binderModule"><ref bean="binderModule"/></property>
+		    	<property name="folderModule"><ref bean="folderModule"/></property>
+		    </bean>
+		</property>
+		<!--<property name="proxyInterfaces">
+			<value>org.kablink.teaming.module.ical.IcalModule</value>
+		</property>-->
+	</bean>
+	
+	<!-- ================================ Security Service =============================== -->
+	
+	<bean id="accessControlManager" class="org.kablink.teaming.security.impl.AccessControlManagerImpl" depends-on="sPropsUtil">
+		<property name="functionManager"><ref bean="functionManager"/></property>
+		<property name="workAreaFunctionMembershipManager"><ref bean="workAreaFunctionMembershipManager"/></property>
+		<property name="coreDao"><ref bean="coreDao"/></property>
+		<property name="profileDao"><ref bean="profileDao"/></property>
+		<property name="licenseManager"><ref bean="licenseManager"/></property>
+	</bean>
+	<!--<bean id="accessControlManager" class="org.kablink.teaming.security.impl.NullAccessControlManager">
+		<property name="profileDao"><ref bean="profileDao"/></property>
+	</bean>
+	-->
+
+	<bean id="aclManager" class="org.kablink.teaming.security.acl.impl.AclManagerImpl">
+	</bean>
+
+	<bean id="functionManager" class="org.kablink.teaming.security.function.impl.FunctionManagerImpl">
+		<property name="securityDao"><ref bean="securityDao"/></property>
+	</bean>
+
+	<bean id="workAreaFunctionMembershipManager" class="org.kablink.teaming.security.function.impl.WorkAreaFunctionMembershipManagerImpl">
+		<property name="securityDao"><ref bean="securityDao"/></property>		
+	</bean>
+	
+	<bean id="securityDao" class="org.kablink.teaming.security.dao.impl.SecurityDaoImpl">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>
+	
+	<bean id="authenticationManager"  class="org.kablink.teaming.security.authentication.impl.AuthenticationManagerImpl" depends-on="sPropsUtil">
+			<property name="profileDao"><ref bean="profileDao"/></property>						
+			<property name="coreDao"><ref bean="coreDao"/></property>						
+			<property name="adminModule"><ref bean="adminModule"/></property>						
+			<property name="profileModule"><ref bean="profileModule"/></property>						
+			<property name="reportModule"><ref bean="reportModule"/></property>						
+			<property name="ldapModule"><ref bean="ldapModule"/></property>		
+			<property name="templateModule"><ref bean="templateModule"/></property>
+			<property name="binderModule"><ref bean="binderModule"/></property>
+			<property name="folderModule"><ref bean="folderModule"/></property>
+			<property name="zoneModule"><ref bean="zoneModule"/></property>
+			<property name="resourceDriverModule"><ref bean="resourceDriverModule"/></property>
+			<property name="processorManager"><ref bean="modelProcessorManager"/></property>				
+			<property name="runAsyncManager"><ref bean="runAsyncManager"/></property>
+	</bean>	
+	
+	<bean id="stringCheckUtil" class = "org.kablink.teaming.util.stringcheck.StringCheckUtil" depends-on="sPropsUtil">
+	</bean>	
+	
+	<bean id="accessTokenManager" parent="baseTransactionProxy">
+		<property name="target">
+			<bean class="org.kablink.teaming.security.accesstoken.impl.AccessTokenManagerImpl">
+				<property name="profileDao"><ref bean="profileDao"/></property>							
+				<property name="securityDao"><ref bean="securityDao"/></property>							
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+			</bean>
+		</property>
+		<property name="transactionAttributes">
+			<props>
+			    <!-- This method must use not REQUIRED but REQUIRES_NEW. This method is usually
+			         invoked when a session times out or invalidated, at which point the executing
+			         thread may be in a read-only transaction. If so, the REQUIRED setting will
+			         cause the destroy method to fail with the following error:
+org.springframework.dao.InvalidDataAccessApiUsageException: Write operations are not allowed in read-only mode (FlushMode.MANUAL): Turn your Session into FlushMode.COMMIT/AUTO or remove 'readOnly' marker from transaction definition.
+                     Once this error occurs, it marks the transaction as "rollback only", which 
+                     then causes the primary commit attempt higher up in the call chain to fail with 
+                     the following errors:
+org.springframework.transaction.UnexpectedRollbackException: Transaction rolled back because it has been marked as rollback-only
+Application exception overridden by commit exception
+			    -->
+				<prop key="destroy*">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
+				<prop key="create*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="update*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+			</props>
+		</property>
+
+	</bean>
+	
+	<!-- =========================== Business Components =========================== -->
+	
+	<!-- Template for expressing dependencies on common services in the system.
+	     This includes DAO components and a variety of other services and managers 
+	     that are commonly used by modules. 
+	     
+	     IMPORTANT: Do NOT ever add module components to this template, since it 
+	     can cause circular dependencies among modules! Instead, inter-module
+	     dependencies must be expressed directly in the bean declaration of the
+	     refering module. -->
+	     
+	<bean id="dependOnCommonServicesTemplate" abstract="true">
+		<property name="coreDao"><ref bean="coreDao"/></property>
+		<property name="folderDao"><ref bean="folderDao"/></property>
+		<property name="profileDao"><ref bean="profileDao"/></property>
+		<property name="securityDao"><ref bean="securityDao"/></property>
+		<property name="functionManager"><ref bean="functionManager"/></property>	
+		<property name="accessControlManager"><ref bean="accessControlManager"/></property>
+		<property name="aclManager"><ref bean="aclManager"/></property>
+		<property name="scheduler"><ref bean="scheduler"/></property>
+		<property name="processorManager"><ref bean="modelProcessorManager"/></property>
+		<property name="luceneSessionFactory"><ref bean="luceneSessionFactory"/></property>
+		<property name="workAreaFunctionMembershipManager"><ref bean="workAreaFunctionMembershipManager"/></property>
+		<property name="resourceDriverManager"><ref bean="resourceDriverManager"/></property>
+		<property name="licenseManager"><ref bean="licenseManager"/></property>
+		<property name="accessTokenManager"><ref bean="accessTokenManager"/></property>
+		<property name="relevanceManager"><ref bean="relevanceManager"/></property>
+        <property name="runAsyncManager"><ref bean="runAsyncManager"/></property>
+	</bean>
+	
+	<bean id="processorDependencyTemplate" parent="dependOnCommonServicesTemplate" depends-on="coreDao" abstract="true">
+		<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+		<property name="definitionModule"><ref bean="definitionModule"/></property>
+		<property name="workflowModule"><ref bean="workflowModule"/></property>
+		<property name="folderModule"><ref bean="folderModule"/></property>
+		<property name="fileModule"><ref bean="fileModule"/></property>
+		<property name="reportModule"><ref bean="reportModule"/></property>
+		<property name="rssModule"><ref bean="rssModule"/></property>
+		<property name="templateModule"><ref bean="templateModule"/></property>
+		<property name="textConverterManager"><ref bean="textConverterManager"/></property>
+		<property name="textStreamConverterManager"><ref bean="textStreamConverterManager"/></property>
+		<property name="antiVirusManager"><ref bean="antiVirusManager"/></property>
+	</bean>
+	
+	<bean id="workspaceModule" parent="moduleTransactionProxy">
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.workspace.impl.WorkspaceModuleImpl">
+				<property name="definitionModule"><ref bean="definitionModule"/></property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="adminModule" parent="moduleTransactionProxy">
+		<property name="target"><ref bean="adminModuleTarget"/></property>
+		<!-- setWorkAreaFunctionMemberships, setWorkAreaFunctionMembershipInherited, setWorkAreaOwner provide transaction semantics at a finer
+		granularity then the method. Handled by processor through transactionTemplate-->
+		<property name="transactionAttributes">
+			<props>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="modify*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addExtension">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addDefaultTemplate">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addTemplate">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addTemplateFromBinder">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addFunction">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addFunctionCondition">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addPosting">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addOpenIDProvider">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="updateDefaultDefinitions">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setMailConfigAndSchedules">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setMobileAccessEnabled">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setFileVersionsMaxAge">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setFileSizeLimitUserDefault">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setQuotaEnabled">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setQuotaDefault">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setQuotaHighWaterMark">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setBinderQuota">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setBinderQuotasEnabled">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setBinderQuotasInitialized">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setHomePageConfig">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setWeekendsAndHolidaysConfig">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setFileSynchAppSettings">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setExternalUserEnabled">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setOpenIDConfig">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setAdHocFoldersEnabled">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setLogTableKeepDays">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setMobileAppsConfig">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setJitsConfig">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setAllowShareWithLdapGroups">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setDownloadEnabled">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setPasswordPolicyEnabled">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setWebAccessEnabled">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setNameCompletionSettings">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setUseDirectoryRightsEnabled">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setCachedRightsRefreshInterval">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setAutoApplyDeferredUpdateLogs">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setTelemetrySettings">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setTelemetryTier2Enabled">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setExtUserTermsAndConditions*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="templateModule" parent="moduleTransactionProxy">
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.template.impl.TemplateModuleImpl">
+				<property name="adminModule"><ref bean="adminModule"/></property>
+				<property name="definitionModule"><ref bean="definitionModule"/></property>
+				<property name="folderModule"><ref bean="folderModule"/></property>
+				<property name="workspaceModule"><ref bean="workspaceModule"/></property>
+				<property name="binderModule"><ref bean="binderModule"/></property>
+				<property name="dashboardModule"><ref bean="dashboardModule"/></property>
+				<property name="fileModule"><ref bean="fileModule"/></property>
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+			</bean>
+		</property>
+		<!-- addBinder provides transaction semantics at a finer
+		granularity then the method. Handled by processor through transactionTemplate-->
+		<property name="transactionAttributes">
+			<props>
+				<prop key="addDefaultTemplate">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addTemplate">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addTemplateFromBinder">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="modify*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="update*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="folderModule" parent="moduleTransactionProxy" depends-on="zoneConfig" >
+		<property name="target"><ref bean="folderModuleTarget"/></property>
+		<!-- addEntry, addReply,addVote, modifyEntry, deleteEntry provide transaction semantics at a finer
+		granularity then the method. Handled by processor through transactionTemplate-->
+		<property name="transactionAttributes">
+			<props>
+				<prop key="setSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addEntryWorkflow">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="copyEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="deleteEntryWorkflow">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="deleteTag">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
+				<prop key="modifyWorkflowState">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="moveEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="preDeleteEntry*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="updateModificationStamp*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="restoreEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="reserveEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="unreserveEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="changeEntryType">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="fileSynchronize">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="profileModule" parent="moduleTransactionProxy">
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.profile.impl.ProfileModuleImpl">
+				<property name="definitionModule"><ref bean="definitionModule"/></property>
+				<property name="templateModule"><ref bean="templateModule"/></property>
+				<property name="adminModule"><ref bean="adminModule"/></property>
+				<property name="binderModule"><ref bean="binderModule"/></property>
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+			</bean>
+		</property>
+		<!-- addUser, addGroup, addEntries, modifyEntry, addUserFromPortal,modifyUserFromPortal, addUserWorkspace, addApplication, addApplicationGroup provide transaction semantics at a finer
+		granularity then the method. Handled by processor through transactionTemplate-->
+		<property name="transactionAttributes">
+			<props>
+				<prop key="addUserMiniBlog">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setUserMiniBlog">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="deleteEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
+				<prop key="save*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="deleteUserByName">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="changePassword">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="defaultWorkspaceCoreProcessor" parent="processorDependencyTemplate" class="org.kablink.teaming.module.workspace.impl.DefaultWorkspaceCoreProcessor"/>
+
+	<bean id="defaultFolderCoreProcessor" parent="processorDependencyTemplate" class="org.kablink.teaming.module.folder.impl.DefaultFolderCoreProcessor"/>
+
+	<bean id="defaultProfileCoreProcessor" parent="processorDependencyTemplate" class="org.kablink.teaming.module.profile.impl.DefaultProfileCoreProcessor"/>
+
+	<bean id="defaultTemplateCoreProcessor" parent="processorDependencyTemplate" class="org.kablink.teaming.module.template.impl.DefaultTemplateCoreProcessor"/>
+	
+	<bean id="binderModule" parent="moduleTransactionProxy">
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.binder.impl.BinderModuleImpl">
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+				<property name="runAsyncManager"><ref bean="runAsyncManager"/></property>
+			</bean>
+		</property>
+		<!-- addBinder, modifyBinder, setTeamMembers, setTeamMembershipInherited, deleteBinder, copyBinder, setBinderFileAgingDates, changeEntryTypes 
+		     provide transaction semantics at a finer granularity then the method. Handled by processor through transactionTemplate-->
+		<property name="transactionAttributes">
+			<props>
+				<prop key="setSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
+				<prop key="modifyNotification">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="modifyPosting">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="modifyTag">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="move*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setDefinition*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setProperty*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setNotification*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setPosting*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setTag*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setMyFilesDir">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="preDeleteBinder*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="restoreBinder">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="deleteTag">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="deleteSimpleName">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addSimpleName">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+			</props>
+		</property>
+	</bean>
+	<bean id="binderAccessUtils" class="org.kablink.teaming.module.shared.AccessUtils">
+		<property name="accessControlManager"><ref bean="accessControlManager"/> </property>
+		<property name="profileDao"><ref bean="profileDao"/></property>
+	</bean>
+	<bean id="definitionBuilderConfig" class="org.kablink.teaming.module.definition.DefinitionConfigurationBuilder"
+		depends-on="licenseChecker">
+		<property name="configFiles">
+			<list>
+				<value>config/definition_builder_config.xml</value>
+			</list>		
+		</property>
+		<!-- TODO: We must use validation! -->
+		<property name="validating"><value>true</value></property>
+	</bean>
+
+	<bean id="definitionModule" parent="moduleTransactionProxy" depends-on="sPropsUtil,stringCheckUtil" >
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.definition.impl.DefinitionModuleImpl">
+				<property name="workflowModule"><ref bean="workflowModule"/></property>
+				<property name="definitionBuilderConfig"><ref bean="definitionBuilderConfig"/></property>		
+				<property name="binderModule"><ref bean="binderModule"/></property>
+			</bean>	
+		</property>
+	</bean>
+	<bean id="workflowFactory" class="org.kablink.teaming.module.workflow.impl.WorkflowFactory">
+		<property name="hibernateSessionFactory"><ref bean="sessionFactory"/></property>
+	</bean> 
+	
+	<bean id="workflowModule" parent="moduleTransactionProxy" depends-on="zoneConfig, workflowFactory" >
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.workflow.impl.WorkflowModuleImpl">
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+			</bean>
+		</property>
+	</bean>	
+
+	<bean id="workflowProcessUtils" parent="dependOnCommonServicesTemplate"  class="org.kablink.teaming.module.workflow.WorkflowProcessUtils">
+		<property name="zoneClassManager"><ref bean="zoneClassManager"/></property>
+		<property name="binderModule"><ref bean="binderModule"/></property>
+	</bean>
+
+	<bean id="dashboardModule" parent="moduleTransactionProxy">
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.dashboard.impl.DashboardModuleImpl">
+				<property name="binderModule"><ref bean="binderModule"/></property>
+			</bean>	
+		</property>
+	</bean>
+	<bean id="velocityEmailEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+		<property name="resourceLoaderPath"><value>/WEB-INF/velocity</value></property>
+		<property name="velocityProperties">
+		<props>
+			<prop key="input.encoding">UTF-8</prop>
+			<prop key="output.encoding">UTF-8</prop>
+			<prop key="velocimacro.library">teaming.vm</prop>
+			<prop key="file.resource.loader.cache">${velocity.engine.cache.enabled}</prop>
+			<!--
+				The following is the number of seconds between
+				modification checks when caching is turned on.  When
+				this is an integer > 0, this represents the number of
+				seconds between checks to see if the template was
+				modified.  If the template has been modified since last
+				check, then it is reloaded and reparsed.  Otherwise
+				nothing is done.  When <= 0, no modification checks
+				will take place, and assuming that the property cache
+				(above) is true, once a template is loaded and parsed
+				the first time it is used, it will not be checked or
+				reloaded after that until the application or servlet
+				engine is restarted.
+			-->
+	    	<prop key="file.resource.loader.modificationCheckInterval">-1</prop>
+		</props>
+		</property>
+	</bean>
+	<bean id="defaultEmailFormatter" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.mail.impl.DefaultEmailFormatter" depends-on="notifyBuilderUtil">
+		<property name="definitionModule"><ref bean="definitionModule"/></property>
+		<property name="mailModule"><ref bean="mailModule"/></property>
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
+		<property name="icalModule"><ref bean="icalModule"/></property>
+		<property name="smtpService"><ref bean="smtpService"/></property>
+		<property name="definitionBuilderConfig"><ref bean="definitionBuilderConfig"/></property>		
+		<property name="binderModule"><ref bean="binderModule"/></property>
+
+	</bean>
+	<bean id="notifyBuilderUtil" class="org.kablink.teaming.module.definition.notify.NotifyBuilderUtil">
+		<property name="velocityEngine"><ref bean="velocityEmailEngine"/></property>
+		<property name="definitionBuilderConfig"><ref bean="definitionBuilderConfig"/></property>		
+		<property name="toolboxConfig"><value>config/toolbox.xml</value></property>
+	</bean>
+	
+	<bean id="defaultEmailPoster" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.mail.impl.DefaultEmailPoster">
+		<property name="folderModule"><ref bean="folderModule"/></property>
+		<property name="icalModule"><ref bean="icalModule"/></property>
+		<property name="reportModule"><ref bean="reportModule"/></property>
+	</bean>
+
+	<bean id="fileModule" parent="moduleNonTransactionProxy">
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.file.impl.FileModuleImpl" depends-on="sPropsUtil">
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+			</bean>
+		</property>
+		<!--<property name="proxyInterfaces">
+			<value>org.kablink.teaming.module.file.FileModule</value>
+		</property>-->
+	</bean>
+	
+	<bean id="convertedFileModule" parent="moduleNonTransactionProxy">
+		<property name="target">
+			<bean class="org.kablink.teaming.module.file.impl.ConvertedFileModuleImpl" depends-on="sPropsUtil">
+				<property name="fileModule"><ref bean="fileModule"/></property>
+				<property name="htmlConverterManager"><ref bean="htmlConverterManager"/></property>
+				<property name="textConverterManager"><ref bean="textConverterManager"/></property>
+				<property name="imageConverterManager"><ref bean="imageConverterManager"/></property>
+			</bean>
+		</property>
+		<!--<property name="proxyInterfaces">
+			<value>org.kablink.teaming.module.file.ConvertedFileModule</value>
+		</property>-->
+	</bean>
+	
+	<bean id="reportModule"  parent="moduleTransactionProxy">
+		<!--  dependences prevent inheriting from dependOnCommonServicesTemplate -->
+		<property name="target">
+			<bean class="org.kablink.teaming.module.report.impl.ReportModuleImpl" depends-on="sPropsUtil">
+				<property name="coreDao"><ref bean="coreDao"/></property>
+				<property name="profileDao"><ref bean="profileDao"/></property>
+				<property name="accessControlManager"><ref bean="accessControlManager"/></property>
+				<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+				<property name="binderModule"><ref bean="binderModule"/></property>
+				<property name="folderModule"><ref bean="folderModule"/></property>
+			</bean>
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="add*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+			</props>
+		</property>
+	</bean>			
+
+	<bean id="sharingModule"  parent="moduleTransactionProxy" depends-on="sPropsUtil">
+		<!--  dependences prevent inheriting from dependOnCommonServicesTemplate -->
+		<property name="target">
+			<bean class="org.kablink.teaming.module.sharing.impl.SharingModuleImpl">
+				<property name="coreDao"><ref bean="coreDao"/></property>
+				<property name="profileDao"><ref bean="profileDao"/></property>
+				<property name="folderDao"><ref bean="folderDao"/></property>
+				<property name="folderModule"><ref bean="folderModule"/></property>
+				<property name="binderModule"><ref bean="binderModule"/></property>
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+				<property name="processorManager"><ref bean="modelProcessorManager"/></property>				
+				<property name="resourceDriverManager"><ref bean="resourceDriverManager"/></property>
+			</bean>
+		</property>
+		<!-- Transaction is managed using transactionTemplate -->
+		<property name="transactionAttributes">
+			<props>
+				<prop key="setShareLists">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+			</props>
+		</property>
+	</bean>			
+
+	<bean id="netFolderModule"  parent="moduleTransactionProxy" depends-on="sPropsUtil">
+		<!--  dependences prevent inheriting from dependOnCommonServicesTemplate -->
+		<property name="target">
+			<bean class="org.kablink.teaming.module.netfolder.impl.NetFolderModuleImpl">		
+				<property name="coreDao"><ref bean="coreDao"/></property>
+				<property name="profileDao"><ref bean="profileDao"/></property>
+			</bean>
+		</property>
+		<!-- Transaction is managed using transactionTemplate -->
+		<property name="transactionAttributes">
+			<props>
+			</props>
+		</property>
+	</bean>			
+
+	<bean id="mobileDeviceModule"  parent="moduleTransactionProxy" depends-on="sPropsUtil">
+		<!--  dependences prevent inheriting from dependOnCommonServicesTemplate -->
+		<property name="target">
+			<bean class="org.kablink.teaming.module.mobiledevice.impl.MobileDeviceModuleImpl">
+				<property name="coreDao"><ref bean="coreDao"/></property>
+				<property name="adminModule"><ref bean="adminModule"/></property>
+				<property name="profileModule"><ref bean="profileModule"/></property>
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+				<property name="processorManager"><ref bean="modelProcessorManager"/></property>				
+			</bean>
+		</property>
+		<!-- Transaction is managed using transactionTemplate -->
+		<property name="transactionAttributes">
+			<props>
+				<prop key="add*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+			    <prop key="delete*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+			    <prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
+			    <prop key="modify*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+			</props>
+		</property>
+	</bean>			
+
+		<bean id="resourceDriverModule"  parent="moduleTransactionProxy">
+		<!--  dependences prevent inheriting from dependOnCommonServicesTemplate -->
+		<property name="target">
+			<bean class="org.kablink.teaming.module.resourcedriver.impl.ResourceDriverModuleImpl" depends-on="sPropsUtil">
+				<property name="coreDao"><ref bean="coreDao"/></property>
+				<property name="functionManager"><ref bean="functionManager"/></property>
+				<property name="workAreaFunctionMembershipManager"><ref bean="workAreaFunctionMembershipManager"/></property>
+				<property name="resourceDriverManager"><ref bean="resourceDriverManager"/></property>
+				<property name="accessControlManager"><ref bean="accessControlManager"/></property>
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+				<property name="folderModule"><ref bean="folderModule"/></property>
+				<property name="binderModule"><ref bean="binderModule"/> </property>
+				<property name="workspaceModule"><ref bean="workspaceModule"/></property>
+			</bean>
+		</property>
+	</bean>			
+
+	<bean id="licenseModule"  parent="moduleTransactionProxy">
+		<property name="target"><ref bean="licenseModuleTarget"/></property>
+	</bean>			
+	<bean id="licenseChecker" class="org.kablink.teaming.module.license.LicenseChecker">
+		<property name="licenseManager"><ref bean="licenseManager"/> </property>
+	</bean>
+
+	<bean id="dashboardHelper" class="org.kablink.teaming.web.util.DashboardHelper" parent="dependOnAllModulesTemplate"/>
+		
+	<bean id="aopallianceOpenSessionInViewInterceptor" class="org.kablink.teaming.util.aopalliance.OpenSessionInViewInterceptor">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>
+	
+	<bean id="aopallianceMethodInvocationTraceInterceptor" class="org.kablink.teaming.util.aopalliance.MethodInvocationTraceInterceptor"/>
+	
+	<bean id="aopallianceResolveRequestContextInterceptor" class="org.kablink.teaming.util.aopalliance.ResolveRequestContextInterceptor"/>
+
+	<!-- referenced internally when viewing files and sending mail -->
+	<bean id="mimeTypes" class="org.springframework.mail.javamail.ConfigurableMimeFileTypeMap">
+		<property name="mappingLocation"><value>/WEB-INF/etc/mime.types</value></property>
+		<property name="mappings"><value><![CDATA[
+application/vnd.oasis.opendocument.database               odb
+application/vnd.oasis.opendocument.chart                  odc
+application/vnd.oasis.opendocument.formula                odf
+application/vnd.oasis.opendocument.graphics               odg
+application/vnd.oasis.opendocument.image                  odi
+application/vnd.oasis.opendocument.text-master            odm
+application/vnd.oasis.opendocument.presentation           odp
+application/vnd.oasis.opendocument.spreadsheet            ods
+application/vnd.oasis.opendocument.text                   odt
+application/vnd.oasis.opendocument.graphics-template      otg
+application/vnd.oasis.opendocument.text-web               oth
+application/vnd.oasis.opendocument.presentation-template  otp
+application/vnd.oasis.opendocument.spreadsheet-template   ots
+application/vnd.oasis.opendocument.text-template          ott
+#   OpenOffice.org (version <= 1.1.4) and Sun StarOffice (version >= 6.0)
+application/vnd.sun.xml.calc.template                     stc
+application/vnd.sun.xml.draw.template                     std
+application/vnd.sun.xml.impress.template                  sti
+application/vnd.sun.xml.writer.template                   stw
+application/vnd.sun.xml.calc                              sxc
+application/vnd.sun.xml.draw                              sxd
+application/vnd.sun.xml.writer.global                     sxg
+application/vnd.sun.xml.impress                           sxi
+application/vnd.sun.xml.math                              sxm
+application/vnd.sun.xml.writer                            sxw
+#   StarDivision and Sun StarOffice (4.0 < version <= 5.2)
+application/vnd.stardivision.draw                         sda
+application/vnd.stardivision.calc                         sdc
+application/vnd.stardivision.impress                      sdd
+application/vnd.stardivision.mail                         sdm
+application/vnd.stardivision.impress.packed               sdp
+application/vnd.stardivision.chart                        sds
+application/vnd.stardivision.writer                       sdw vob vor
+application/vnd.stardivision.writer-global                sgl
+application/vnd.stardivision.math                         smf		
+text/calendar											  ics
+	  ]]></value></property>
+	</bean>
+		
+	<bean id="newableFileSupport" class="org.kablink.teaming.module.file.impl.NewableFileSupportImpl"/>
+		
+	<!-- =========================Portlet support =========================================================== -->	
+
+	<!-- ========================= Data Access (DAO) Components ====================== -->
+	
+	<bean id="coreDao" class="org.kablink.teaming.dao.impl.CoreDaoImpl">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>
+	
+	<bean id="profileDao" class="org.kablink.teaming.dao.impl.ProfileDaoImpl" depends-on="zoneConfig,sPropsUtil">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<property name="coreDao"><ref bean="coreDao"/></property>
+	</bean>
+
+	<bean id="folderDao" class="org.kablink.teaming.dao.impl.FolderDaoImpl">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<property name="coreDao"><ref bean="coreDao"/></property>
+	</bean>
+
+	<bean id="jdbcDao" class="org.kablink.teaming.dao.impl.JdbcDaoImpl">
+		<property name="dataSource"><ref bean="dataSource"/></property>
+		<property name="lobHandler"><ref bean="lobHandler"/></property>
+		<property name="transactionTemplate"><ref bean="jdbcTransactionTemplate"/></property>
+	</bean>
+	
+	<bean id="statelessSessionTemplate" class="org.kablink.teaming.dao.StatelessSessionTemplate">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>
+	
+	<!-- ======================== File & Repository Services ====================== -->
+	
+	<bean id="simpleFileRepository" class="org.kablink.teaming.repository.file.FileRepositorySessionFactory" 
+		depends-on="sPropsUtil" init-method="initialize" destroy-method="shutdown">
+		<property name="repositoryRootDir"><value>${data.simplefilerepository.root.dir}/filerepository</value></property>
+		<property name="archiveStore"><ref bean="archiveStore"/></property>
+	</bean>
+
+	<bean id="jackrabbitRepository" class="org.kablink.teaming.repository.jcr.jackrabbit.JCRRepositorySessionFactory"
+		init-method="initialize" destroy-method="shutdown">	
+		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
+		<property name="repositoryRootDir"><value>${data.jackrabbitrepository.root.dir}/jackrabbit</value></property>
+		<property name="homeSubdirName"><value>home</value></property>
+		<property name="configFileName"><value>jackrabbit-repository.xml</value></property>
+		<property name="initializeOnStartup"><value>false</value></property>
+		<property name="username"><value>none</value></property>
+		<property name="password"><value>none</value></property>
+		<property name="versionDeletionAllowed"><value>true</value></property>
+		<property name="archiveStore"><ref bean="archiveStore"/></property>
+	</bean>
+	
+	<!-- Uncomment this to use Slide-based WebDAV server as a repository.
+	     Also uncomment related properties in the properties file and set 
+	     their values appropriately. -->
+	<!--<bean id="webdavRepository" class="org.kablink.teaming.repository.webdav.WebdavRepositorySessionFactory"
+		init-method="initialize" destroy-method="shutdown">
+		<property name="hostUrl"><value>${webdav.repository.hosturl}</value></property>
+		<property name="contextPath"><value>${webdav.repository.context.path}</value></property>
+		<property name="docRootPath"><value>${webdav.repository.document.root.path}</value></property>
+		<property name="username"><value>${webdav.repository.username}</value></property>
+		<property name="password"><value>${webdav.repository.password}</value></property>
+		<property name="versionDeletionAllowed"><value>false</value></property>
+		<property name="archiveStore"><ref bean="archiveStore"/></property>
+	</bean>-->
+	
+	<!-- ================================ Presence Service =============================== -->
+	<bean id="presenceService"  parent="moduleNonTransactionProxy">
+		<property name="target"><ref bean="presenceServiceImpl"/></property>
+	</bean>
+	
+	<!-- ================================ Conferencing Service =========================== -->
+	<bean id="conferencingModule" parent="moduleNonTransactionProxy">
+		<property name="target"><ref bean="conferencingModuleImpl"/></property>
+	</bean>
+	
+	<!-- ================================  Mail Support =============================== -->
+	<!-- this bean is only used to allow setting of initial context properties -->
+	<bean id="mailJndiAccessor" class="org.springframework.jndi.JndiAccessor"/>
+	<bean id="mailSender" class="org.kablink.teaming.module.mail.impl.JavaMailSenderImpl">
+		<property name="defaultEncoding"><value>utf-8</value></property>
+		<property name="defaultFileTypeMap"><ref bean="mimeTypes"/></property>
+	</bean>
+
+	<bean id="mailModule" parent="moduleNonTransactionProxy">
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.mail.impl.MailModuleImpl" 
+					depends-on="zoneConfig, springContextUtil">
+				<property name="mailSender"><ref bean="mailSender"/></property>
+				<property name="jndiAccessor"><ref bean="mailJndiAccessor"/></property>
+				<property name="mailRootDir"><value>${data.root.dir}/mail</value></property>
+				<property name="icalModule"><ref bean="icalModule"/></property>
+				<property name="binderModule"><ref bean="binderModule"/></property>
+				<property name="folderModule"><ref bean="folderModule"/></property>
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+				<property name="reportModule"><ref bean="reportModule"/></property>
+			</bean>	
+		</property>
+		<!--<property name="proxyInterfaces">
+			<value>org.kablink.teaming.module.mail.MailModule</value>
+		</property>-->
+	</bean>
+
+	<bean id="smtpService" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.smtp.impl.SMTPManagerImpl"
+			depends-on="zoneConfig, springContextUtil, sPropsUtil">
+		<property name="enabled"><value>${smtp.service.enable}</value></property>
+		<property name="bindAddress"><value>${smtp.service.bindAddress}</value></property>
+		<property name="port"><value>${smtp.service.port}</value></property>
+		<property name="tls"><value>${smtp.service.tls}</value></property>
+		<property name="username"><value>${smtp.service.authentication.username}</value></property>
+		<property name="keystoreFile"><value>${smtp.service.keystore.file}</value></property>
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
+		<property name="binderModule"><ref bean="binderModule"/></property>
+	</bean>
+	
+	<!-- ============================== Web Services Components ============================ -->
+	
+	<bean id="loginInfoInterceptor" class="org.kablink.teaming.remoting.ws.interceptor.LoginInfoInterceptor">
+		<property name="reportModule"><ref bean="reportModule"/></property>
+	</bean>
+	
+	<bean id="accessTokenValidationInterceptor" class="org.kablink.teaming.remoting.ws.interceptor.AccessTokenValidationInterceptor">
+		<property name="accessTokenManager"><ref bean="accessTokenManager"/></property>
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
+	</bean>
+	
+	<bean id="wsProxyTemplate" class="org.springframework.aop.framework.ProxyFactoryBean" abstract="true">
+		<property name="interceptorNames">
+			<list>
+				<value>aopallianceWsLoggingInterceptor</value>
+				<!-- When a user request is served, typically one of the very first 
+				     interceptors we define is one that sets up request context for 
+				     the serving thread. In the case of Web request, typically this
+				     information comes from either the request object or the session
+				     and the interceptor sets up thread context using the user 
+				     information. However, in the case of Web Services that rely on
+				     WS-Security for message-level authentication, neither request
+				     object nor session is relevant. The user credential must come
+				     from the WS framework. 
+				     Specifically, when used in conjunction with WS-Security compliant
+				     tool such as WSS4J, the hook is provided via a callback routine
+				     that the framework invokes to obtain password information for
+				     the user making the request. That's where we set up our request 
+				     context.
+				     For Web Services using Basic authentication, the request context
+				     is set up by the servlet serving each request. 
+				     For Web Services using token-based authentication, we have another
+				     interceptor dedicated to the processing of the tokens. And the
+				     request context is set up by the interceptor after it has 
+				     successfully validated the token.				     
+				     So, that's why we do not have here in the interceptor chain
+				     the usual interceptor that sets up request context. -->
+				<value>accessTokenValidationInterceptor</value>
+				<value>aopallianceOpenSessionInViewInterceptor</value>
+				<!-- This must come after open-session-in-view -->
+				<value>aopallianceResolveRequestContextInterceptor</value>
+				<value>aopallianceWsLogContextInfoUponExceptionInterceptor</value>
+				<value>loginInfoInterceptor</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="aopallianceWsLogContextInfoUponExceptionInterceptor" class="org.kablink.teaming.remoting.ws.interceptor.LogContextInfoUponExceptionInterceptor"/>
+	
+	<bean id="templateService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="org.kablink.teaming.remoting.ws.service.template.TemplateServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<list>
+				<value>org.kablink.teaming.remoting.ws.service.template.TemplateService</value>
+				<value>org.kablink.teaming.remoting.ws.service.template.TemplateServiceInternal</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="searchService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="org.kablink.teaming.remoting.ws.service.search.SearchServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<list>
+				<value>org.kablink.teaming.remoting.ws.service.search.SearchService</value>
+				<value>org.kablink.teaming.remoting.ws.service.search.SearchServiceInternal</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="definitionService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="org.kablink.teaming.remoting.ws.service.definition.DefinitionServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<list>
+				<value>org.kablink.teaming.remoting.ws.service.definition.DefinitionService</value>
+				<value>org.kablink.teaming.remoting.ws.service.definition.DefinitionServiceInternal</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="folderService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="org.kablink.teaming.remoting.ws.service.folder.attachments.FolderServiceImpl" parent="dependOnAllModulesTemplate">
+				<property name="processorManager"><ref bean="modelProcessorManager"/></property>
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<list>
+				<value>org.kablink.teaming.remoting.ws.service.folder.FolderService</value>
+				<value>org.kablink.teaming.remoting.ws.service.folder.FolderServiceInternal</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="migrationService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="org.kablink.teaming.remoting.ws.service.folder.attachments.MigrationServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<value>org.kablink.teaming.remoting.ws.service.folder.MigrationService</value>
+		</property>
+	</bean>
+	
+	<bean id="binderService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="org.kablink.teaming.remoting.ws.service.binder.attachments.BinderServiceImpl" parent="dependOnAllModulesTemplate">
+				<property name="coreDao"><ref bean="coreDao"/></property>
+				<property name="profileDao"><ref bean="profileDao"/></property>
+				<property name="accessControlManager"><ref bean="accessControlManager"/></property>
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<list>
+				<value>org.kablink.teaming.remoting.ws.service.binder.BinderService</value>
+				<value>org.kablink.teaming.remoting.ws.service.binder.BinderServiceInternal</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="icalService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="org.kablink.teaming.remoting.ws.service.ical.attachments.IcalServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<value>org.kablink.teaming.remoting.ws.service.ical.IcalService</value>
+		</property>
+	</bean>
+	
+	<bean id="ldapService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="org.kablink.teaming.remoting.ws.service.ldap.LdapServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<value>org.kablink.teaming.remoting.ws.service.ldap.LdapService</value>
+		</property>
+	</bean>
+	
+	<bean id="licenseService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="org.kablink.teaming.remoting.ws.service.license.LicenseServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<value>org.kablink.teaming.remoting.ws.service.license.LicenseService</value>
+		</property>
+	</bean>
+	
+	<bean id="profileService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="org.kablink.teaming.remoting.ws.service.profile.attachments.ProfileServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<list>
+				<value>org.kablink.teaming.remoting.ws.service.profile.ProfileService</value>
+				<value>org.kablink.teaming.remoting.ws.service.profile.ProfileServiceInternal</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="zoneService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="org.kablink.teaming.remoting.ws.service.zone.ZoneServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<value>org.kablink.teaming.remoting.ws.service.zone.ZoneService</value>
+		</property>
+	</bean>
+	
+	<bean id="adminService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="org.kablink.teaming.remoting.ws.service.admin.AdminServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<list>
+				<value>org.kablink.teaming.remoting.ws.service.admin.AdminService</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- ============================== Remote Application Support ============================ -->
+	<bean id="remoteApplicationManager" class="org.kablink.teaming.remoteapplication.impl.RemoteApplicationManagerImpl">
+		<property name="profileDao"><ref bean="profileDao"/></property>
+		<property name="accessTokenManager"><ref bean="accessTokenManager"/></property>
+	</bean>
+	
+	<bean id="runtimeStatistics" class="org.kablink.teaming.util.RuntimeStatistics">
+		<property name="invocationStatisticsInterceptor"><ref bean="invocationStatisticsInterceptor"/></property>
+		<property name="wsLoggingInterceptor"><ref bean="aopallianceWsLoggingInterceptor"/></property>
+	</bean>
+	
+	<!-- ================================  JMX/MBean Support =============================== -->
+	<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
+	    <property name="beans">
+	      <map>
+	        <entry key="Vibe:type=Indexing,name=luceneSessionFactory">
+	          <ref bean="luceneSessionFactory"/>
+	        </entry>
+	        <entry key="Vibe:type=Converter,name=htmlConverterManager">
+	          <ref bean="htmlConverterManager"/>
+	        </entry>
+	        <entry key="Vibe:type=Converter,name=textConverterManager">
+	          <ref bean="textConverterManager"/>
+	        </entry>
+	        <entry key="Vibe:type=Converter,name=textStreamConverterManager">
+	          <ref bean="textStreamConverterManager"/>
+	        </entry>
+	        <entry key="Vibe:type=Converter,name=imageConverterManager">
+	          <ref bean="imageConverterManager"/>
+	        </entry>
+	        <entry key="Vibe:type=Converter,name=htmlOpenOfficeConverter">
+	          <ref bean="htmlOpenOfficeConverter"/>
+	        </entry>
+	        <entry key="Vibe:type=Converter,name=textOpenOfficeConverter">
+	          <ref bean="textOpenOfficeConverter"/>
+	        </entry>
+	        <entry key="Vibe:type=Converter,name=imageOpenOfficeConverter">
+	          <ref bean="imageOpenOfficeConverter"/>
+	        </entry>
+	        <entry key="Vibe:type=Module,name=rssModule">
+	          <ref bean="rssModule"/>
+	        </entry>
+			<entry key="Vibe:type=Repository,name=simpleFileRepository">
+	          <ref bean="simpleFileRepository"/>
+	        </entry>
+	        <entry key="Vibe:type=Repository,name=jackrabbitRepository">
+	          <ref bean="jackrabbitRepository"/>
+	        </entry>
+	        <!--<entry key="Vibe:type=Repository,name=webdavRepository">
+	          <ref bean="webdavRepository"/>
+	        </entry>-->
+	        <entry key="Vibe:type=Realtime,name=presenceService">
+	          <ref bean="presenceService"/>
+	        </entry>
+	        <entry key="Vibe:type=Module,name=conferencingModule">
+	          <ref bean="conferencingModule"/>
+	        </entry>
+	        <entry key="Vibe:type=Hibernate,name=hibernateStatisticsService">
+	          <ref bean="hibernateStatisticsService"/>
+	        </entry>
+	        <entry key="Vibe:type=Module,name=folderModule">
+	          <ref bean="folderModuleTarget"/>
+	        </entry>
+	        <entry key="Vibe:type=Server,name=smtpService">
+	          <ref bean="smtpService"/>
+	        </entry>
+	        <entry key="Vibe:type=Other,name=runtimeStatistics">
+	          <ref bean="runtimeStatistics"/>
+	        </entry>
+	        <entry key="Vibe:type=Processor,name=defaultFolderCoreProcessor">
+	          <ref bean="defaultFolderCoreProcessor"/>
+	        </entry>
+	      </map>
+	    </property>
+	</bean>
+	
+	<!-- ============================== LDAP Support ============================ -->
+	<bean id="ldapModule"  parent="moduleTransactionProxy">
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.ldap.impl.LdapModuleImpl">
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+				<property name="profileModule"><ref bean="profileModule"/></property>
+				<property name="definitionModule"><ref bean="definitionModule"/></property>
+				<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+				<property name="templateModule"><ref bean="templateModule"/></property>
+				<property name="binderModule"><ref bean="binderModule"/></property>
+				<property name="folderModule"><ref bean="folderModule"/></property>
+				<property name="netFolderModule"><ref bean="netFolderModule"/></property>
+				<property name="adminModule"><ref bean="adminModule"/></property>
+				<property name="resourceDriverModule"><ref bean="resourceDriverModule"/></property>
+			</bean>
+		</property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
+                <prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+            </props>
+        </property>
+	</bean>
+
+	<!-- ==============================Extension Support ==================== -->
+	<bean id="extensionManager" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.extension.impl.ExtensionManagerImpl">
+	</bean>
+
+	<!-- Extension deployer -->
+	<bean id="extDeployer"  parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.extension.impl.ExtensionDeployerImpl" depends-on="zoneConfig">
+		<property name="templateModule"><ref bean="templateModule"/></property>
+		<property name="definitionModule"><ref bean="definitionModule"/></property>
+		<property name="zoneClassManager"><ref bean="zoneClassManager"/></property>
+		<property name="adminModule"><ref bean="adminModule"/></property>
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
+		<property name="binderModule"><ref bean="binderModule"/></property>
+	</bean>
+	<bean id="zoneClassManager" class="org.kablink.teaming.extension.impl.ZoneClassManagerImpl" depends-on="zoneConfig"/>
+	
+	<!-- ================================ Groovy Script Service =============================== -->
+	<bean id="groovyScriptService" class="org.kablink.teaming.groovy.GroovyScriptService" depends-on="sPropsUtil">
+	</bean>
+	
+    <!-- ========== Defines security related beans that are common across different authentication mechanisms ========== -->
+
+	<!-- Portal Login Support -->
+	<bean id="portalLoginBean" class="org.kablink.teaming.portal.StandaloneLogin"/>
+	
+	<!--<bean id="zoneGrabbingFilter" class="org.kablink.teaming.spring.security.ZoneGrabbingFilter">
+		<security:custom-filter position="FIRST"/>
+	</bean>-->
+	
+	<bean id="_authenticationManager" class="org.kablink.teaming.asmodule.spring.security.config.TeamingAuthenticationManager">
+		<constructor-arg>
+		    <list>
+                <!-- Vibe's custom authentication provider -->
+		        <ref bean="authenticationModule"/>
+		    </list>
+		</constructor-arg>
+		<property name="authenticator"><value>web</value></property>
+	</bean>
+
+	<bean id="_anonymousProcessingFilter"
+	      class="org.kablink.teaming.spring.security.ZoneAwareAnonymousProcessingFilter">
+	    <constructor-arg value="thisIsIgnored" />
+	    <constructor-arg value="guest" />
+	    <constructor-arg value="ROLE_ANONYMOUS" />
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
+		<property name="authenticationModule"><ref bean="authenticationModule"/></property>
+	</bean>
+
+    <security:http pattern="/ws/**" security="none" />
+    <security:http pattern="/rss/**" security="none" />
+    <security:http pattern="/atom/**" security="none" />
+    <security:http pattern="/ical/**" security="none" />
+    <security:http pattern="/static/**" security="none" />
+    <security:http pattern="/ext/**" security="none" />
+    <security:http pattern="/help/**" security="none" />
+    <security:http pattern="/validate/**" security="none" />        
+    <security:http pattern="/redirect/**" security="none" />
+    <security:http pattern="/bitbucket/**" security="none" />
+    <security:http pattern="/html/**" security="none" />
+          
+	<!-- =============================== Ganglia Monitoring Support ============================== -->
+	<bean id="gangliaMonitoring" class="org.kablink.teaming.util.GangliaMonitoring" depends-on="sPropsUtil"/>
+	
+	<!-- ================= To make server/node address available to bean context declaratively during context initialization =============== -->
+	<bean id="nodeAddress" class="org.kablink.teaming.util.NetworkUtil"/>
+	
+	<!-- ================================ Telemetry Service =============================== -->
+	<bean id="telemetryService" class="org.kablink.teaming.telemetry.TelemetryService" depends-on="sPropsUtil">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<property name="coreDao"><ref bean="coreDao"/></property>
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
+		<property name="adminModule"><ref bean="adminModule"/></property>
+		<property name="luceneSessionFactory"><ref bean="luceneSessionFactory"/></property>
+	</bean>
+
+</beans>

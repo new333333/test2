@@ -1,0 +1,490 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet author="jong" context="schema" failOnError="true" id="1">
+        <createTable schemaName="dbo" tableName="SS_NetFolderConfig">
+            <column autoIncrement="true" name="id" type="NUMERIC(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_NetFolderConfig"/>
+            </column>           
+            <column name="lockVersion" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="NVARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+			<column name="topFolderId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+			</column>			
+			<column name="netFolderServerId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+			</column>			
+            <column name="resourcePath" type="NVARCHAR(1024)">
+            	<constraints nullable="false"/>
+            </column>
+			<column name="homeDir" type="TINYINT">
+                <constraints nullable="true"/>
+			</column>			
+			<column name="allowDesktopAppToSyncData" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+			<column name="allowMobileAppsToSyncData" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="indexContent" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="jitsEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="jitsMaxAge" type="NUMERIC(19,0)">
+                <constraints nullable="true" />
+            </column>
+            <column name="jitsAclMaxAge" type="NUMERIC(19,0)">
+                <constraints nullable="true" />
+            </column>
+            <column name="fullSyncDirOnly" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="syncScheduleOption" type="SMALLINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="useInheritedIndexContent" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="useInheritedJitsSettings" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="allowDAToTriggerInitialHFSync" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="useInheritedDATriggerSetting" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="2">
+        <createIndex schemaName="dbo" indexName="name_netFolderConfig" tableName="SS_NetFolderConfig" unique="false">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="3">
+        <createIndex schemaName="dbo" indexName="nfsId_netFolderConfig" tableName="SS_NetFolderConfig" unique="false">
+            <column name="netFolderServerId"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="4">
+        <createIndex schemaName="dbo" indexName="topFolderId_netFolderConfig" tableName="SS_NetFolderConfig" unique="true">
+            <column name="topFolderId"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="5">
+        <addColumn schemaName="dbo" tableName="SS_Forums">
+            <column name="binderType" type="CHAR(1)" defaultValue="f">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="6">
+        <sql>
+update dbo.SS_Forums set binderType = LEFT(type, 1);
+        </sql>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="7">
+        <comment>This column is replaced by binderType column</comment>
+        <dropColumn schemaName="dbo" tableName="SS_Forums" columnName="type"/>
+    </changeSet>
+		
+    <changeSet author="jong" context="schema" failOnError="true" id="8">
+        <addColumn schemaName="dbo" tableName="SS_Forums">
+            <column name="netFolderConfigId" type="NUMERIC(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn schemaName="dbo" tableName="SS_Forums">
+            <column name="legacyMirroredDriverNameHash" type="NUMERIC(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn schemaName="dbo" tableName="SS_Forums">
+            <column name="relRscPath" type="NVARCHAR(1024)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="9">
+        <customChange class="org.kablink.liquibase.change.custom.MigrateMirroredFoldersChange">
+            <param name="dbType" value="sqlserver"/>
+            <param name="batchSize" value="1000"/>
+            <param name="transactionSize" value="100"/>
+        </customChange>
+    </changeSet>
+    	
+	<changeSet author="jong" context="schema" failOnError="true" id="10">
+        <comment>These columns are no longer needed because SS_NetFolderConfig table assumes the role</comment>
+        <dropColumn schemaName="dbo" tableName="SS_Forums" columnName="resourceDriverName"/>
+        <dropColumn schemaName="dbo" tableName="SS_Forums" columnName="resourcePath"/>
+        <dropColumn schemaName="dbo" tableName="SS_Forums" columnName="homeDir"/>
+        <dropColumn schemaName="dbo" tableName="SS_Forums" columnName="allowDesktopAppToSyncData"/>
+        <dropColumn schemaName="dbo" tableName="SS_Forums" columnName="allowMobileAppsToSyncData"/>
+        <dropColumn schemaName="dbo" tableName="SS_Forums" columnName="indexContent"/>
+        <dropColumn schemaName="dbo" tableName="SS_Forums" columnName="jitsEnabled"/>
+        <dropColumn schemaName="dbo" tableName="SS_Forums" columnName="jitsMaxAge"/>
+        <dropColumn schemaName="dbo" tableName="SS_Forums" columnName="jitsAclMaxAge"/>
+        <dropColumn schemaName="dbo" tableName="SS_Forums" columnName="fullSyncDirOnly"/>
+        <dropColumn schemaName="dbo" tableName="SS_Forums" columnName="syncScheduleOption"/>
+        <dropColumn schemaName="dbo" tableName="SS_Forums" columnName="useInheritedIndexContent"/>
+        <dropColumn schemaName="dbo" tableName="SS_Forums" columnName="useInheritedJitsSettings"/>
+        <dropColumn schemaName="dbo" tableName="SS_Forums" columnName="allowDAToTriggerInitialHFSync"/>
+        <dropColumn schemaName="dbo" tableName="SS_Forums" columnName="useInheritedDATriggerSetting"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="11">
+        <addColumn schemaName="dbo" tableName="SS_KeyShieldConfig">
+            <column name="usernameAttributeAlias" type="NVARCHAR(16)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="dennis" context="schema" failOnError="true" id="12">
+        <comment>Manage Proxy Identities</comment>
+        <createTable tableName="SS_ProxyIdentity">
+            <column autoIncrement="true" name="id" type="NUMERIC(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_ProxyIdentity"/>
+            </column>           
+            <column name="zoneId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="proxyName" type="NVARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="title" type="NVARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+	</changeSet>
+	
+    <changeSet author="dennis" context="schema" failOnError="true" id="13">
+        <comment>Use Proxy Identities</comment>
+        <addColumn  tableName="SS_ResourceDriver">
+            <column name="useProxyIdentity" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn  tableName="SS_ResourceDriver">
+            <column name="proxyIdentityId" type="NUMERIC(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="dennis" context="schema" failOnError="true" id="14">
+        <comment>Add force pin code option to mobile applications configuration for Filr</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="mobileAppsForcePinCode" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="dhivya" context="schema" failOnError="true" id="15">
+        <comment>Netbios name if the user was provisioned from AD</comment>
+        <addColumn schemaName="dbo" tableName="SS_Principals">
+            <column name="netbiosName" type="NVARCHAR(16)">
+              <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="16">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="char">select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SS_ChangeLogs' and COLUMN_NAME = 'id'</sqlCheck>
+        </preConditions>
+        <comment>Change primary key column data type from CHAR(32) to NCHAR(32) for SS_ChangeLogs table</comment>
+		<sql>
+DECLARE @pkname nvarchar(128)
+SET @pkname = (SELECT name FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[SS_ChangeLogs]') AND name LIKE N'PK__SS_%')
+IF (@pkname IS NOT NULL)
+BEGIN
+DECLARE @statement nvarchar(2000)
+SET @statement = 'ALTER TABLE [dbo].[SS_ChangeLogs] DROP CONSTRAINT [' + @pkName + ']'
+EXEC(@statement)
+END
+GO
+ALTER TABLE SS_ChangeLogs ALTER COLUMN id nchar(32) NOT NULL
+GO
+ALTER TABLE [dbo].[SS_ChangeLogs] ADD CONSTRAINT [PK__SS_ChangLogs] PRIMARY KEY CLUSTERED ([id]) 
+GO
+		</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="17">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="char">select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SS_Attachments' and COLUMN_NAME = 'id'</sqlCheck>
+        </preConditions>
+        <comment>Change primary key column data type from CHAR(32) to NCHAR(32) for SS_Attachments table</comment>
+		<sql>
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FKA1AD4C312D9DE71B]') AND parent_object_id = OBJECT_ID(N'[dbo].[SS_Attachments]'))
+ALTER TABLE [dbo].[SS_Attachments] DROP CONSTRAINT [FKA1AD4C312D9DE71B]
+GO
+DECLARE @pkname nvarchar(128)
+SET @pkname = (SELECT name FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[SS_Attachments]') AND name LIKE N'PK__SS_%')
+IF (@pkname IS NOT NULL)
+BEGIN
+DECLARE @statement nvarchar(2000)
+SET @statement = 'ALTER TABLE [dbo].[SS_Attachments] DROP CONSTRAINT [' + @pkName + ']'
+EXEC(@statement)
+END
+GO
+IF  EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[SS_Attachments]') AND name = N'owningAttachment_Att')
+DROP INDEX [owningAttachment_Att] ON [dbo].[SS_Attachments]
+GO
+ALTER TABLE SS_Attachments ALTER COLUMN id nchar(32) NOT NULL
+GO
+ALTER TABLE SS_Attachments ALTER COLUMN parentAttachment nchar(32) NULL
+GO
+ALTER TABLE [dbo].[SS_Attachments] ADD CONSTRAINT [PK__SS_Attachments] PRIMARY KEY CLUSTERED (id) 
+GO
+ALTER TABLE [dbo].[SS_Attachments] ADD CONSTRAINT [FKA1AD4C312D9DE71B] FOREIGN KEY([parentAttachment]) REFERENCES [dbo].[SS_Attachments] ([id])
+GO
+CREATE NONCLUSTERED INDEX [owningAttachment_Att] ON [dbo].[SS_Attachments] ([parentAttachment])
+GO
+		</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="18">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="char">select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SS_CustomAttributes' and COLUMN_NAME = 'id'</sqlCheck>
+        </preConditions>
+        <comment>Change primary key column data type from CHAR(32) to NCHAR(32) for SS_CustomAttributes table</comment>
+		<sql>
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK476EDFC7F05A86A6]') AND parent_object_id = OBJECT_ID(N'[dbo].[SS_CustomAttributes]'))
+ALTER TABLE [dbo].[SS_CustomAttributes] DROP CONSTRAINT [FK476EDFC7F05A86A6]
+GO
+DECLARE @pkname nvarchar(128)
+SET @pkname = (SELECT name FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[SS_CustomAttributes]') AND name LIKE N'PK__SS_%')
+IF (@pkname IS NOT NULL)
+BEGIN
+DECLARE @statement nvarchar(2000)
+SET @statement = 'ALTER TABLE [dbo].[SS_CustomAttributes] DROP CONSTRAINT [' + @pkName + ']'
+EXEC(@statement)
+END
+GO
+IF  EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[SS_CustomAttributes]') AND name = N'owningAttribute_cAtt')
+DROP INDEX [owningAttribute_cAtt] ON [dbo].[SS_CustomAttributes]
+GO
+ALTER TABLE dbo.SS_CustomAttributes ALTER COLUMN id nchar(32) NOT NULL
+GO
+ALTER TABLE dbo.SS_CustomAttributes ALTER COLUMN parent nchar(32) NULL
+GO
+ALTER TABLE [dbo].[SS_CustomAttributes] ADD CONSTRAINT [PK__SS_CustomAttributes] PRIMARY KEY CLUSTERED (id) 
+GO
+ALTER TABLE [dbo].[SS_CustomAttributes] ADD CONSTRAINT [FK476EDFC7F05A86A6] FOREIGN KEY([parent]) REFERENCES [dbo].[SS_CustomAttributes] ([id])
+GO
+CREATE NONCLUSTERED INDEX [owningAttribute_cAtt] ON [dbo].[SS_CustomAttributes] ([parent])
+GO
+		</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="19">
+        <comment>Add telemetryEnabled field to SS_ZoneConfig table</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="telemetryEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="21">
+        <comment>Anti-virus service configuration</comment>
+        <createTable tableName="SS_AntiVirusConfig">
+	        <column name="zoneId" type="NUMERIC(19,0)">
+	            <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_AntiVirusConfig"/>
+	        </column>
+            <column name="type" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+	        <column name="enabled" type="TINYINT">
+                <constraints nullable="false"/>
+	        </column>
+            <column name="serviceUrl" type="VARCHAR(128)">
+                <constraints nullable="false" />
+            </column>
+            <column name="interfaceId" type="VARCHAR(32)">
+                <constraints nullable="false" />
+            </column>
+            <column name="username" type="NVARCHAR(32)">
+                <constraints nullable="false" />
+            </column>
+            <column name="password" type="VARCHAR(128)">
+                <constraints nullable="false" />
+            </column>
+            <column name="lastUpdateTime" type="NUMERIC(19,0)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+	</changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="22">
+        <addColumn tableName="SS_AntiVirusConfig">
+            <column name="connectTimeout" type="INT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="23">
+        <comment>Add telemetryTier2Enabled field to SS_ZoneConfig table</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="telemetryTier2Enabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="24">
+        <addForeignKeyConstraint baseColumnNames="netFolderServerId" baseTableName="SS_NetFolderConfig" baseTableSchemaName="dbo" constraintName="FKCEAFD38EED036070" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_ResourceDriver" referencedTableSchemaName="dbo" referencesUniqueColumn="false"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="25">
+        <addColumn schemaName="dbo" tableName="SS_KeyShieldConfig">
+            <column name="hardwareTokenRequired" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="26">
+        <addColumn schemaName="dbo" tableName="SS_KeyShieldConfig">
+            <column name="nonSsoAllowedForLdapUser" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="27">
+        <addColumn schemaName="dbo" tableName="SS_KeyShieldConfig">
+            <column name="ssoErrorMessageForWeb" type="NVARCHAR(128)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="28">
+        <addColumn schemaName="dbo" tableName="SS_KeyShieldConfig">
+            <column name="ssoErrorMessageForWebdav" type="NVARCHAR(128)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="dennis" context="schema" failOnError="true" id="29">
+        <addColumn schemaName="dbo" tableName="SS_LdapConnectionConfig">
+            <column name="importUsersAsExternalUsers" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="30">
+        <comment>Increase clientAddr column size from 16 to 40 characters to accommodate ipv6</comment>
+        <modifyDataType schemaName="dbo" tableName="SS_LoginAudit" columnName="clientAddr" newDataType="VARCHAR(40)"/>
+        <modifySql dbms="mssql">
+            <append value=" NOT NULL"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="31">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="varchar">select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SS_Forums' and COLUMN_NAME = 'internalId'</sqlCheck>
+        </preConditions>
+        <comment>Change data type from VARCHAR(32) to NVARCHAR(32) for internalId column in SS_Forums table</comment>
+		<sql>
+IF  EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[SS_Forums]') AND name = N'internalId_Binder')
+DROP INDEX [internalId_Binder] ON [dbo].[SS_Forums]
+GO
+ALTER TABLE dbo.SS_Forums ALTER COLUMN internalId nvarchar(32) NULL
+GO
+CREATE NONCLUSTERED INDEX [internalId_Binder] ON [dbo].[SS_Forums] ([internalId])
+GO
+		</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="32">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="varchar">select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SS_BinderState' and COLUMN_NAME = 'fullSync_status'</sqlCheck>
+        </preConditions>
+        <comment>Change data type from VARCHAR(16) to NVARCHAR(16) for fullSync_status column in SS_Forums table</comment>
+		<sql>
+IF  EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[SS_BinderState]') AND name = N'statusAndDate_binderState')
+DROP INDEX [statusAndDate_binderState] ON [dbo].[SS_BinderState]
+GO
+ALTER TABLE dbo.SS_BinderState ALTER COLUMN fullSync_status nvarchar(16) NULL
+GO
+CREATE NONCLUSTERED INDEX [statusAndDate_binderState] ON [dbo].[SS_BinderState] (fullSync_status,fullSync_statusDate)
+GO
+		</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="33">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="varchar">select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SS_CustomAttributes' and COLUMN_NAME = 'ownerType'</sqlCheck>
+        </preConditions>
+        <comment>Change data type from VARCHAR(16) to NVARCHAR(16) for ownerType column in SS_CustomAttributes table</comment>
+		<sql>
+IF  EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[SS_CustomAttributes]') AND name = N'entityOwner_cAtt')
+DROP INDEX [entityOwner_cAtt] ON [dbo].[SS_CustomAttributes]
+GO
+ALTER TABLE dbo.SS_CustomAttributes ALTER COLUMN ownerType nvarchar(16) NULL
+GO
+CREATE NONCLUSTERED INDEX [entityOwner_cAtt] ON [dbo].[SS_CustomAttributes] (ownerType,ownerId)
+GO
+		</sql>
+    </changeSet>
+
+	<changeSet author="dennis" context="schema" failOnError="true" id="34">
+		<comment>Desktop Configuration - Applications Whitelist/Blacklist</comment>
+		<addColumn tableName="SS_ZoneConfig">
+			<column name="fsaApplicationsBlob" type="ntext" />
+		</addColumn>
+	</changeSet>
+
+    <changeSet author="dennis" context="schema" failOnError="true" id="35">
+		<comment>Default Locale Language for New External Users</comment>
+        <addColumn tableName="SS_ZoneConfig">
+			<column name="localeLanguageExt" type="VARCHAR(16)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="dennis" context="schema" failOnError="true" id="36">
+		<comment>Default Locale Country for New External Users</comment>
+        <addColumn tableName="SS_ZoneConfig">
+			<column name="localeCountryExt" type="VARCHAR(16)"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="dennis" context="schema" failOnError="true" id="37">
+		<comment>Default TimeZone for New Users</comment>
+        <addColumn tableName="SS_ZoneConfig">
+			<column name="timeZone" type="VARCHAR(80)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="dennis" context="schema" failOnError="true" id="38">
+		<comment>Default TimeZone for New External Users</comment>
+        <addColumn tableName="SS_ZoneConfig">
+			<column name="timeZoneExt" type="VARCHAR(80)"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

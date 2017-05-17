@@ -1,0 +1,27 @@
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<title>Clear and Close</title>
+		<script type="text/javascript">
+		function clearCacheAndClose() {
+			try {
+			    // Clears all authentication credentials from the cache in the current IE browser process.
+			    // This will clear the credentials cache for the entire IE process not just ones used for Teaming.
+				document.execCommand("ClearAuthenticationCache");
+			} catch(e) {
+			    // The above works only with IE. Therefore you will be inside this block if using FireFox.
+			    // In that case, the only way to clear the credentials is to exit the browser.
+			};
+			self.window.close();
+		}
+		</script>
+	</head>
+	<body onLoad="clearCacheAndClose();">
+		<h1>Close Browser To Complete Sign Out</h1>
+		<span>You must close your browser to complete the sign out process.</span>
+
+		<div>
+			<img src="/ssf/html/mast_head_novell_graphic.png"/> 
+		</div>
+	</body>
+</html>
