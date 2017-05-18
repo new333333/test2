@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class table="SS_WorkflowHistory" name="org.kablink.teaming.domain.WorkflowHistory">
+    <id unsaved-value="null" name="id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <property name="zoneId" access="field" index="startDate_wfhistory"/>
+    <property name="startBy"/>
+    <property name="startDate" index="startDate_wfhistory"/>
+    <property name="endBy"/>
+    <property name="endDate"/>
+	<property name="entityId" index="entityOwner_wfhistory"/>
+   	<property name="entityType" length="16" index="entityOwner_wfhistory"/>
+    <property name="owningBinderId" index="owningBinder_wfhistory"/>
+ 	<property name="owningBinderKey" length="255" />
+  	<property name="tokenId"/>
+    <property name="state" length="64"/>
+	<property name="threadName" length="64"/>
+	<property name="definitionId" length="32"/>
+	<property name="ended"/>
+  </class>
+</hibernate-mapping>

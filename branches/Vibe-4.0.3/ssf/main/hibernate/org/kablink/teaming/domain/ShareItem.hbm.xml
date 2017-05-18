@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class table="SS_ShareItem" dynamic-update="true" lazy="false" dynamic-insert="false" name="org.kablink.teaming.domain.ShareItem">
+    <id unsaved-value="null" name="id" type="long">
+      <generator class="native">
+      	<param name="sequence">ss_shareitem_id_sequence</param>
+      </generator>
+    </id>
+    <!-- Note that ShareItem domain class contains lockVersion property in memory. However, there is no
+         mapping element that maps it to a database column, meaning that optimistic locking is not used
+         for this class. -->
+    <property name="zoneId" access="field"/>
+    <property name="latest"/>
+    <property name="sharerId" index="sharerId_shareitem"/>    
+    <component name="sharedEntityIdentifier" class="org.kablink.teaming.domain.EntityIdentifier">
+      <property name="type" column="sharedEntity_type" type="int" index="sharedEntity_shareitem"/>
+      <property name="entityId" column="sharedEntity_id" index="sharedEntity_shareitem"/>
+    </component>
+    <property name="comment" column="comments" length="255"/>
+    <property name="daysToExpire" type="int"/>
+    <property name="startDate" index="startDate_shareitem"/>
+    <property name="endDate" index="endDate_shareitem"/>
+    <property name="deletedDate"/>
+    <property name="recipientType" column="recipient_type" access="field" type="short" index="recipient_shareitem"/>
+    <property name="recipientId" column="recipient_id" index="recipient_shareitem"/>
+    <property name="expirationHandled" access="field"/> 
+    <property name="partOfPublicShare" access="field"/> 
+    <property name="passKey" access="field" length="32"/> 
+    <component name="rightSet" class="org.kablink.teaming.security.function.WorkAreaOperation$RightSet">
+    	<property name="createEntries" column="right_createEntries" access="field"/>
+    	<property name="modifyEntries" column="right_modifyEntries" access="field"/>
+    	<property name="modifyEntryFields" column="right_modifyEntryFields" access="field"/>
+    	<property name="renameEntries" column="right_renameEntries" access="field"/>
+    	<property name="deleteEntries" column="right_deleteEntries" access="field"/>
+    	<property name="readEntries" column="right_readEntries" access="field"/>
+    	<property name="addReplies" column="right_addReplies" access="field"/>
+    	<property name="generateReports" column="right_generateReports" access="field"/>
+    	<property name="downloadFolderAsCsv" column="right_downloadFolderAsCsv" access="field"/>
+    	<property name="binderAdministration" column="right_binderAdministration" access="field"/>
+    	<property name="createEntryAcls" column="right_createEntryAcls" access="field"/>
+    	<property name="changeAccessControl" column="right_changeAccessControl" access="field"/>
+    	<property name="createWorkspaces" column="right_createWorkspaces" access="field"/>
+    	<property name="createFolders" column="right_createFolders" access="field"/>
+    	<property name="manageEntryDefinitions" column="right_manageEntryDefs" access="field"/>
+    	<property name="manageWorkflowDefinitions" column="right_manageWorkflowDefs" access="field"/>
+    	<property name="creatorReadEntries" column="right_creatorReadEntries" access="field"/>
+    	<property name="creatorModifyEntries" column="right_creatorModifyEntries" access="field"/>
+    	<property name="creatorRenameEntries" column="right_creatorRenameEntries" access="field"/>
+    	<property name="creatorDeleteEntries" column="right_creatorDeleteEntries" access="field"/>
+    	<property name="ownerCreateEntryAcls" column="right_ownerCreateEntryAcls" access="field"/>
+    	<property name="addTags" column="right_addTags" access="field"/>
+    	<property name="viewBinderTitle" column="right_viewBinderTitle" access="field"/>
+    	<property name="allowSharing" column="right_allowSharing" access="field"/>
+    	<property name="allowSharingExternal" column="right_allowSharingExternal" access="field"/>
+    	<property name="allowSharingPublic" column="right_allowSharingPublic" access="field"/>
+    	<property name="allowSharingForward" column="right_allowSharingForward" access="field"/>
+    	<property name="allowAccessNetFolder" column="right_allowAccessNetFolder" access="field"/>
+    	<property name="allowSharingPublicLinks" column="right_allowSharingPublicLinks" access="field"/>
+    	<property name="allowFolderSharingInternal" column="right_allowFolderSharingInt" access="field"/>
+    	<property name="allowFolderSharingExternal" column="right_allowFolderSharingExt" access="field"/>
+    	<property name="allowFolderSharingPublic" column="right_allowFolderSharingPublic" access="field"/>
+    	<property name="allowFolderSharingForward" column="right_allowFolderSharingFwd" access="field"/>
+    	</component> 
+  </class>
+</hibernate-mapping>

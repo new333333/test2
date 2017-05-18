@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+                      http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+  version="3.1"
+  metadata-complete="true">
+  
+	<context-param>
+		<param-name>landingPagePath</param-name>
+		<param-value>/ssf/a/</param-value>
+	</context-param>
+	<servlet>
+		<servlet-name>SimpleURLServlet</servlet-name>
+		<servlet-class>org.kablink.teaming.simpleurl.servlet.SimpleURLServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SimpleURLServlet</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+</web-app>

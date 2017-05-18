@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+  	<globalConfiguration>
+		<parameter name="adminPassword" value="admin"/>
+		<parameter name="sendXsiTypes" value="true"/>
+		<parameter name="sendMultiRefs" value="false"/>
+		<parameter name="sendXMLDeclaration" value="true"/>
+		<parameter name="axis.sendMinimizedElements" value="true"/>
+		<parameter name="attachments.Directory" value="./ssf-ws/attachments"/>
+		<parameter name="attachments.implementation" value="org.apache.axis.attachments.AttachmentsImpl"/>
+		<!--<parameter name="dotNetSoapEncFix" value="true"/>-->
+		<requestFlow>
+			<handler type="java:org.apache.axis.handlers.JWSHandler">
+				<parameter name="scope" value="session"/>
+			</handler>
+			<handler type="java:org.apache.axis.handlers.JWSHandler">
+				<parameter name="scope" value="request"/>
+				<parameter name="extension" value=".jwr"/>
+			</handler>
+		</requestFlow>
+	</globalConfiguration>
+	<handler name="Authenticate" type="java:org.apache.axis.handlers.SimpleAuthenticationHandler"/>
+	<handler name="LocalResponder" type="java:org.apache.axis.transport.local.LocalResponder"/>
+	<handler name="URLMapper" type="java:org.apache.axis.handlers.http.URLMapper"/>
+	<transport name="http">
+		<requestFlow>
+			<handler type="URLMapper"/>
+			<handler type="java:org.apache.axis.handlers.http.HTTPAuthHandler"/>
+		</requestFlow>
+	</transport>
+	<transport name="local">
+		<responseFlow>
+			<handler type="LocalResponder"/>
+		</responseFlow>
+	</transport>
+	<service name="TeamingServiceV1" provider="java:RPC" style="rpc" use="encoded">
+	 	<requestFlow>
+   			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">
+    			<parameter name="passwordCallbackClass" value="org.kablink.teaming.remoting.ws.security.PWCallback"/>
+    			<parameter name="action" value="UsernameToken Timestamp"/>
+   			</handler>
+  		</requestFlow>
+		<namespace>http://ws.remoting.teaming.kablink.org/v1</namespace>
+		<parameter name="scope" value="application"/>
+		<parameter name="wsdlTargetNamespace" value="http://ws.remoting.teaming.kablink.org/v1"/>
+		<parameter name="wsdlServiceElement" value="TeamingServiceSoapService"/>
+		<parameter name="wsdlServicePort" value="TeamingService"/>
+		<parameter name="className" value="org.kablink.teaming.remoting.ws.TeamingServiceEndpoint"/>
+		<parameter name="wsdlPortType" value="TeamingServiceSoap"/>
+		<parameter name="typeMappingVersion" value="1.2"/>
+		<parameter name="allowedMethods" value="*"/>
+		<beanMapping qname="ns:AbstractPageableCollection" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.AbstractPageableCollection"/>
+		<beanMapping qname="ns:AttachmentsField" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.AttachmentsField"/>
+		<beanMapping qname="ns:Attachment" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.AttachmentsField$Attachment"/>
+		<beanMapping qname="ns:AverageRating" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.AverageRating"/>
+		<beanMapping qname="ns:Binder" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Binder"/>
+		<beanMapping qname="ns:BinderBrief" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.BinderBrief"/>
+		<beanMapping qname="ns:CustomBooleanField" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.CustomBooleanField"/>
+		<beanMapping qname="ns:CustomDateField" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.CustomDateField"/>
+		<beanMapping qname="ns:CustomEventField" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.CustomEventField"/>
+		<beanMapping qname="ns:DayAndPosition" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Event$DayAndPosition"/>
+		<beanMapping qname="ns:DefinableEntity" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.DefinableEntity"/>
+		<beanMapping qname="ns:DefinitionBrief" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.DefinitionBrief"/>
+		<beanMapping qname="ns:DefinitionCollection" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.DefinitionCollection"/>
+		<beanMapping qname="ns:Description" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Description"/>
+		<beanMapping qname="ns:Entry" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Entry"/>
+		<beanMapping qname="ns:Event" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Event"/>
+		<beanMapping qname="ns:Duration" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Duration"/>
+		<beanMapping qname="ns:Field" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Field"/>
+		<beanMapping qname="ns:FileVersions" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.FileVersions"/>
+		<beanMapping qname="ns:FileVersion" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.FileVersions$FileVersion"/>
+		<beanMapping qname="ns:TrashBrief" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.TrashBrief"/>
+		<beanMapping qname="ns:TrashCollection" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.TrashCollection"/>
+		<beanMapping qname="ns:FolderBrief" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.FolderBrief"/>
+		<beanMapping qname="ns:FolderCollection" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.FolderCollection"/>
+		<beanMapping qname="ns:FolderEntry" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.FolderEntry"/>
+		<beanMapping qname="ns:FolderEntryBrief" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.FolderEntryBrief"/>
+		<beanMapping qname="ns:FolderEntryCollection" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.FolderEntryCollection"/>
+		<beanMapping qname="ns:FunctionMembership" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.FunctionMembership"/>
+		<beanMapping qname="ns:Group" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Group"/>
+		<beanMapping qname="ns:CustomLongArrayField" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.CustomLongArrayField"/>
+		<beanMapping qname="ns:Principal" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Principal"/>
+		<beanMapping qname="ns:PrincipalBrief" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.PrincipalBrief"/>
+		<beanMapping qname="ns:PrincipalCollection" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.PrincipalCollection"/>
+		<beanMapping qname="ns:CustomStringArrayField" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.CustomStringArrayField"/>
+		<beanMapping qname="ns:CustomStringField" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.CustomStringField"/>
+		<beanMapping qname="ns:SubscriptionStyle" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.SubscriptionStyle"/>
+		<beanMapping qname="ns:Subscription" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Subscription"/>
+		<beanMapping qname="ns:Tag" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Tag"/>
+		<beanMapping qname="ns:TeamBrief" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.TeamBrief"/>
+		<beanMapping qname="ns:TeamCollection" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.TeamCollection"/>
+		<beanMapping qname="ns:TeamMemberCollection" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.TeamMemberCollection"/>
+		<beanMapping qname="ns:TemplateBrief" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.TemplateBrief"/>
+		<beanMapping qname="ns:TemplateCollection" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.TemplateCollection"/>
+		<beanMapping qname="ns:Timestamp" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Timestamp"/>
+		<beanMapping qname="ns:User" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.User"/>
+		<beanMapping qname="ns:UserBrief" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.UserBrief"/>
+		<beanMapping qname="ns:UserCollection" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.UserCollection"/>
+		<beanMapping qname="ns:GroupBrief" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.GroupBrief"/>
+		<beanMapping qname="ns:GroupCollection" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.GroupCollection"/>
+		<beanMapping qname="ns:Workflow" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Workflow"/>
+		<beanMapping qname="ns:WorkflowResponse" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.WorkflowResponse"/>
+		<beanMapping qname="ns:ReleaseInfo" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.ReleaseInfo"/>
+		<beanMapping qname="ns:ZoneConfig" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.ZoneConfig"/>
+	</service>
+</deployment>

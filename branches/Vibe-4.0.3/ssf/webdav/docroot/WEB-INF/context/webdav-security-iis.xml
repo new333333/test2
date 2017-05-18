@@ -1,0 +1,45 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-4.3.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.1.xsd">
+
+    <!-- ============================== Common beans ============================ -->
+
+    <import resource="webdav-security-common.xml"/>
+
+    <!-- ===================== Pre-authentication using IIS (Windows Authentication) ===================== -->
+
+    <bean id="iisFilter" class="org.kablink.teaming.asmodule.spring.security.preauth.IISPreAuthenticatedProcessingFilter">
+		<property name="authenticationManager" ref="_authenticationManager"/>
+		<property name="continueFilterChainOnUnsuccessfulAuthentication"><value>false</value></property>
+    </bean>
+
+    <!-- =========================== Basic authentication (for direct access) ============================ -->
+
+	<bean id="_authenticationManager" class="org.kablink.teaming.asmodule.spring.security.config.TeamingAuthenticationManager">
+		<constructor-arg>
+		    <list>
+		        <ref bean="authenticationProvider"/>
+		    </list>
+		</constructor-arg>
+		<property name="authenticator"><value>webdav</value></property>
+	</bean>
+
+	<bean id="authenticationProvider" class="org.kablink.teaming.asmodule.spring.security.providers.AuthenticationModuleBridge"/>
+	
+    <security:http use-expressions="true" realm="Novell" create-session="never" authentication-manager-ref="_authenticationManager">
+        <security:csrf disabled="true"/>
+        <security:custom-filter position="ANONYMOUS_FILTER" ref="optionsProcessingFilter" />
+		<security:custom-filter position="PRE_AUTH_FILTER" ref="iisFilter"/>
+        <security:session-management session-fixation-protection="newSession" />
+        <security:intercept-url pattern="/**" access="isFullyAuthenticated() or isAnonymous()" />
+        <security:anonymous enabled="false" />
+        <security:http-basic/>
+    </security:http>
+	
+</beans>

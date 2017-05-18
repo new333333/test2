@@ -1,0 +1,243 @@
+<?xml version="1.0"?>
+
+<project name="standalone" basedir="." >
+	<!-- This setting will override the value in the properties file -->
+	<property name="portal.type" value="standalone"/>
+	
+	<import file="../build-common.xml" />
+	
+	<import file="../deploy-support.xml" />
+	
+	<property name="tomcat.common.lib.ext" value="${app.server.dir}/lib/ext" />
+	<property name="tomcat.shared.lib.ext" value="${app.server.dir}/lib/ext" />
+	<property name="tomcat.conf" value="${app.server.dir}/conf" />
+	
+	<target name="clean" depends="build-common.clean">
+		<delete dir="temp" />
+		<delete dir="temp2" />
+	</target>
+	
+	<target name="deploy" depends="jar">
+	</target>
+
+	<target name="clean-app-server">
+		<delete>
+			<fileset dir="${app.server.common.lib.dir}/.." 
+				includes="activation.jar,jtds.jar,kablink*.jar,mail.jar,mysql-connector.jar,ojdbc*.jar,postgresql-jre7.jar" />
+		</delete>		
+		<delete failonerror="false">
+			<fileset dir="${app.server.dir}/common/lib/ext" includes="*.jar" />
+		</delete>
+		<delete failonerror="false">
+			<fileset dir="${app.server.dir}/shared/lib/ext" includes="*.jar" />
+		</delete>
+		<delete failonerror="false">
+			<fileset dir="${app.server.common.lib.dir}" includes="*.*" />
+		</delete>		
+		<delete failonerror="false">
+			<fileset dir="${app.server.shared.lib.dir}" includes="*.jar" />
+		</delete>		
+		
+		<delete dir="${app.server.ssf.dir}"/>
+		<delete dir="${app.server.ssfs.dir}"/>
+		<delete dir="${app.server.webdav.dir}"/>
+	</target>
+	
+	<target name="init-standalone">
+		<if>
+			<equals arg1="${app.server.type}" arg2="tomcat" />
+			<then>
+				<path id="deploy.standalone.classpath">
+					<pathelement location="${env.ANT_HOME}/lib/ant.jar" />
+					<!--<fileset dir="../lib" includes="*.jar" />-->
+					<fileset dir="${app.server.dir}/common/endorsed" includes="*.jar" />
+					<fileset dir="${app.server.dir}/common/lib/ext" includes="*.jar" />
+					<pathelement location="${app.server.dir}/common/lib/jsp-api.jar" />
+					<pathelement location="${app.server.dir}/common/lib/servlet-api.jar" />
+				</path>
+			</then>
+			<elseif>
+				<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
+				<then>
+					<path id="deploy.standalone.classpath">
+						<pathelement location="${app.server.deploy.dir}/liferay-portal.ear/portal-ejb.jar" />
+						<pathelement location="${env.ANT_HOME}/lib/ant.jar" />
+						<fileset dir="${app.server.deploy.dir}/liferay-portal.ear/lib" />
+						<fileset dir="${app.server.server.dir}/lib"/>
+						<!--<pathelement location="${app.server.deploy.dir}/../lib/javax.servlet.jar" />-->
+						<pathelement location="${app.server.server.dir}/lib/ext/portal-ascore.jar" />
+						<pathelement location="${app.server.server.dir}/lib/ext/portlet.jar" />
+					</path>
+				</then>
+			</elseif>
+		</if>	
+	</target>
+	
+	<target name="full-deploy">
+		<if>
+			<equals arg1="${app.server.type}" arg2="tomcat" />
+			<then>
+				<antcall target="deploy-standalone-tomcat" />
+			</then>
+			<elseif>
+				<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
+				<then>
+					<antcall target="deploy-standalone-jboss-tomcat" />
+				</then>
+			</elseif>
+		</if>
+	</target>
+	
+	<target name="build">
+		<antcall target="build-additional-components"/>
+	</target>
+	
+	<!-- Build additional components that are not part of ssf web app -->
+	<target name="build-additional-components">
+		<antcall target="handle-additional-components">
+			<param name="target" value="build"/>
+		</antcall>
+	</target>
+
+	<!-- Deploy additional components that are not part of ssf web app -->
+	<target name="deploy-additional-components">
+		<antcall target="handle-additional-components">
+			<param name="target" value="deploy"/>
+		</antcall>
+	</target>
+
+	<!-- Utility to call specified target (as param "target") on additional component projects -->
+	<target name="handle-additional-components" depends="init-standalone">
+		<!-- AS core component is deployed into the app server's shared area -->
+		<ant dir="${project.dir}/as-common" target="${target}" inheritAll="false" />
+		<ant dir="${project.dir}/as-shared" target="${target}" inheritAll="false" />
+		<!-- ssfs component is deployed into its own web app -->
+		<!--<ant dir="${project.dir}/ssfs" target="${target}" inheritAll="false" />-->
+		<!-- ssr component is deployed into its own web app -->
+		<ant dir="${project.dir}/ssr" target="${target}" inheritAll="false" />
+		<!-- simple-url component is deployed into its own web app -->
+		<ant dir="${project.dir}/simple-url" target="${target}" inheritAll="false" />
+		<!-- mobile component is deployed into its own web app -->
+		<ant dir="${project.dir}/mobile" target="${target}" inheritAll="false" />
+		<!-- gwt component is deployed into its own web app -->
+		<ant dir="${project.dir}/gwt" target="${target}" inheritAll="false" />
+		<!-- rest component is deployed into its own web app -->
+		<ant dir="${project.dir}/rest" target="${target}" inheritAll="false" />
+		<!-- webdav component is deployed into its own web app -->
+		<ant dir="${project.dir}/webdav" target="${target}" inheritAll="false" />
+	</target>
+
+	<target name="move-shared-libraries">
+		<move todir="${tomcat.shared.lib.ext}">
+			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" excludes="${libraries.ssf.shared.excludes}"/>
+		</move>
+	</target>
+	
+	<target name="deploy-standalone-tomcat" depends="init-standalone, clean-app-server">
+		<copy file="${project.dir}/war/ssf.war" todir="temp2"/>
+
+		<antcall target="copy-standalone-specific-ssf-artifacts"/>
+
+		<war basedir="temp"
+			destfile="temp2/ssf.war"
+			webxml="temp/WEB-INF/web.xml"
+			update="true" />				
+
+		<antcall target="deploy-war">
+			<param name="deploy-support.war.name" value="ssf" />
+			<param name="deploy-support.war.dir" value="temp2" />
+		</antcall>
+				
+		<!--<delete dir="temp" />
+		<delete dir="temp2" />-->
+
+		<antcall target="deploy-additional-components" />
+		
+		<antcall target="move-shared-libraries"/>
+
+		<!--<delete file="${app.server.ssf.dir}/WEB-INF/lib/xercesImpl.jar" />-->
+	
+		<!-- Delete the following file from SSF web app. This library already exists in
+		     the common/lib/ext area. Having duplicate files causes the file download 
+		     operation in web services to crash with the following error:
+		     java.lang.LinkageError: loader constraints violated when linking javax/activation/DataHandler class
+		-->
+		<!--<delete>
+			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" includes="activation.jar"/>
+		</delete>-->		
+		
+		<ant dir="${project.dir}/tomcat" target="deploy" inheritAll="false"/>
+		
+		<copy file="${project.dir}/lib/jtds.jar" todir="${tomcat.common.lib.ext}" />
+		<copy file="${project.dir}/lib/mysql-connector.jar" todir="${tomcat.common.lib.ext}" />
+		<copy file="${project.dir}/lib/ojdbc7.jar" todir="${tomcat.common.lib.ext}" />
+		<copy file="${project.dir}/lib/postgresql-jre7.jar" todir="${tomcat.common.lib.ext}" />
+
+		<copy file="${project.dir}/lib/activation.jar" todir="${tomcat.common.lib.ext}" />
+		<copy file="${project.dir}/lib/mail.jar" todir="${tomcat.common.lib.ext}" />
+
+		<copy todir="${tomcat.common.lib.ext}" >
+			<fileset dir="${project.dir}/classes" includes="*.*" />
+		</copy>
+
+		<copy todir="${tomcat.conf}" >
+			<fileset dir="${project.dir}/conf" includes="*.*" />
+		</copy>
+	</target>
+		
+	<target name="deploy-log4j">
+		<copy todir="${tomcat.conf}" >
+			<fileset dir="${project.dir}/conf" includes="*.*" />
+		</copy>
+	</target>
+		
+	<target name="deploy-standalone-jboss-tomcat" depends="init-standalone, clean-app-server">		
+		<copy file="${project.dir}/war/ssf.war" todir="temp2"/>
+		
+		<antcall target="copy-standalone-specific-ssf-artifacts"/>
+
+		<war basedir="temp"
+			destfile="temp2/ssf.war"
+			webxml="temp/WEB-INF/web.xml"
+			update="true" />				
+
+		<antcall target="deploy-war">
+			<param name="deploy-support.war.name" value="ssf" />
+			<param name="deploy-support.war.dir" value="temp2" />
+		</antcall>
+
+		<delete dir="temp" />
+		<delete dir="temp2" />
+		
+		<antcall target="deploy-additional-components" />
+						
+		<copy file="${project.dir}/lib/jtds.jar" todir="${app.server.server.dir}/lib" />
+		<copy file="${project.dir}/lib/mysql-connector.jar" todir="${app.server.server.dir}/lib" />
+		<copy file="${project.dir}/lib/ojdbc7.jar" todir="${app.server.server.dir}/lib" />
+		<copy file="${project.dir}/lib/postgresql-jre7.jar" todir="${app.server.server.dir}/lib" />
+
+		<!-- 1. JBoss 4.0.2+ classloader does not work properly if the application 
+		     comes with its own log4j archive. (You get the following error -
+		     log4j:ERROR A "org.jboss.logging.util.OnlyOnceErrorHandler" object is not assignable to a "org.apache.log4j.spi.ErrorHandler" variable.)
+		     So, we should remove the jar file from our lib area so that it uses
+		     the one that JBoss has. 
+		     2. Liferay puts portlet.jar in the server's shared area (server/default/deploy/lib/ext).
+		     If we have our own portlet.jar in our lib directory, the Liferay fails to 
+		     register our portlets at startup time (it fails with usual ugly classloader
+		     problem). So we remove that too. -->
+		<delete>
+			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" includes="log4j*.jar,portlet.jar"/>
+		</delete>		
+	</target>
+
+	<target name="copy-standalone-specific-ssf-artifacts">
+		<copy overwrite="true" 
+			file="${project.dir}/web/docroot/WEB-INF/web.xml"
+			tofile="temp/WEB-INF/web.xml"/>
+	
+		<copy overwrite="true" 
+			file="${project.dir}/web/docroot/WEB-INF/jboss-web.xml"
+			tofile="temp/WEB-INF/jboss-web.xml"/>
+	</target>
+
+</project>

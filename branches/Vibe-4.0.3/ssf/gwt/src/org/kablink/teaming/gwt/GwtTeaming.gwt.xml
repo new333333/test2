@@ -1,0 +1,116 @@
+<module rename-to="gwtteaming">
+	<!-- All our images live in our 'public' path.  We need to -->
+	<!-- specify that in our module to keep the GWT v2.7.0     -->
+	<!-- compiler happy.                                       -->
+	<resource path="public" />
+	
+	<!-- Inherit the core Web Toolkit stuff. -->
+	<inherits name='com.google.gwt.user.User'        />
+	<inherits name="com.google.gwt.i18n.I18N"        />
+	<inherits name="com.google.gwt.i18n.CldrLocales" />
+	<inherits name='com.google.gwt.xml.XML'          />
+	<inherits name='com.google.gwt.json.JSON'        />
+	
+	<!-- Inherit the default GWT theme style sheet. -->
+	<inherits name='com.google.gwt.user.theme.standard.Standard'/>
+	
+	<!-- Other possible themes for GWT.  -->
+	<!--
+		<inherits name='com.google.gwt.user.theme.chrome.Chrome'/>
+		<inherits name='com.google.gwt.user.theme.dark.Dark'    />
+	-->
+	
+	<!-- Inherit the GWT Calendar support libraries. -->
+	<inherits name='com.bradrydzewski.gwt.calendar.Calendar'            />
+	<inherits name='com.bradrydzewski.gwt.calendar.theme.google.Google' />
+
+	<!-- Other possible themes for the GWT Calendar.  -->
+	<!--
+		<inherits name='com.bradrydzewski.gwt.calendar.theme.ical.iCal' />
+		<inherits name='com.bradrydzewski.gwt.calendar.theme.outlook.Outlook' /> 
+	-->
+	
+	<!-- Inherit the GWT drag-and-drop support library. -->
+	<inherits name='com.allen_sauer.gwt.dnd.gwt-dnd' />
+	
+	<!-- Inherit the GWT W3C file APIs support library. -->	
+	<inherits name="org.vectomatic.libgwtfile"/>
+	
+	<!-- Inherit the GWT 'Crypto' API support library. -->	
+	<inherits name="com.googlecode.gwt.crypto.Crypto" />
+	
+	<!-- Inherit the gQuery support libraries. -->	
+	<inherits name="com.google.gwt.query.Query"           />
+	<inherits name="gwtquery.plugins.draggable.Draggable" />
+	
+	<!-- Inherit the GWT Tour support library. -->
+	<set-configuration-property name='xsiframe.failIfScriptTag' value='FALSE'/>
+	<inherits name="com.eemi.gwt.tour.GwtTour"/>
+
+	<!-- Fixes a build warning with the IE9 permutation -->
+	<!-- with the GWT Tour stuff.                       -->	
+	<replace-with class="gwtquery.plugins.draggable.client.impl.DraggableHandlerImplIE8">
+		<when-type-is class="gwtquery.plugins.draggable.client.impl.DraggableHandlerImpl"/>
+		<when-property-is name="user.agent" value="ie9"/>
+	</replace-with>
+   		
+	<!-- Other 'generic' module inherits go here. -->
+
+	<!-- Specify the application entry point class. -->
+	<entry-point class='org.kablink.teaming.gwt.client.GwtTeaming'/>
+
+	<!-- Specify the initial split point that needs to be loaded. -->
+	<!--	
+		<extend-configuration-property
+			name="compiler.splitpoint.initial.sequence"
+			value="org.kablink.teaming.gwt.client.GwtMainPage"/>
+	-->
+	
+    <!-- Specify the application specific style sheets. -->
+	<stylesheet src='GwtTeaming.css'                />
+    <stylesheet src='GwtProfile.css'                />		
+    <stylesheet src='GwtLandingPage.css'            />		
+    <stylesheet src='GwtBinderViews.css'            />		
+    <stylesheet src='GwtMenus.css'                  />		
+    <stylesheet src='GwtFolderEntryView.css'        />		
+    <stylesheet src='GwtDesktopAppDownloadPage.css' />		
+    <stylesheet src='GwtReports.css'                />		
+    <stylesheet src='GwtCalendar.css'               />
+    <stylesheet src='VibeCellTable.css'             />		
+    <stylesheet src='VibeDataGrid.css'              />
+    <stylesheet src='VibeWidgets.css'               />
+    <stylesheet src='LegacyJspSupport.css'          />
+
+   	<!-- Limit support of which browsers we compile for.  Speeds up -->
+	<!-- compilation during development.                            -->
+	<inherits name='org.kablink.teaming.gwt.buildBrowsers' />	<!-- Must match definition and usage of ${gwt.browsers.module} in build.xml. -->
+	<!-- Possible user.agent values:                              -->
+	<!--    gecko1_8:  All versions of Firefox and IE11.          -->
+	<!--    ie8:       IE8.                                       -->
+	<!--    ie9:       IE9.                                       -->
+	<!--    ie10:      IE10.                                      -->
+	<!--    safari:    Safari and Chrome (webkit), all versions.  -->
+
+	<!-- Using deferred binding, when requested, load the -->
+	<!-- appropriate agent class.                         -->	
+	<replace-with class="org.kablink.teaming.gwt.client.util.AgentGecko18">
+		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
+		<when-property-is name="user.agent" value="gecko1_8" />
+	</replace-with>
+	<replace-with class="org.kablink.teaming.gwt.client.util.AgentIE8">
+		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
+		<when-property-is name="user.agent" value="ie8" />
+	</replace-with>
+	<replace-with class="org.kablink.teaming.gwt.client.util.AgentIE9">
+		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
+		<when-property-is name="user.agent" value="ie9" />
+	</replace-with>
+	<replace-with class="org.kablink.teaming.gwt.client.util.AgentIE10">
+		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
+		<when-property-is name="user.agent" value="ie10" />
+	</replace-with>
+	<replace-with class="org.kablink.teaming.gwt.client.util.AgentSafari">
+		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
+		<when-property-is name="user.agent" value="safari" />
+	</replace-with>
+</module>

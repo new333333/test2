@@ -1,0 +1,70 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-4.3.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.1.xsd">
+
+    <!-- ============================== Base beans =================================== -->
+	
+    <import resource="security-auth-common.xml"/>
+
+    <!-- ============================== Basic authentication ============================ -->
+    
+    <!-- Note: This option is reserved only for use in conjunction with iChain/NAM or similar 
+         authentication proxy where the proxy handles all first-line authentication and 
+         subsequently sends login token in the form of Basic Auth header to the Teaming server. 
+         In all other situations, the default authentication option based on form-based login
+         must be used instead. -->
+         
+    <bean id="_logoutFilter" class="org.kablink.teaming.spring.security.LogoutFilter" depends-on="sPropsUtil">
+		<constructor-arg value="/bitbucket"/>
+		<constructor-arg>
+			<list>
+				<bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler"/>
+			</list>
+		</constructor-arg>
+		<property name="filterProcessesUrl" value="/s/portalLogout"/>
+    </bean>
+
+    <!-- ============================== CSRF protection ============================ -->
+    <bean id="crsfHeaderFilter" class="org.kablink.teaming.spring.security.CsrfHeaderFilter" />
+
+    <!--Provides a way to not force checking of Cross Site "forgery on all requests -->
+    <bean id="csrfSecurityRequestMatcher" class="org.kablink.teaming.spring.security.CsrfSecurityRequestMatcher">
+        <property name="enabled" value="${csrf.enable}"/>
+        <property name="ignoredPaths">
+            <list>
+                <value>.*\.rpc$</value>
+                <value>/s/portalLogin</value>
+                <value>/s/portalLogout</value>
+                <value>^/ws/.*</value>
+            </list>
+        </property>
+        <property name="ignoredMethods">
+            <array>
+                <value>GET</value>
+                <value>HEAD</value>
+                <value>TRACE</value>
+                <value>OPTIONS</value>
+            </array>
+        </property>
+    </bean>
+
+    <security:http use-expressions="true" realm="Novell" authentication-manager-ref="_authenticationManager">
+    	<security:headers>
+		  <security:frame-options policy="SAMEORIGIN"/>
+		</security:headers>
+        <security:csrf disabled="true"/>
+		<security:custom-filter position="LOGOUT_FILTER" ref="_logoutFilter"/>
+        <security:custom-filter after="CSRF_FILTER" ref="crsfHeaderFilter"/>
+        <security:session-management session-fixation-protection="newSession" />
+        <security:intercept-url pattern="/**" access="isFullyAuthenticated()" />
+        <security:anonymous enabled="false" />        
+        <security:http-basic/>
+    </security:http>
+
+</beans>

@@ -1,0 +1,85 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-4.3.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.1.xsd">
+
+	<!-- Handler mapping implementation that maps from URLs to request handler beans -->
+	<bean id="defaultHandlerMapping" parent="simpleUrlHandlerMappingTemplate">
+		<property name="urlMap">
+			<map>
+				<entry key="/viewFile"><ref bean="viewFile"/></entry>
+				<entry key="/viewFile/*"><ref bean="viewFile"/></entry>
+				<entry key="/viewiCal"><ref bean="viewiCal"/></entry>				
+				<entry key="/viewCss"><ref bean="viewCss"/></entry>				
+				<entry key="/viewCss/**/*"><ref bean="viewCss"/></entry>
+				<entry key="/viewDefinitionXml"><ref bean="viewDefinitionXml"/></entry>				
+				<entry key="/viewFragment"><ref bean="viewFragment"/></entry>
+				<entry key="/reportDownload"><ref bean="reportDownload"/></entry>
+				<entry key="/definitionDownload"><ref bean="definitionDownload"/></entry>
+				<entry key="/templateDownload"><ref bean="templateDownload"/></entry>
+				<entry key="/errorHandler"><ref bean="errorHandler"/></entry>
+				<entry key="/__readFile"><ref bean="readFile"/></entry>
+				<entry key="/__readFile/**/*"><ref bean="readFile"/></entry>
+				<entry key="/readFile"><ref bean="readFile"/></entry>
+				<entry key="/readFile/**/*"><ref bean="readFile"/></entry>
+				<entry key="/readScaledFile/**/*"><ref bean="readScaledFile"/></entry>
+				<entry key="/readThumbnail/**/*"><ref bean="readThumbnail"/></entry>
+				<entry key="/portalLogin"><ref bean="portalLogin"/></entry>
+				<entry key="/portalLogout"><ref bean="portalLogin"/></entry>
+			</map>
+		</property>
+	</bean>
+
+	<!-- Handler Exception Resolver -->
+	<bean id="handlerExceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="exceptionMappings">
+			<props>
+				<prop key="org.kablink.teaming.exception.CheckedCodedException">common/servlet.defCodedError</prop>
+				<prop key="org.kablink.teaming.exception.UncheckedCodedException">common/servlet.defCodedError</prop>
+				<prop key="org.kablink.teaming.web.util.CloseWrapperException">common/defCodedErrorClose</prop>
+			</props>
+		</property>
+		<property name="defaultErrorView"><value>common/defError</value></property>
+	</bean>
+
+	<!-- Controllers -->
+
+	<bean id="viewFile" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.forum.ViewFileController">
+		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
+	</bean>
+	<bean id="viewiCal" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.forum.ViewICalController">
+		<property name="icalModule"><ref bean="icalModule"/></property>
+		<property name="mailModule"><ref bean="mailModule"/></property>
+	</bean>
+	<bean id="viewCss" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.forum.ViewCssController"/>
+	<bean id="viewDefinitionXml" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.definition.ViewDefinitionXmlController"/>
+	<bean id="viewFragment" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.widget_test.FragmentController"/>
+	<bean id="reportDownload" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.administration.ReportDownloadController">
+		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
+	</bean>
+	<bean id="definitionDownload" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.administration.ExportDefinitionDownloadController">
+		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
+	</bean>
+	<bean id="templateDownload" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.administration.TemplateDownloadController">
+		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
+	</bean>
+	<bean id="errorHandler" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.forum.ErrorController"/>
+	<bean id="readFile" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.forum.ReadFileController">
+		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
+	</bean>
+	<bean id="readScaledFile" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.forum.ReadScaledFileController">
+		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
+	</bean>
+	<bean id="readThumbnail" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.forum.ReadThumbnailController">
+		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
+	</bean>
+	<bean id="portalLogin" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.portal.PortalLoginController">
+		<property name="portalLogin"><ref bean="portalLoginBean"/></property>
+	</bean>
+
+</beans>

@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+
+<project name="main" basedir="." default="compile">
+	<!-- If you want to run a specific unit test (or a select sub-set of unit tests)
+	     rather than the entire tests from the project, uncomment this property 
+	     and specify appropriate pattern for the names of the test classes. -->
+	<!--<property name="test.includes" value="**/InvokeUtilTests.class"/>-->
+	
+	<import file="../build-common.xml" />
+	<import file="../deploy-support.xml" />
+	
+	<property name="jar.file" value="kablink-teaming-main.jar" />
+	<property name="hibernate.dir" value="${basedir}/hibernate" />
+
+	<target name="clean" depends="ss-hib-clean,build-common.clean" />
+
+	<target name="compile" depends="compile-common,build-common.compile" />
+
+	<target name="compile-common">
+		<mkdir dir="${classes.dir}" />
+		<javac
+			classpathref="project.classpath"
+			compiler="${javac.compiler}"
+			debug="${javac.debug}"
+			deprecation="${javac.deprecation}"
+			destdir="${classes.dir}"
+			includes="**/portal/PortalException.java,**/portal/SystemException.java,**/portal/util/HibernateUtil.java,**/portal/util/Lucene*.java"
+			fork="${javac.fork}"
+			memoryMaximumSize="${javac.memoryMaximumSize}"
+			nowarn="${javac.nowarn}"
+			srcdir="${source.dir}"
+		/>
+	</target>
+
+	<target name="jar" depends="compile,ss-hib-gen">
+		<jar
+			basedir="${classes.dir}"
+			jarfile="${jar.file}"
+		>
+			<!-- No longer necessary
+			<manifest>
+				<attribute name="Class-Path" value="${classpath.manifest.ss} ${classpath.manifest.3rd}" />
+			</manifest>-->
+		</jar>
+		<antcall target="jar-manifest">
+			<param name="jar-manifest.jar.file" value="${jar.file}"/>
+		</antcall>
+	</target>
+
+	<target name="deploy" depends="jar">
+		<antcall target="deploy-jar">
+			<param name="deploy-support.jar.file" value="${jar.file}" />
+		</antcall>
+	</target>
+
+	<target name="ss-hib-clean" description="Delete Hibernate mapping files">
+		<delete failonerror="false">
+			<fileset dir="${classes.dir}" includes="**/*.hbm.xml"/>
+		</delete>		
+	</target>
+
+	<target name="ss-hib-gen"
+        description="Generate Hibernate mapping files from XDoclet in source">
+        			
+		<echo message="Building Hibernate mappings..."/>
+		
+	    <copy todir="${classes.dir}">
+	        <fileset dir="${hibernate.dir}">
+	        	<include name="**/*.hbm.xml"/>
+			</fileset>
+	    </copy>		
+	</target>
+</project>

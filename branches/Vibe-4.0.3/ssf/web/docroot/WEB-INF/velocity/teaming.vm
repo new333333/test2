@@ -1,0 +1,64 @@
+#*
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
+ * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
+ * http://www.opensource.org/licenses/cpal_1.0. The CPAL is based on the Mozilla Public License Version 1.1
+ * but Sections 14 and 15 have been added to cover use of software over a computer network and provide for
+ * limited attribution for the Original Developer. In addition, Exhibit A has been modified to be
+ * consistent with Exhibit B.
+ * 
+ * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND,
+ * either express or implied. See the CPAL for the specific language governing rights and limitations
+ * under the CPAL.
+ * 
+ * The Original Code is ICEcore. The Original Developer is SiteScape, Inc. All portions of the code
+ * written by SiteScape, Inc. are Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
+ * 
+ * 
+ * Attribution Information
+ * Attribution Copyright Notice: Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
+ * Attribution Phrase (not exceeding 10 words): [Powered by ICEcore]
+ * Attribution URL: [www.icecore.com]
+ * Graphic Image as provided in the Covered Code [web/docroot/images/pics/powered_by_icecore.png].
+ * Display of Attribution Information is required in Larger Works which are defined in the CPAL as a
+ * work which combines Covered Code or portions thereof with code not governed by the terms of the CPAL.
+ * 
+ * 
+ * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
+ * are trademarks of SiteScape, Inc.
+ *#
+#macro (ss_printLn $line)$line
+#end
+#macro (ss_print $line)$line#end 
+#macro (ss_eWrapper)#ss_print("padding:10px;margin-top:5px;-moz-border-radius:5px;border-radius:5px;-webkit-border-radius:5px;")#end 
+#macro (ss_eRelated)#ss_print("font-size:.9em;background:#EDEDED;padding:5px 10px;-moz-border-radius:5px;border-radius:5px;-webkit-border-radius:5px;")#end 
+#macro (ss_entrySubhead)#ss_print("text-align:center;padding:5px;font-size:14px;color:#949494;")#end 
+#macro (ss_eNav)#ss_print("position:relative;")#end 
+#macro (ss_eUserAvatar)#ss_print("background:#c4c4c4;padding:5px;margin-bottom:8px;color:#fff;font-weight:bold;text-decoration:none;-moz-border-radius:5px;border-radius:5px;-webkit-border-radius:5px;")#end 
+#macro (ss_eDate)#ss_print("color:#505354;font-size:11px;font-weight:normal;padding-left:5px;")#end 
+#macro (ss_eAuthor)#ss_print("font-size:12px;font-weight:bold;margin-left:5px;")#end 
+#macro (ss_eActions)#ss_print("position:absolute;top:12px;right:8px;")#end 
+#macro (ss_eUserAvatarImg)#ss_print("width:24px;vertical-align:middle;padding-right:5px;")#end 
+#macro (ss_eFolderLink)#ss_print("font-size:12px;font-weight:normal;text-transform:none;margin-left:5px;")#end 
+#macro (ss_eFolderBreadcrumb)#ss_print("color:#505354;font-size:11px;font-weight:normal;padding-left:5px;")#end 
+#macro (ss_eLabel)#ss_print("color:#505354;font-size:10px;text-transform:uppercase;letter-spacing:.5px;margin:16px 10px 3px 5px;")#end 
+#macro (ss_eLabel2)#ss_print("font-size:13px;margin: 15px 10px 5px 5px;")#end 
+#macro (ss_eChild)#ss_print("margin:1px 1px 1px 15px;padding:8px;background-color:#F6F6F6;border:1px solid #B8B8B8;-moz-border-radius:5px;border-radius:5px;-webkit-border-radius:5px;")#end 
+#macro (ss_entryContent)#ss_print("font-size:12px;font-weight:normal;font-family:Arial;margin:5px 5px 10px 15px;")#end
+#macro (ss_eTitle)#ss_print("font-size:1.1em;color:#5691A6;margin:5px;")#end
+#macro (ss_entrySignature)#ss_print("font-size:10px;padding-left:5px;color:#666666;")#end 
+#macro (ss_labelLeft)#ss_print("font-weight:bold;font-size:12px;display:inline;padding-right:2px;")#end
+#macro (ss_labelRight)#ss_print("font-weight:bold;font-size:12px;display:inline;padding-left:2px;")#end
+#macro (ss_labelAbove)#ss_print("font-weight:bold;font-size:12px;padding-top:2px;padding-bottom:2px;display:block;")#end
+#macro (ss_fineprint)#ss_print("font-size:10px !important; ")#end
+#macro (ss_light)#ss_print("color: #999999;")#end
+#macro (ss_legend)#ss_print("font-family:Arial;font-weight:bold;font-size:12px;color:#333333;")#end
+#macro (ss_fieldset)#ss_print("margin-top:6px;margin-bottom:4px;border:1px solid #CCCCCC;")#end
+#macro (ss_ul)#ss_print("margin-left:0em;padding-left:0em;margin-top:0px;margin-bottom:2px;")#end
+#macro (ss_li)#ss_print("list-style-type:none;margin-left:0px;margin-bottom:0px;padding-left:0px;")#end
+#macro (ss_getUserLink $user)
+#if ($user.WorkspaceId)
+	  <a style="text-decoration:none;color:#505354;" href="$ssVisitor.getPermaLink($user)">$esc.html($ssVisitor.getUserTitle($user))</a>
+#else
+	  $esc.html($ssVisitor.getUserTitle($user))
+#end
+#end

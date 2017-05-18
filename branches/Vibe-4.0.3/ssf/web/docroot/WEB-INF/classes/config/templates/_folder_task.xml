@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="5" internalId="402883b90cc53079010cc539bf260009">
+  <attribute name="templateTitle" type="string">__template_folder_task</attribute>
+  <attribute name="templateDescription" type="description">__template_folder_task_description</attribute>
+  <attribute name="title" type="string">__template_folder_task</attribute>
+  <attribute name="description" type="description"></attribute>
+  <attribute name="iconName" type="string">/icons/folder_blue_task.png</attribute>
+  <attribute name="name" type="string">_folder_task</attribute>
+  <property name="library">false</property>
+  <property name="mirrored">false</property>
+  <property name="uniqueTitle">false</property>
+  <property name="inheritFunctionMembership">true</property>
+  <property name="inheritDefinitions">false</property>
+  <property name="inheritTeamMembers">true</property>
+  <definition name="_taskFolder" databaseId="402883c1129b1f8101129b28bc620003"/>
+  <definition name="_taskEntry" databaseId="402883c1129b1f8101129b28bbe50002"/>
+  <definition name="_task_workflow" databaseId="24e350dd203897f40120389be0c80007">
+    <definition name="_taskEntry" databaseId="402883c1129b1f8101129b28bbe50002"/>
+  </definition>
+</template>
