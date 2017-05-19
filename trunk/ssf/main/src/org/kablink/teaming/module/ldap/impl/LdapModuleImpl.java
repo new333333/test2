@@ -34,6 +34,7 @@ package org.kablink.teaming.module.ldap.impl;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.invoke.MethodHandles;
 import java.net.InetAddress;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -74,7 +75,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
@@ -170,7 +170,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  */
 @SuppressWarnings({"unchecked", "unused"})
 public class LdapModuleImpl extends CommonDependencyInjection implements LdapModule {
-	protected Log logger = LogFactory.getLog(getClass());
+	protected static Log logger = LogFactory.getLog(MethodHandles.lookup().lookupClass());
 
 	private ConcurrentHashMap<Long,List<LdapConnectionConfig>> readOnlyCache = new ConcurrentHashMap<Long, List<LdapConnectionConfig>>();
 
@@ -626,7 +626,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					Object tmpValue;
 					
-					tmpValue = attrib.get();
+					tmpValue = getAttributeValue(attrib);
 					if ( tmpValue != null && tmpValue instanceof byte[] )
 						value = tmpValue;
 				}
@@ -646,7 +646,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					{
 						Object tmpValue;
 						
-						tmpValue = attrib.get();
+						tmpValue = getAttributeValue(attrib);
 						if ( tmpValue != null && tmpValue instanceof byte[] )
 							value = tmpValue;
 					}
@@ -888,7 +888,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if ( attrib == null )
 					return null;
 				
-				value = attrib.get();
+				value = getAttributeValue(attrib);
 				if ( value == null || (value instanceof String) == false )
 					return null;
 				
@@ -904,7 +904,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if ( attrib == null )
 					return null;
 				
-				value = attrib.get();
+				value = getAttributeValue(attrib);
 				if ( value == null || (value instanceof String) == false )
 					return null;
 				
@@ -1265,7 +1265,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			if ( attrib == null )
 				return null;
 			
-			value = attrib.get();
+			value = getAttributeValue(attrib);
 			if ( value == null || (value instanceof String) == false )
 				return null;
 			
@@ -1316,7 +1316,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					{
 						Object value;
 						
-						value = attrib.get();
+						value = getAttributeValue(attrib);
 						if ( value != null && value instanceof String )
 						{
 							homeDirInfo.setVolume( (String) value );
@@ -1329,7 +1329,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					{
 						Object value;
 						
-						value = attrib.get();
+						value = getAttributeValue(attrib);
 						if ( value != null && value instanceof String )
 						{
 							String serverDn;
@@ -1828,7 +1828,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						{
 							Object value;
 							
-							value = attrib.get();
+							value = getAttributeValue(attrib);
 							if ( value != null && value instanceof String )
 							{
 								teamingName = (String) value;
@@ -2267,7 +2267,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
                         if (attrib != null) {
                             Object value;                           
 
-                            value = attrib.get();
+                            value = getAttributeValue(attrib);
                             if (value != null && value instanceof String) {
                                 domainInfo = new ADLdapObject();
                                 domainInfo.setDomainName((String) value);
@@ -2278,7 +2278,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
                             configAttrib = attrs.get("configurationNamingContext");
                             if (configAttrib != null) {
                                 Object value;
-                                value = configAttrib.get();
+                                value = getAttributeValue(configAttrib);
                                 if (value != null && value instanceof String) {
                                     configContext = (String) value;
                                 }
@@ -2310,7 +2310,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
                             if (attrib != null) {
                                 Object value;
 
-                                value = attrib.get();
+                                value = getAttributeValue(attrib);
                                 if (value != null && value instanceof String) {
                                     domainInfo.setNetbiosName((String) value);
                                 }
@@ -2797,7 +2797,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						{
 							Object value;
 							
-							value = attrib.get();
+							value = getAttributeValue(attrib);
 							if ( value != null && value instanceof String )
 							{
 								String dateStr;
@@ -3214,7 +3214,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					Object val;
 
-					val = att.get();
+					val = getAttributeValue(att);
 					if ( val != null && val instanceof String )
 					{
 						samAccountName = ((String)val).trim();
@@ -5544,7 +5544,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						//map ldap id to sitescapeName
 						ssName = null;
 						Object attrValue;
-						attrValue = id.get();
+						attrValue = getAttributeValue(id);
 						if ( attrValue != null )
 						{
 							if ( attrValue instanceof String )
@@ -6393,7 +6393,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							id = lAttrs.get( "cn" );
 							if ( id != null )
 							{
-								teamingName = idToName(id.get()); // Do NOT cast to String!
+								teamingName = idToName(getAttributeValue(id)); // Do NOT cast to String!
 							}
 							else
 								teamingName = dn;
@@ -6427,7 +6427,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 									Attribute att = null;
 									for (i=0; i<memberAttributes.size(); i++) {
 										att = lAttrs.get((String)memberAttributes.get(i));
-										if(att != null && att.get() != null && att.size() != 0) {
+										if(att != null && getAttributeValue(att) != null && att.size() != 0) {
 											break;
 										}
 										att = null;
@@ -7184,7 +7184,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					continue;
 				}
 				
-				Object val = att.get();
+				Object val = getAttributeValue(att);
 				if ( val == null )
 				{
 					// Does the update mapping already hold a value for this attribute?
@@ -7316,7 +7316,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			{
 				Object value;
 				
-				value = attrib.get();
+				value = getAttributeValue(attrib);
 				if ( value != null && value instanceof String )
 				{
 					String strValue;
@@ -7360,7 +7360,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			{
 				Object value;
 				
-				value = attrib.get();
+				value = getAttributeValue(attrib);
 				if ( value != null && value instanceof String )
 				{
 					String disabled;
@@ -7464,7 +7464,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					String strValue;
 
-					strValue = (String) attrib.get();
+					strValue = (String) getAttributeValue(attrib);
 					if ( strValue != null )
 					{
 						long adTime;
@@ -7525,7 +7525,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			try
 			{
-				value = attrib.get();
+				value = getAttributeValue(attrib);
 				if ( value != null && value instanceof String )
 				{
 					String strValue;
@@ -7559,7 +7559,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			{
 				Object value;
 				
-				value = attrib.get();
+				value = getAttributeValue(attrib);
 				if ( value != null && value instanceof String )
 				{
 					String strValue;
@@ -7606,7 +7606,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			{
 				Object value;
 				
-				value = attrib.get();
+				value = getAttributeValue(attrib);
 				if ( value != null && value instanceof byte[] )
 				{
 					int i;
@@ -7665,7 +7665,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			{
 				Object value;
 				
-				value = attrib.get();
+				value = getAttributeValue(attrib);
 				if ( value != null && value instanceof byte[] )
 				{
 					StringBuilder strSID;
@@ -7752,7 +7752,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			try
 			{
-				value = attrib.get();
+				value = getAttributeValue(attrib);
 				if ( value != null && value instanceof String )
 					return (String) value;
 			}
@@ -7928,6 +7928,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		return id.trim();
 	}
 	protected String idToName(Object id) {
+		if(id == null) return null;
 		String strId = null;
 		if(id instanceof String) {
 			strId = (String)id;
@@ -9015,5 +9016,28 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     @Override
     public boolean getLdapSupportsExternalUserImport() {
     	return SPropsUtil.getBoolean("ldap.sync.supports.external.users", (!(Utils.checkIfFilr())));
+    }
+    
+    private static Object getAttributeValue(Attribute att) throws NamingException {
+    	// 5/19/2017 JK (bugs #1039381 and #1039362) 
+    	// This special handling is needed to work around the bugs.
+    	try {
+			return att.get();
+		} catch (NamingException e) {
+			Throwable cause = e.getCause();
+			if(cause != null && cause instanceof java.util.NoSuchElementException) {
+				if(logger.isTraceEnabled())
+					logger.trace(e.toString());
+				return null;				
+			}
+			else {
+				throw e; // Rethrow
+			}
+			
+		} catch (java.util.NoSuchElementException e) {
+			if(logger.isTraceEnabled())
+				logger.trace(e.toString());
+			return null;				
+		}
     }
 }
