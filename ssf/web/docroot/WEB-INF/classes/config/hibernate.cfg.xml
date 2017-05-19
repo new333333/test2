@@ -277,12 +277,12 @@
  		<collection-cache collection="org.kablink.teaming.domain.FolderEntry.workflowResponses" usage="read-write"/>
  		<!--<collection-cache collection="org.kablink.teaming.domain.Principal.customAttributes" usage="nonstrict-read-write"/>-->
  		<!--<collection-cache collection="org.kablink.teaming.domain.Principal.attachments" usage="nonstrict-read-write"/>-->
- 		<collection-cache collection="org.kablink.teaming.domain.Principal.events" usage="nonstrict-read-write"/>
+ 		<!--<collection-cache collection="org.kablink.teaming.domain.Principal.events" usage="nonstrict-read-write"/>-->
  		<!--<collection-cache collection="org.kablink.teaming.domain.Principal.emailAddresses" usage="nonstrict-read-write"/>-->
- 		<collection-cache collection="org.kablink.teaming.domain.UserPrincipal.memberOf" usage="nonstrict-read-write"/>
- 		<collection-cache collection="org.kablink.teaming.domain.Group.members" usage="nonstrict-read-write"/>
- 		<collection-cache collection="org.kablink.teaming.domain.ApplicationPrincipal.memberOf" usage="nonstrict-read-write"/>
- 		<collection-cache collection="org.kablink.teaming.domain.ApplicationGroup.members" usage="nonstrict-read-write"/>
+ 		<!--<collection-cache collection="org.kablink.teaming.domain.UserPrincipal.memberOf" usage="nonstrict-read-write"/>-->
+ 		<!--<collection-cache collection="org.kablink.teaming.domain.Group.members" usage="nonstrict-read-write"/>-->
+ 		<!--<collection-cache collection="org.kablink.teaming.domain.ApplicationPrincipal.memberOf" usage="nonstrict-read-write"/>-->
+ 		<!--<collection-cache collection="org.kablink.teaming.domain.ApplicationGroup.members" usage="nonstrict-read-write"/>-->
  		<collection-cache collection="org.kablink.teaming.security.function.Function.operationNames" usage="read-write"/>
  		<collection-cache collection="org.kablink.teaming.security.function.Function.conditionalClauses" usage="read-write"/>
  		<collection-cache collection="org.kablink.teaming.security.function.WorkAreaFunctionMembership.memberIds" usage="read-write"/>
