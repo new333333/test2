@@ -33,6 +33,10 @@
  */
 %>
 <%@ page import="org.kablink.teaming.lucene.util.SearchFieldResult" %>
+<%@ page import="org.kablink.teaming.domain.CustomAttribute" %>
+<%@ page import="org.kablink.teaming.domain.FolderEntry" %>
+<%@ page import="java.util.Map" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%
 	String s_property_name = (String) request.getAttribute("property_name");
 	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");

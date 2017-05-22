@@ -33,6 +33,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
+<%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
 <%
 	String type = (String) request.getAttribute("ss_type");
 	String elementName = (String) request.getAttribute("ssElementName");

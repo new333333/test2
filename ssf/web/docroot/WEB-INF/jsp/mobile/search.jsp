@@ -33,6 +33,10 @@
  */
 %>
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
+<%@ taglib prefix="ssf" uri="http://www.sitescape.com/tags-ssf" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <script type="text/javascript">
 function ss_setMobileSearchActionUrl(formObj) {

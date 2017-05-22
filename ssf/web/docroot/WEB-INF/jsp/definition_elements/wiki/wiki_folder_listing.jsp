@@ -34,6 +34,10 @@
 %>
 <% //View the listing part of a wiki folder %>
 <%@ page import="java.util.Date" %>
+<%@ page import="org.kablink.teaming.domain.User" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+
 <c:set var="selectedSortBy" value="${ssUserFolderPropertyObj.properties.sortBy}"/>
 
 <c:set var="topWikiFolder" value="${ssBinder}"/>

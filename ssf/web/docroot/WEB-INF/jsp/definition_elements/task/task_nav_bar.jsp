@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="org.kablink.teaming.util.SPropsUtil" %>
 <div class="ss_clear"></div>
 <script type="text/javascript"> 

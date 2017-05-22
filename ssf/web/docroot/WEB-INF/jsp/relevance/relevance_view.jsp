@@ -34,6 +34,8 @@
 %>
 <% // Relevance Integration - View. %>
 <%@ page import="org.kablink.teaming.relevance.util.RelevanceUtils" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%
 	if (RelevanceUtils.isRelevanceEnabled()) {
 %>

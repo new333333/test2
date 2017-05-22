@@ -32,7 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
 	<script type="text/javascript">
 	

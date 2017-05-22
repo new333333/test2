@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <% //Profile name view %>
 <c:if test="${!empty ssDefinitionEntry.name}">
 

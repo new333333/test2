@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <pre>
 Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
 

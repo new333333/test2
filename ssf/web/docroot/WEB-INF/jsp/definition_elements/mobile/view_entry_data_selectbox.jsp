@@ -35,10 +35,18 @@
 <% //Selectbox view %>
 <%@ page import="org.kablink.teaming.web.util.DefinitionHelper" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.dom4j.Element" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<jsp:useBean id="property_name" type="String" scope="request" />
+<jsp:useBean id="property_caption" type="String" scope="request" />
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssDefinitionEntry" type="org.kablink.teaming.domain.DefinableEntity" scope="request" />
 
 <div class="entry-content">
 <div class="entry-caption"><c:out value="${property_caption}" /></div>
-
+<%
+	Element item = (Element) request.getAttribute("item");
+%>
 <c:forEach var="selection" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}" >
 <%
 	String caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,

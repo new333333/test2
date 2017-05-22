@@ -32,6 +32,8 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.ArrayList" %>
 <%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
 <jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
@@ -43,7 +45,7 @@
 <c:otherwise>
 
 <c:set var="ss_folderViewColumnsType" value="${ssFolderViewType}" scope="request"/>
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_column_defaults.jsp" %>
+	<jsp:include page="/WEB-INF/jsp/definition_elements/folder_column_defaults.jsp" />
 <%
   List allColumns = new ArrayList();
 %>

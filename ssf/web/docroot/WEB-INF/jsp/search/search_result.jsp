@@ -33,6 +33,7 @@
  */
 %>
 <%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
@@ -135,7 +136,7 @@ var ss_entryCount = 0;
   anchorOnly="true"/>
 									<!-- Search result list -->
 									<c:set var="ssFolderEntriesResults" value="${ssFolderEntries}"/>
-									<%@ include file="/WEB-INF/jsp/search/result_list.jsp" %>
+									<jsp:include page="/WEB-INF/jsp/search/result_list.jsp" />
 
 									<c:if test="${ss_pageNumber != 1 || ssPageEndIndex != ssTotalRecords}">
 										<!-- Search results navigation -->

@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <div id="actions-menu" class="action-dialog" style="display:none; z-index:2;">
 	<div id="actions-button" class="close-menu">

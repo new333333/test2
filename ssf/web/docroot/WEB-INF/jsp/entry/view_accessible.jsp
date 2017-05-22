@@ -33,6 +33,8 @@
  */
 %>
 <%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <% //view a folder forum in accessible mode %>
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />

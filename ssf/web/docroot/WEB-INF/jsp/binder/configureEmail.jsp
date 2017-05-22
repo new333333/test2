@@ -67,8 +67,7 @@
 						<span class="ss_bold"><ssf:nlt tag="notify.header"/></span>
 						<% if ( Utils.checkIfFilr() == false ) { %>
 							<ssf:showHelp guideName="adv_user" pageId="mngfolder_sendnotification" />
-						<% } %>
-						<% else { %>
+						<% } else { %>
 							<ssf:showHelp guideName="user" pageId="folderadmin_configurenotifications" />
 						<% } %>
 					</td>

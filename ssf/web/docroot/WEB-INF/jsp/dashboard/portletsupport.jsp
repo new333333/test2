@@ -35,6 +35,7 @@
 
 <jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <%
 int entryWindowWidth = 0;

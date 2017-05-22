@@ -32,7 +32,8 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-	<td><a class="ss_downButton" 
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+	<td><a class="ss_downButton"
 		onClick="ss_moveThisTableRow(this, '${renderResponse.namespace}', 'down');ss_saveColumnOrder(this, 'columns__order');"
 		alt="<ssf:nlt tag="favorites.movedown"/>" title="<ssf:nlt tag="favorites.movedown"/>" /></a>
 	 </td>

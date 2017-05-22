@@ -47,37 +47,37 @@
 	if (itemType.equals("title")) {
 
 	} else if (itemType.equals("description")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" /><%
 
 	} else if (itemType.equals("htmlEditorTextarea")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_html_textarea.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_html_textarea.jsp" /><%
 		
 	} else if (itemType.equals("file")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_file.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_file.jsp" /><%
 		
 	} else if (itemType.equals("graphic")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_graphic.jsp" %><%		
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_graphic.jsp" /><%
 	
 	} else if (itemType.equals("attachFiles")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_attachments.jsp" %><%		
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/mobile/view_entry_attachments.jsp" /><%
 
 	} else if (itemType.equals("selectbox")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_selectbox.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_selectbox.jsp" /><%
 		
 	} else if (itemType.equals("date")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_date.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_date.jsp" /><%
 
 	} else if (itemType.equals("date_time")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_date_time.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_date_time.jsp" /><%
 		
 	} else if (itemType.equals("user_list") || itemType.equals("userListSelectbox")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_user_list.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_user_list.jsp" /><%
 
 	} else if (itemType.equals("mashupCanvas")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/mashup_canvas_view.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/mashup_canvas_view.jsp" /><%
 
 	} else if (itemType.equals("workspaceRemoteApp")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/remote_application_view.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/remote_application_view.jsp" /><%
 
 	} else {
 	}

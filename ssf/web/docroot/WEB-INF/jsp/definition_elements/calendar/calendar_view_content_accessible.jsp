@@ -33,7 +33,11 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="java.util.Map" %>
 <%@ page import="java.util.HashMap" %>
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+
 <script type="text/javascript">
 
 				

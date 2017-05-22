@@ -35,11 +35,14 @@
 <%@ page import="org.kablink.teaming.web.util.DefinitionHelper" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ page import="org.dom4j.Document" %>
+<%@ page import="org.dom4j.Element" %>
 <%@ page import="org.kablink.teaming.domain.DefinableEntity" %>
+<%@ page import="org.kablink.teaming.domain.CustomAttribute" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <%
 	//Get the item being displayed
-	item = (Element) request.getAttribute("item");
+	Element item = (Element) request.getAttribute("item");
 	String propertyName = (String) request.getAttribute("property_name");
 	Document configDefinition = (Document) request.getAttribute("ssConfigDefinition");
 	DefinableEntity definitionEntry = (DefinableEntity) request.getAttribute("ssDefinitionEntry");

@@ -35,6 +35,7 @@
 <%@ page import="java.util.Calendar"          %>
 <%@ page import="java.util.Date"              %>
 <%@ page import="java.util.GregorianCalendar" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%
 	GregorianCalendar cal = new GregorianCalendar();
 	cal.setTime(new Date());

@@ -32,8 +32,10 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="places_entry" value="${ssDefinitionEntry}"/>
 <jsp:useBean id="places_entry" type="org.kablink.teaming.domain.Entry" />
+<jsp:useBean id="property_name" type="String" scope="request" />
 <div class="entry-content">
 	<div class="entry-caption"><c:out value="${property_caption}" /></div>
 	<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getBinderTitlesAndIcons(places_entry.getCustomAttribute(property_name)) %>" >

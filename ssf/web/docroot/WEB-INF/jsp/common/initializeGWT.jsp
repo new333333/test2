@@ -34,6 +34,7 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT"         %>
 <%@ page import="org.kablink.teaming.util.ReleaseInfo" %>
+<%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
 
 <meta name="gwt:property" content="locale=<%= NLT.get( "Teaming.Lang" ) %>">
 

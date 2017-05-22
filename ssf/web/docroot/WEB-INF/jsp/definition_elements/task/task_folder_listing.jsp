@@ -35,6 +35,8 @@
 <% //View the listing part of a tasks folder %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%@ page import="java.util.Date" %>
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 
 <script type="text/javascript">
 	var myTasks_${renderResponse.namespace} = new ss_tasks ('ss_tasks_list_${renderResponse.namespace}', '${ssBinder.id}', '${renderResponse.namespace}');

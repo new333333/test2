@@ -32,11 +32,18 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ page import="org.kablink.teaming.web.util.GwtUIHelper"  %>
 <%@ page import="org.kablink.teaming.web.util.BinderHelper" %>
+<%@ page import="org.kablink.teaming.web.WebKeys" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
+<jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
+<jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 
 <% // The main forum view - for viewing folder listings and for viewing entries %>
 <jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
+
 <%
 String op = (String) renderRequest.getAttribute(WebKeys.ACTION);
 String displayStyle = ssUser.getCurrentDisplayStyle();

@@ -50,9 +50,6 @@
 
 </c:if>
 <c:if test="${empty ssReloadUrl}">
-<jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
-<jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
-<jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 <%@ include file="/WEB-INF/jsp/entry/view_listing_common.jsp" %>
 <jsp:useBean id="ss_entryWindowWidth" type="java.lang.Integer" scope="request" />
 <jsp:useBean id="ss_entryWindowHeight" type="java.lang.Integer" scope="request" />
@@ -61,7 +58,7 @@
     <c:if test="<%= !isViewEntry %>">
 
 <div id="ss_portlet_content" class="ss_style ss_portlet ss_content_outer" style="margin:0px; padding:0px;">
-<%@ include file="/WEB-INF/jsp/entry/view_search_results_vertical.jsp" %>
+<jsp:include page="/WEB-INF/jsp/entry/view_search_results_vertical.jsp" />
 </div>
      </c:if>
   </c:if>

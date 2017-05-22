@@ -32,7 +32,8 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<form action="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<form action="<ssf:url action="advanced_search" actionUrl="true"><ssf:param
 		name="binderId" value="${ssBinder.id}"/><ssf:param 
 		name="tabTitle" value=""/><ssf:param 
 		name="newTab" value="1"/></ssf:url>" method="post" id="advSearchForm">

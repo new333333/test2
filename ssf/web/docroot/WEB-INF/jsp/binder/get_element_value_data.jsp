@@ -67,5 +67,5 @@
 	  
 	</div></taconite-replace>
        
-<c:/if>
+</c:if>
 </taconite-root>

@@ -56,5 +56,5 @@
 <jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
 <jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
 <div class="ss_folder">
-<%@ include file="/WEB-INF/jsp/definition_elements/milestone/milestone_folder_listing.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/milestone/milestone_folder_listing.jsp" />
 </div>

@@ -33,6 +33,8 @@
  */
 %>
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
 
 <div class="header">
 
@@ -76,4 +78,4 @@
 <%@ include file="/WEB-INF/jsp/mobile/miniblog.jsp" %>
 </c:if>
 
-<%@ include file="/WEB-INF/jsp/mobile/logout.jsp" %>
+<jsp:include page="/WEB-INF/jsp/mobile/logout.jsp" />
