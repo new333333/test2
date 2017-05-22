@@ -36,7 +36,15 @@
 <%@ page import="org.kablink.teaming.web.util.DefinitionHelper" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ page import="org.kablink.teaming.lucene.util.SearchFieldResult" %>
+<%@ page import="org.kablink.teaming.domain.FolderEntry" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="org.dom4j.Element" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+
+<jsp:useBean id="property_name" type="String" scope="request" />
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <%
+	Element item = (Element) request.getAttribute("item");
 	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");
 	if (thisEntry instanceof FolderEntry) {
 %>

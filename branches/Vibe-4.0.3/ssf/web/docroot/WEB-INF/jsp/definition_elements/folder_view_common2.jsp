@@ -35,10 +35,26 @@
 <% // Folder listing %>
 <%@ page import="org.kablink.teaming.relevance.util.RelevanceUtils" %>
 <%@ page import="org.kablink.teaming.web.util.MiscUtil" %>
+<%@ page import="org.kablink.teaming.ObjectKeys" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.teaming.domain.User" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ page import="java.util.Date" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.Map" %>
 <%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="org.dom4j.Element" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
+<jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
+
+<%
+	boolean isIECheck = BrowserSniffer.is_ie(request);
+	String strBrowserType = "";
+	if (isIECheck) strBrowserType = "ie";
+%>
 
 <c:set var="ss_showDeleteCheckboxes" value="true"/>
 <c:if test="${ssBinder.mirrored}">
@@ -1020,25 +1036,27 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	  <c:if test="${!empty entryDef}">
 	  <jsp:useBean id="entryDef" type="org.kablink.teaming.domain.Definition"/>
 	  <ssf:slidingTableColumn  style="${slidingTableColStyle}">
+			<%
+				String eleValues;
+			%>
          <span <%= seenStyle %>>
          <c:if test="${!empty eleName2 && !empty entry1[eleName2] || !empty eleName2 && eleType2 == 'event'}">
 	       <c:if test="${eleType2 == 'selectbox' || eleType2 == 'radio' || eleType2 == 'checkbox' || eleType2 == 'text' || eleType2 == 'entryAttributes' || eleType2 == 'hidden'}">
 	         <%
-	         	String eleValues = org.kablink.teaming.web.util.DefinitionHelper.getCaptionsFromValues(entryDef, eleName2, entry1.get(eleName2).toString());
+	         	eleValues = org.kablink.teaming.web.util.DefinitionHelper.getCaptionsFromValues(entryDef, eleName2, entry1.get(eleName2).toString());
 	         %>
 	         <%= eleValues %>
 	       </c:if>
 	       
 	       <c:if test="${eleType2 == 'number'}">
-	         <%
-	         	String eleValues = org.kablink.teaming.web.util.DefinitionHelper.getCaptionsFromValues(entryDef, eleName2, entry1.get(eleName2).toString());
+	         <%eleValues = org.kablink.teaming.web.util.DefinitionHelper.getCaptionsFromValues(entryDef, eleName2, entry1.get(eleName2).toString());
 	         %>
 	         <span style="white-space:nowrap;"><%= eleValues %></span>
 	       </c:if>
 	       
 	       <c:if test="${eleType2 == 'url'}">
 	         <%
-	         	String eleValues = org.kablink.teaming.web.util.DefinitionHelper.getCaptionsFromValues(entryDef, eleName2, entry1.get(eleName2).toString());
+	         	eleValues = org.kablink.teaming.web.util.DefinitionHelper.getCaptionsFromValues(entryDef, eleName2, entry1.get(eleName2).toString());
 	         	Element ele = (Element)org.kablink.teaming.web.util.DefinitionHelper.findAttribute(eleName2, entryDef.getDefinition());
 	         	String linkText = org.kablink.teaming.web.util.DefinitionHelper.getItemProperty(ele, "linkText");
 	         	String target = org.kablink.teaming.web.util.DefinitionHelper.getItemProperty(ele, "target");

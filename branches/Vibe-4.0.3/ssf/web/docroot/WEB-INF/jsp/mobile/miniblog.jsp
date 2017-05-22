@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:if test="${empty ss_microblog_post_url}">
   <c:set var="ss_microblog_post_url" scope="request">
     <ssf:url adapter="true" portletName="ss_forum" 

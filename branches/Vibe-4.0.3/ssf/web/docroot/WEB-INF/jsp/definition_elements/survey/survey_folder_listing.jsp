@@ -34,6 +34,8 @@
 %>
 <% //View the listing part of a survey folder %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%@ page import="java.util.Date" %>
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <script type="text/javascript">
 var ss_showingFolder = true;
 </script>

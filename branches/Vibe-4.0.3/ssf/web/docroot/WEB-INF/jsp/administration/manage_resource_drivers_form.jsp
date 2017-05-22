@@ -72,13 +72,13 @@
 	      <c:if test="${selectedType == 'webdav'}">selected</c:if>
 	    ><ssf:nlt tag="administration.resourceDrivers.type.webdav"/></option>
 	    <ssf:ifAuthorizedByLicense featureName="com.novell.teaming.Filr">
-		    <option value="<%= ResourceDriverConfig.DriverType.cifs %>"
+		    <option value="<%= ResourceDriverConfig.DriverType.windows_server %>"
 		      <c:if test="${selectedType == 'cifs'}">selected</c:if>
 		    ><ssf:nlt tag="administration.resourceDrivers.type.cifs"/></option>
-		    <option value="<%= ResourceDriverConfig.DriverType.ncp_netware %>"
+		    <option value="<%= ResourceDriverConfig.DriverType.netware %>"
 		      <c:if test="${selectedType == 'ncp_netware'}">selected</c:if>
 		    ><ssf:nlt tag="administration.resourceDrivers.type.ncp_netware"/></option>
-		    <option value="<%= ResourceDriverConfig.DriverType.ncp_oes %>"
+		    <option value="<%= ResourceDriverConfig.DriverType.oes %>"
 		      <c:if test="${selectedType == 'ncp_oes'}">selected</c:if>
 		    ><ssf:nlt tag="administration.resourceDrivers.type.ncp_oes"/></option>
 		    <option value="<%= ResourceDriverConfig.DriverType.famt %>"

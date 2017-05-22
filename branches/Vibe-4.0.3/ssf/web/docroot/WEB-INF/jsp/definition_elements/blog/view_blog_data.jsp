@@ -60,10 +60,10 @@
 		%><%@ include file="/WEB-INF/jsp/definition_elements/blog/view_blog_data_checkbox.jsp" %><%
 		
 	} else if (itemType.equals("selectbox")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/blog/view_blog_data_selectbox.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/blog/view_blog_data_selectbox.jsp" /><%
 		
 	} else if (itemType.equals("radio")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/blog/view_blog_data_radio.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/blog/view_blog_data_radio.jsp" /><%
 		
 	} else if (itemType.equals("date")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/blog/view_blog_data_date.jsp" %><%

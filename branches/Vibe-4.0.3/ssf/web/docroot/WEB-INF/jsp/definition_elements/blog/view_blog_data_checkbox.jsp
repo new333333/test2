@@ -32,6 +32,10 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.domain.FolderEntry" %>
+<%@ page import="java.util.Map" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+
 <% //checkbox view %>
 <%
 	String s_property_name = (String) request.getAttribute("property_name");

@@ -89,7 +89,7 @@ function ss_setPhotoIframeSize${renderResponse.namespace}() {
 	<tr>
 	  <td valign="top">
 		<div class="ss_folder" id="ss_photo_folder_div">
-		  <%@ include file="/WEB-INF/jsp/definition_elements/photo/photo_folder_listing.jsp" %>
+		  <jsp:include page="/WEB-INF/jsp/definition_elements/photo/photo_folder_listing.jsp" />
 		</div>
 	  </td>
 	  <td valign="top" width="200">

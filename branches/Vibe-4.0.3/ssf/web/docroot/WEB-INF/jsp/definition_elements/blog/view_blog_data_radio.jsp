@@ -34,6 +34,13 @@
 %>
 <%@ page import="org.kablink.teaming.web.util.DefinitionHelper" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.teaming.domain.FolderEntry" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="org.dom4j.Element" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+
 <%
 	//Get the item being displayed
 	Element item = (Element) request.getAttribute("item");

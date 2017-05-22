@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <!-- Should we show the text verification controls? -->
 <c:if test="${!empty ssDoTextVerification}">
 	<!-- Yes -->

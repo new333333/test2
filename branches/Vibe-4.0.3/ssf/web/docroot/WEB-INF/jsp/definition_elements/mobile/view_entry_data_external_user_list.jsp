@@ -33,6 +33,7 @@
  */
 %>
 <%@ page import="org.kablink.teaming.domain.CustomAttribute" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <% // External user list view. %>
 <%

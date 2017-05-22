@@ -35,7 +35,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page contentType="text/xml; charset=UTF-8" %>
-<%@ page import="org.kablink.teaming.module.ic.RecordType" %>
 
 
 <taconite-root xml:space="preserve">

@@ -34,6 +34,7 @@
 %>
 <% // Relevance Integration - Scripts. %>
 <%@ page import="org.kablink.teaming.relevance.util.RelevanceUtils" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%
 	if (RelevanceUtils.isRelevanceEnabled()) {
 %>

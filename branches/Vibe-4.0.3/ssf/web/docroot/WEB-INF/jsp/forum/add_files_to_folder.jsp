@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <c:if test="${ssFolder.entityType == 'folder'}">

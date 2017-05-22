@@ -33,7 +33,10 @@
  */
 %>
 <% //View the listing part of a photo folder %>
+<%@ page import="org.kablink.teaming.ObjectKeys" %>
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request"/>
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <script type="text/javascript">
 var ss_showingFolder = true;
 </script>

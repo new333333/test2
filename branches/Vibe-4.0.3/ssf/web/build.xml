@@ -2,7 +2,8 @@
 
 <project name="web" basedir="." default="war">
 	<import file="../build-common.xml" />
-	
+	<import file="${app.server.dir}/bin/catalina-tasks.xml"/>
+
 	<property name="war.file" value="ssf-web.war" />
 		
 	<propertycopy name="app.server.dir" from="app.server.${portal.type}.${app.server.type}.dir" />
@@ -487,29 +488,34 @@
 	-->
 	
 	<target name="precompile-jsp-init-tomcat">
-		<path id="jspc.classpath">        
-			<pathelement location="${env.JAVA_HOME}/jre/lib/rt.jar" />
-			<pathelement location="${env.JAVA_HOME}/lib/tools.jar" />
-			<pathelement location="${app.server.dir}/common/lib/commons-el.jar" />
-			<pathelement location="${app.server.dir}/common/lib/jasper-compiler.jar" />
-			<pathelement location="${app.server.dir}/common/lib/jasper-runtime.jar" />
-	        <fileset dir="${app.server.dir}/common/lib">
-	            <include name="**/*.jar"/>
-	        </fileset>
-	        <fileset dir="${app.server.dir}/common/endorsed">
-	            <include name="**/*.jar"/>
-	        </fileset>        
-	    </path>		
+		<path id="jspc.classpath">
+			<fileset dir="${project.dir}/main-minimum" includes="kablink-teaming-main-minimum.jar" />
+			<fileset dir="${project.dir}/main" includes="kablink-teaming-main.jar" />
+			<fileset dir="${project.dir}/util" includes="kablink-teaming-util.jar" />
+			<fileset dir="${project.dir}/util-search" includes="kablink-teaming-util-search.jar" />
+			<fileset dir="${project.dir}/rest-lib" includes="kablink-teaming-rest-lib.jar" />
+			<fileset dir="${project.dir}/commons-httpclient-contrib" includes="kablink-teaming-commons-httpclient-contrib.jar" />
+			<fileset dir="${project.dir}/slide-webdavclient" includes="kablink-teaming-slide-webdavclient.jar" />
+			<fileset dir="${project.dir}/taglib" includes="kablink-teaming-taglib.jar" />
+			<fileset dir="${project.dir}/indexer-lucene" includes="kablink-teaming-lucenecommon.jar" />
+			<fileset dir="${project.dir}/liferay/teaming" includes="kablink-teaming-liferay-hooks.jar" />
+			<fileset dir="${project.dir}/lib" includes="${libraries.ssf}" />
+			<fileset dir="${project.dir}/lib" includes="jms.jar" />
+			<fileset dir="${project.dir}/lib" includes="util-java.jar" />
+			<fileset dir="${project.dir}/lib" includes="portal-*.jar" />
+			<fileset dir="${project.dir}/gwt" includes="kablink-teaming-gwt.jar" />
+	    </path>
+		<pathconvert property="jspc.cp" refid="jspc.classpath"/>
 	</target>
 	
 	<target name="jsp-to-java-tomcat" depends="precompile-jsp-init-tomcat">
-		<java 	classname="org.apache.jasper.JspC"
-				fork="true"
-				newenvironment="true"
-		>
-			<classpath refid="jspc.classpath" />
-			<arg line="-d ${jsp.artifacts.dir} -webapp ${app.server.ssf.dir}" />
-		</java>	 
+		<jasper
+				validateXml="false"
+				uriroot="${web.dir}"
+				webXmlFragment="${web.dir}/WEB-INF/web-generated.xml"
+				outputDir="${jsp.artifacts.dir}"
+				classpath="${jspc.cp}">
+		</jasper>
 	</target>
 	
 	<target name="remove-dependent-java-tomcat" depends="precompile-jsp-init-tomcat">
@@ -546,16 +552,13 @@
 	           destdir="${jsp.artifacts.dir}"
 	           debug="true"
 	           optimize="false"
-	           source="1.6">
+	           source="1.8">
 	            <classpath>
 	                <path refid="jspc.classpath"/>
-	    	        <fileset dir="${app.server.ssf.dir}/WEB-INF/lib">
-	    	            <include name="**/*.jar"/>
+	    	        <fileset dir="${app.server.dir}/lib">
+	    	            <include name="*.jar"/>
 	    	        </fileset>
-	    	        <fileset dir="${app.server.dir}/common/lib/ext">
-	    	            <include name="**/*.jar"/>
-	    	        </fileset>
-	            </classpath>           
+	            </classpath>
 	    </javac>  		
 	</target>
 	
@@ -581,7 +584,7 @@
 		
 		<antcall target="java-to-class-tomcat" />
 		
-		<antcall target="copy-artifacts-to-tomcat" />
+		<!--<antcall target="copy-artifacts-to-tomcat" />-->
 	</target>
 
 	<target name="deploy-image-themes">

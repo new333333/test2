@@ -34,6 +34,10 @@
 %>
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
+
 <script type="text/javascript">
 
 function ss_mobileLogoff() {

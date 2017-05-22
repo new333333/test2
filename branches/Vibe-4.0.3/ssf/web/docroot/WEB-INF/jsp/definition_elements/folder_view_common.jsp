@@ -59,6 +59,6 @@ var ss_closeText = "<ssf:nlt tag="button.close"/>";
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation_init.jsp" />
 
 <div <c:if test="${slidingTableStyle == 'fixed'}">id="ss_folder_view_common${renderResponse.namespace}"</c:if>>
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_view_common2.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/folder_view_common2.jsp" />
 </div>
 <c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>

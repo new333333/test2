@@ -39,7 +39,7 @@
 <jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <c:set var="ss_folderViewColumnsType" value="empty" scope="request" />
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_column_defaults.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/folder_column_defaults.jsp" />
 
   <c:if test="${!empty ssFolders}">
   <div class="folders">

@@ -43,6 +43,8 @@
 <%@ page import="java.util.HashMap" %>
 <%@ page import="org.kablink.util.BrowserSniffer" %>
 
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
+
 <%
 boolean isFilr = org.kablink.teaming.util.Utils.checkIfFilr();
 isFilr = false;		//I turned off the way Filr sorted its hits. (pmh)

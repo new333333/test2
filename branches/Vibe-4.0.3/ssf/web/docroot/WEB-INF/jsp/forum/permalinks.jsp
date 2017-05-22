@@ -33,6 +33,7 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.Utils" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <div style="padding:10px;">
 <table cellspacing="2" cellpadding="6" border="1" style="width:100%; background:#cecece;">

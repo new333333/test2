@@ -34,6 +34,10 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<jsp:useBean id="property_name" type="String" scope="request" />
+<jsp:useBean id="property_caption" type="String" scope="request" />
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssDefinitionEntry" type="org.kablink.teaming.domain.DefinableEntity" scope="request" />
 <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
 <ssf:remoteApplication applicationId="${ssDefinitionEntry.customAttributes[property_name].value}">
   <ssf:param name="binderId" value="${ssBinder.id}"/>

@@ -37,20 +37,15 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ page import="org.kablink.teaming.ssfs.util.SsfsUtil" %>
-<%
-boolean isIECheck = BrowserSniffer.is_ie(request);
-String strBrowserType = "";
-if (isIECheck) strBrowserType = "ie";
-%>
 <jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
 <c:set var="ss_folderViewColumnsType" value="folder" scope="request" />
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_column_defaults.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/folder_column_defaults.jsp" />
 <c:set var="slidingTableStyle" value="sliding"/>
 <c:if test="${empty ss_folderViewStyle || ss_folderViewStyle == 'folder'}">
   <c:set var="slidingTableStyle" value="fixed"/>
 </c:if>
 
 <div <c:if test="${slidingTableStyle == 'fixed'}">id="ss_folder_view_common${renderResponse.namespace}"</c:if>>
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_view_common2.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/folder_view_common2.jsp" />
 </div>

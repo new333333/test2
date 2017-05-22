@@ -33,6 +33,7 @@
  */
 %>
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
