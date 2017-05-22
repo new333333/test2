@@ -33,7 +33,10 @@
  */
 %>
 <% //View the listing part of a milestone folder %>
+<%@ page import="java.util.Date" %>
+
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <script type="text/javascript">
 var ss_showingFolder = true;
 </script>

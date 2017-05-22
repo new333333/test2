@@ -32,6 +32,11 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.teaming.domain.User" %>
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
+
 <c:set var="slidingTableTableStyle" value=""/>
 <c:set var="slidingTableRowStyle" value="ss_table_oddRow"/>
 <c:set var="slidingTableRowOddStyle" value="ss_table_oddRow"/>

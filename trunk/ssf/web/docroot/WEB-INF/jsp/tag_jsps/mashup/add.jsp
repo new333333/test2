@@ -33,6 +33,7 @@
  */
 %>
 <% //Add entry %>
+<%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">

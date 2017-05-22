@@ -41,7 +41,7 @@
 	Map components = null;
 	Map component = null;
 	Map data = null;
-	String[] googleScript = null;
+	String googleScript = null;
 	String googleScript0 = "";
 	Map dashboard = (Map)ssDashboard.get("dashboard");
 	if (dashboard != null) components = (Map)dashboard.get("components");

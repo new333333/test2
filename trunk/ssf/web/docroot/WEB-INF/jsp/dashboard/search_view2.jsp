@@ -113,8 +113,7 @@
 		</div>
 
 		<c:set var="ssFolderEntriesResults" value="${ssResultEntries}" />
-		<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
-		<%@ include file="/WEB-INF/jsp/search/result_list.jsp" %>
+		<jsp:include page="/WEB-INF/jsp/search/result_list.jsp" />
 		
 		<div id="ss_searchResult_header">
 			<div class="ss_dashboardPaginator"> 

@@ -1,3 +1,4 @@
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <!--  This form is used for logging in. -->
 <div id="microFocusLoginPage" style="display: visible">
 	<form name="loginFormName" id="microFocusLoginFormId" method="post" autocomplete="off" action="<c:out value="${ss_loginPostUrl}" escapeXml="true"/>"

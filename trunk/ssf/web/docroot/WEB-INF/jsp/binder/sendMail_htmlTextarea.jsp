@@ -33,6 +33,7 @@
  */
 %>
 <%@ page import="java.util.Locale" %>
+<%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
 <script type="text/javascript" src="<html:tinyMcePath/>tiny_mce.js"></script>
 <%@ include file="/WEB-INF/jsp/common/tinymce_translations.jsp" %>
 <script type="text/javascript">

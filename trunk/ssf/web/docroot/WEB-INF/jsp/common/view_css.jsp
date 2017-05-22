@@ -36,7 +36,10 @@
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
 <%@ page import="org.kablink.teaming.web.util.BinderHelper" %>
 <%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
-<%@ page import="org.kablink.teaming.util.ReleaseInfo" %><%--
+<%@ page import="org.kablink.teaming.util.ReleaseInfo" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%--
+
 
 --%><fmt:setLocale value="${ssUser.locale}" scope="request" /><%--
 --%><fmt:setTimeZone value="${ssUser.timeZone.ID}" scope="request"/><%--

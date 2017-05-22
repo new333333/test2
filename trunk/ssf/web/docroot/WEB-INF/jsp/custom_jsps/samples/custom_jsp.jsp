@@ -49,10 +49,10 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:choose>
 <c:when test="${ssConfigJspStyle == 'form'}">
-<%@ include file="/WEB-INF/jsp/custom_jsps/custom_jsp_form.jsp" %>
+<%@ include file="/WEB-INF/jsp/custom_jsps/samples/custom_jsp_form.jsp" %>
 </c:when>
 <c:when test="${ssConfigJspStyle == 'view'}">
-<%@ include file="/WEB-INF/jsp/custom_jsps/custom_jsp_view.jsp" %>
+<%@ include file="/WEB-INF/jsp/custom_jsps/samples/custom_jsp_view.jsp" %>
 </c:when>
 <c:otherwise>
 <c:if test="${!empty ssConfigJsp}">

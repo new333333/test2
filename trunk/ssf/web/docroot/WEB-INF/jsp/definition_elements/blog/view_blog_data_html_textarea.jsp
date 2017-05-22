@@ -32,6 +32,10 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.domain.DefinableEntity" %>
+<%@ page import="org.kablink.teaming.domain.FolderEntry" %>
+<%@ page import="java.util.Map" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <% //Textarea view %>
 <% //NOTE: textarea's are currently not stored in the search index, so this is element is never shown. %>

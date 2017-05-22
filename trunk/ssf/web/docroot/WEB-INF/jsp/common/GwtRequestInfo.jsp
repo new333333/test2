@@ -35,6 +35,7 @@
 <%@ page import="java.util.TimeZone" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="org.kablink.teaming.domain.User" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%
 	User currentUser = (User) request.getAttribute( "ssUser" );
 	Date now = new Date();

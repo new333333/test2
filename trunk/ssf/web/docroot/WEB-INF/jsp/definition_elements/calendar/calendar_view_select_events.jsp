@@ -33,6 +33,7 @@
  */
 %>
 
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="org.kablink.util.BrowserSniffer" %>
 <div class="ss_style">
 <script type="text/javascript"> 

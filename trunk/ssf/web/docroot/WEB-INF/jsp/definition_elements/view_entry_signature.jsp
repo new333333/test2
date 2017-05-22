@@ -133,13 +133,13 @@
 		<table cellspacing="0" cellpadding="0" class="margintop1" width="100%">
 		 <tr>
 		  <td class="ss_non_clipped_signature">
-			<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
+			<jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" />
 		  </td>
 		 </tr>
 		 <tr>
 		  <td style="padding-left: 10px;">
 		  <c:set var="property_caption" value=""/>
-			<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
+			<jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" />
 		  </td>
 		 </tr>
 		  <c:if test="${!empty ssDefinitionEntry.modification.principal && 
@@ -206,10 +206,10 @@
 				<c:set var="property_caption" value=""/>
 			  </td>
 			  <td>
-				  <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
+				  <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" />
 			  </td>
 			  <td nowrap>
-				  <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
+				  <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" />
 			  </td>
 			 </tr>
 			  <c:if test="${!empty ssDefinitionEntry.modification.principal && 
@@ -252,7 +252,7 @@
 	</td>
 	<td align="right" width="100%">
 		  <div>
-			<%@ include file="/WEB-INF/jsp/definition_elements/popular_view.jsp" %>
+			<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view.jsp" />
 		  </div>
 	</td>
   </tr>

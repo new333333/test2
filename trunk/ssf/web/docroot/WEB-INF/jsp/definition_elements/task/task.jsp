@@ -39,7 +39,6 @@
 <%@ page import="org.kablink.teaming.ObjectKeys"                         %>
 <%@ page import="org.kablink.teaming.util.SPropsUtil"                    %>
 <%@ page import="org.kablink.teaming.web.util.ListFolderHelper.ModeType" %>
-<jsp:useBean id="ssSeenMap"               type="org.kablink.teaming.domain.SeenMap"                     scope="request" />
 <jsp:useBean id="ssCurrentFolderModeType" type="org.kablink.teaming.web.util.ListFolderHelper.ModeType" scope="request" />
 <jsp:useBean id="ss_searchTotalHits"      type="java.lang.Integer"                                      scope="request" />
 <jsp:useBean id="ssBinder"                type="org.kablink.teaming.domain.Binder"                      scope="request" />

@@ -89,7 +89,7 @@ var ss_showingFolder = false;
 <jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
 
 <ssf:ifaccessible>
-<%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_view_content_accessible.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/calendar/calendar_view_content_accessible.jsp" />
 </ssf:ifaccessible>
 
 <ssf:ifnotaccessible>

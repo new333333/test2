@@ -33,6 +33,7 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <c:if test="${empty isDashboard}">
 	<% // We need the following <div> in order for the calendar to work on a landing page on IE. %>

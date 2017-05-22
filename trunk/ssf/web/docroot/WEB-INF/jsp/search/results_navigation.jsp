@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 
 			<div class="ss_paginator margintop2" style="margin-bottom: 5px;"> 

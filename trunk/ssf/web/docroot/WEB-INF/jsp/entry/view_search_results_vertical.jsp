@@ -33,6 +33,8 @@
  */
 %>
 <% //view a folder forum with the entry at the bottom in an iframe %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <%

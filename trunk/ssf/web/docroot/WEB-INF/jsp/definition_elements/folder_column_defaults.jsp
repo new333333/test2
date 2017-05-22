@@ -36,6 +36,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
+<jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
   <%
 	  Log logger = LogFactory.getLog("org.kablink.jsp");
 	Map ssFolderColumns = (Map) ssUserFolderProperties.get("userFolderColumns");

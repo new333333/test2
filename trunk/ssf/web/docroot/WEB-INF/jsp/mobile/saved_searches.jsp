@@ -33,6 +33,7 @@
  */
 %>
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 	<c:if test="${!empty ss_UserQueries}">
 	  <div style="padding-top:20px;"> </div>

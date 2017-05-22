@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <div class="header">
 <table cellspacing="0" cellpadding="0" width="100%">
