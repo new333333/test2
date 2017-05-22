@@ -33,6 +33,9 @@
  */
 %>
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="ssf" uri="http://www.sitescape.com/tags-ssf" %>
+<%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
 
 <div id="actions">
  <table cellspacing="0" cellpadding="0" width="100%">

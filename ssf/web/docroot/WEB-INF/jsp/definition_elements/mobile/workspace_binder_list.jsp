@@ -32,7 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${!empty ssProfileUser}">
   <div class="folders">
 		<a id="myprofile-a" href="<ssf:url adapter="true" portletName="ss_forum" 

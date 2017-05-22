@@ -35,6 +35,7 @@
 <% //View the listing part of a guestbook folder %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/guestbook/guestbook_sign.jsp" %>
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <script type="text/javascript">
 var ss_showingFolder = true;
 </script>

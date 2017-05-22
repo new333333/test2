@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <% //View dashboard canvas (javascript) %>
 <script type="text/javascript">
 //Initialize the variables only once

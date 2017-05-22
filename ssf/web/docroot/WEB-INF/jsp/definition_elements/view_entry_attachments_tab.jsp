@@ -35,6 +35,7 @@
 <% // View entry attachments %>
 <%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ page import="org.kablink.teaming.ssfs.util.SsfsUtil" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%
 	boolean presence_service_enabled = org.kablink.teaming.util.SPropsUtil.getBoolean("presence.service.enable", false);
 	String webdavSuffix = org.kablink.teaming.util.SPropsUtil.getString("webdav.folder.url.suffix", "");

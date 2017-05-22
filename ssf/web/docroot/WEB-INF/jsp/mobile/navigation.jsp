@@ -34,6 +34,7 @@
 %>
 <%@ page import="java.util.Stack" %>
 <%@ page import="org.kablink.teaming.domain.Binder" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
   <div id="hierarchy-dialog" class="action-dialog" style="display:none; z-index:2;">
 	<div class="close-menu">

@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="isEntryACL" value="false" scope="request"/>
 <c:if test="${ssWorkArea.workAreaType == 'folderEntry'}">
   <c:set var="ss_hideApplications" value="1" scope="request"/>

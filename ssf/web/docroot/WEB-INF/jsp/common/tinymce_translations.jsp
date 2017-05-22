@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:choose>
 	<c:when test="${ssUser.locale.language == 'cs'}"><c:set var="ss_user_lang" value="cs" /></c:when>
 	<c:when test="${ssUser.locale.language == 'da'}"><c:set var="ss_user_lang" value="da" /></c:when>

@@ -36,6 +36,7 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.HashMap" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 
 <%
 	Map entriesSeen = new HashMap();

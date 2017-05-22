@@ -37,5 +37,5 @@
 <jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
 <c:set var="ss_folderViewColumnsType" value="folder" scope="request" />
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_column_defaults.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/folder_column_defaults.jsp" />
 <%@ include file="/WEB-INF/jsp/definition_elements/folder_view_common.jsp" %>

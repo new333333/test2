@@ -32,9 +32,11 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <% //Team_list view %>
 <c:set var="teamlist_entry" value="${ssDefinitionEntry}"/>
 <jsp:useBean id="teamlist_entry" type="org.kablink.teaming.domain.Entry" />
+<jsp:useBean id="property_name" type="String" scope="request" />
 
 <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].valueSet}">
 <div class="entry-content">

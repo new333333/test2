@@ -51,7 +51,7 @@
 
 <c:forEach var="entry" items="${ssFolderEntries}">
   <c:set var="ssDefinitionEntry" value="${entry}" scope="request"/>
-  <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_title.jsp" %>
+  <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_title.jsp" />
   <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_signature.jsp" %>
 </c:forEach>
 </div>

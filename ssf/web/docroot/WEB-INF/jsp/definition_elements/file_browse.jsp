@@ -33,7 +33,9 @@
  */
 %>
 
-<%@page import="org.kablink.teaming.util.SPropsUtil"%><c:set var="ss_fieldModifyDisabled" value=""/>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%@page import="org.kablink.teaming.util.SPropsUtil"%>
+<c:set var="ss_fieldModifyDisabled" value=""/>
 <%
 	String[] createFileTypes = org.kablink.teaming.util.SPropsUtil.getStringArray("file.createFileTypes", ",");
 %>

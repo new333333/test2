@@ -52,4 +52,6 @@
 --%><%@ page import="org.kablink.teaming.util.NLT" %><%--
 --%><%@ include file="/WEB-INF/jsp/common/include.jsp" %><%--
 --%><%@ include file="/WEB-INF/jsp/forum/init.jsp" %><%--
---%><c:if test="${empty ss_divCounter}"><c:set var="ss_divCounter" value="0" scope="request" /></c:if>
+--%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:if test="${empty ss_divCounter}"><c:set var="ss_divCounter" value="0" scope="request" /></c:if>

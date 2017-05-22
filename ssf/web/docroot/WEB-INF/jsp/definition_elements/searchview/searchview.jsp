@@ -35,7 +35,6 @@
 <% // Search view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="java.util.Date" %>
-<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
 <div class="ss_folder_border">

@@ -33,6 +33,7 @@
  */
 %>
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <script type="text/javascript">
 function ss_logoff() {

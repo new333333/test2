@@ -33,6 +33,8 @@
  */
 %>
 <%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <c:set var="gwtUIActive" value="false" />
 <% if (GwtUIHelper.isGwtUIActive(request)) { %>

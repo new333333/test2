@@ -31,8 +31,12 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-%><%--
+%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="ssf" uri="http://www.sitescape.com/tags-ssf" %>
+
+<%--
 --%><%@ include file="/WEB-INF/jsp/common/common.jsp" %><%--
 --%><%@ page contentType="text/html; charset=UTF-8" %><%--
 

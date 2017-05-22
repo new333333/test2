@@ -33,6 +33,7 @@
  */
 %>
 <%@ page import="org.kablink.teaming.web.util.BinderHelper" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="ssDefEntryId" value="${ssDefinitionEntry.id}" scope="request" />
 <jsp:useBean id="ssDefEntryId" type="java.lang.Long" scope="request" />
 <%

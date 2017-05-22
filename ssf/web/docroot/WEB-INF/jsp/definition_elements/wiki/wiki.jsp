@@ -36,7 +36,6 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ page import="java.util.Date" %>
-<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 
 <c:if test="${!ss_wikiFolderList && (!empty ss_wikiHomepageEntry)}">
   <c:set var="ssConfigDefinition" value="${ss_wikiHomepageEntryMap.ssConfigDefinition}" scope="request"/>

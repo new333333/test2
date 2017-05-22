@@ -34,6 +34,7 @@
 %>
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
+<%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
 
 <%@ include file="/WEB-INF/jsp/mobile/masthead_new.jsp" %>
 <%@ include file="/WEB-INF/jsp/mobile/navigation.jsp" %>

@@ -35,6 +35,8 @@
 
 <%@ page import="java.util.Calendar" %>
 <%@ page import="java.util.Date" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <%
 Calendar calendarPrevDate = (java.util.Calendar) request.getAttribute("ssPrevDate");

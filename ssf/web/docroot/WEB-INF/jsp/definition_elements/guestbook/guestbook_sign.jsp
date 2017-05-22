@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <% // Show Link to Sign the guestbook and form for this %>
 
 

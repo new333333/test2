@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 
 <% //view a folder forum with folder on the left and the entry on the right in an iframe %>

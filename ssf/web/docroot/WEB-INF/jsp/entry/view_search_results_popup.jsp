@@ -32,6 +32,8 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <% //view a folder forum with folder on the left and the entry on the right in an iframe %>
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <%@ page import="org.kablink.teaming.module.definition.DefinitionUtils" %>

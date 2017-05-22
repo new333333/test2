@@ -34,8 +34,10 @@
 %>
 <%-- Toolbar viewer --%><%-- 
 --%><%@ page import="org.kablink.util.BrowserSniffer" %><%--
---%><%@ page import="org.kablink.teaming.util.NLT" %><%--
---%><%
+--%><%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+
+<%
 boolean isIE = BrowserSniffer.is_ie(request);
 String ss_portletNamespace = renderResponse.getNamespace();
 

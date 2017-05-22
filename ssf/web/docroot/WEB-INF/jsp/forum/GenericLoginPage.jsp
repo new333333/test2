@@ -1,4 +1,5 @@
 <!--  This form is used for logging in. -->
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="genericLoginPage" style="display: none">
 <p>Generic Login Page</p>
 	<form name="loginFormName" id="genericLoginFormId" method="post"

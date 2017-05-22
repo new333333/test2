@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <% //Date widget form element %>
 <c:if test="${empty timeZoneID}">
 	<c:set var="timeZoneID" value="${ssUser.timeZone.ID}" />

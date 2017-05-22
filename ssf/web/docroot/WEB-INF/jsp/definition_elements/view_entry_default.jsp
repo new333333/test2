@@ -43,7 +43,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_title.jsp" %>
 <% } else {
 %>
-<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_title.jsp" %>
+  <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_title.jsp" />
 <% } %>
 
 <c:set var="textFormat" value=""/>

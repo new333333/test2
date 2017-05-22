@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page import="org.kablink.teaming.domain.ShareItem" %>
 <% boolean shared; %>
 
