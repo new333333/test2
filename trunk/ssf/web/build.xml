@@ -2,7 +2,7 @@
 
 <project name="web" basedir="." default="war">
 	<import file="../build-common.xml" />
-	<import file="${app.server.dir}/bin/catalina-tasks.xml"/>
+	<import file="${app.server.dir}/bin/catalina-tasks.xml" optional="true"/>
 
 	<property name="war.file" value="ssf-web.war" />
 		
