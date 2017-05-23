@@ -587,16 +587,14 @@ public class LoginFilter  implements Filter {
 			// Yes!  We'll need the zoneName and userId to validate
 			// things.
 			String zoneName = WebHelper.getRequiredZoneName(req);
-			Long   userId   = WebHelper.getRequiredUserId(  req);
+			Long   userId   = WebHelper.getRequiredUserId(req);
 			
 			// Can we find a folderEntry marker within it?
-			String feIdMarker = (WebKeys.URL_FOLDER_ENTRY + "/");
-			int    feIdPos    = path.indexOf(feIdMarker);
-			
+			Long feId = findFolderEntryIdInPath(path);
+
 			// Can we find a folderId marker within it?
-			String fIdMarker = (WebKeys.URL_FOLDER_ID + "/");
-			int    fIdPos    = path.indexOf(fIdMarker);
-			
+			Long fId = findFolderIdInPath(path);
+
 			// Can we find a folderEntryList marker within it?
 			String feListIdMarker = (WebKeys.URL_FOLDER_ENTRY_LIST + "/");
 			int    feListIdPos    = path.indexOf(feListIdMarker);
@@ -606,21 +604,19 @@ public class LoginFilter  implements Filter {
 			int    fListIdPos    = path.indexOf(fListIdMarker);
 
 			// Did we find a folderEntry marker?
-			if (0 < feIdPos) {
+			if (feId!=null) {
 				FolderEntry fe;
 				try {
 					// Yes!  Try to access the entry as Guest.
-					final String fePart = path.substring(feIdPos + feIdMarker.length());
-					final Long   feId   = Long.parseLong(fePart.substring(0, fePart.indexOf('/')));
-						fe = ((FolderEntry) RunasTemplate.runas(
-							new RunasCallback() {
-								@Override
-								public Object doAs() {
-									return getFolderModule().getEntry(null, feId);
-								}
-							},
-							zoneName,
-							userId));
+					fe = ((FolderEntry) RunasTemplate.runas(
+						new RunasCallback() {
+							@Override
+							public Object doAs() {
+								return getFolderModule().getEntry(null, feId);
+							}
+						},
+						zoneName,
+						userId));
 				}
 				catch (Exception ex) {
 					// Failure possibilities:  AccessControlException,
@@ -635,21 +631,19 @@ public class LoginFilter  implements Filter {
 			
 			// No, we didn't find a folderEntry marker!  Did we find a
 			// folderId marker?
-			else if (0 < fIdPos) {
+			else if (fId!=null) {
 				Folder	f;
 				try {
 					// Yes!  Try to access the folder as Guest.
-					final String fPart = path.substring(fIdPos + fIdMarker.length());
-					final Long   fId   = Long.parseLong(fPart.substring(0, fPart.indexOf('/')));
-						f = ((Folder) RunasTemplate.runas(
-							new RunasCallback() {
-								@Override
-								public Object doAs() {
-									return getFolderModule().getFolder(fId);
-								}
-							},
-							zoneName,
-							userId));
+					f = ((Folder) RunasTemplate.runas(
+						new RunasCallback() {
+							@Override
+							public Object doAs() {
+								return getFolderModule().getFolder(fId);
+							}
+						},
+						zoneName,
+						userId));
 				}
 				catch (Exception ex) {
 					// Failure possibilities:  AccessControlException,
@@ -672,11 +666,11 @@ public class LoginFilter  implements Filter {
 				if (!feListValid) {
 					feListValid = true;
 					String[] feList = feListPart.split(":");
-					for (String feId:  feList) {
+					for (String feIdStr:  feList) {
 						FolderEntry fe;
 						try {
 							// Yes!  Try to access the entry as Guest.
-							final String feIdFinal = feId;
+							final String feIdFinal = feIdStr;
 							fe = ((FolderEntry) RunasTemplate.runas(
 								new RunasCallback() {
 									@Override
@@ -706,11 +700,11 @@ public class LoginFilter  implements Filter {
 				if (!fListValid) {
 					fListValid = true;
 					String[] fList = fListPart.split(":");
-					for (String fId:  fList) {
+					for (String fIdStr:  fList) {
 						Folder	f;
 						try {
 							// Yes!  Try to access the folder as Guest.
-							final String fIdFinal = fId;
+							final String fIdFinal = fIdStr;
 							f = ((Folder) RunasTemplate.runas(
 								new RunasCallback() {
 									@Override
@@ -770,7 +764,37 @@ public class LoginFilter  implements Filter {
 		// value for the request's readFile URL analysis.  Return it.
 		return reply;
 	}
+
+	private Long findFolderEntryIdInPath(String path) {
+		return findIdInPath(path, WebKeys.URL_FOLDER_ENTRY);
+	}
 	
+	private Long findFolderIdInPath(String path) {
+		// I don't know if checking for URL_FOLDER_ID is necessary.  I think it might have been a typo, but
+		// the code was looking for it in 4.0 and I'm not sure if it's safe to remove.  URL_FOLDER is
+		// definitely needed.
+		Long id = findIdInPath(path, WebKeys.URL_FOLDER);
+		if (id==null) {
+			id = findIdInPath(path, WebKeys.URL_FOLDER_ID);
+		}
+		return id;
+	}
+
+	private Long findIdInPath(String path, String marker) {
+		if (!marker.endsWith("/")) {
+			marker = (marker + "/");
+		}
+		int    idPos    = path.indexOf(marker);
+		if (idPos>=0) {
+			String idStr = path.substring(idPos + marker.length());
+			try {
+				return Long.parseLong(idStr.substring(0, idStr.indexOf('/')));
+			} catch (NumberFormatException e) {
+			}
+		}
+		return null;
+	}
+
 	protected boolean isPathPermittedUnauthenticated(String path) {
 		return (path != null && 
 				(path.equals("/"+WebKeys.SERVLET_PORTAL_LOGIN) || 
