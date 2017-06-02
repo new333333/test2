@@ -294,11 +294,14 @@ public class GwtMenuHelper {
 					String operatingSystem  = BrowserSniffer.getOSInfo(request);
 					String relativeFilePath = fa.getFileItem().getName();
 					String strOpenInEditor  = SsfsUtil.openInEditor(relativeFilePath, operatingSystem, bs.getProfileModule().getUserProperties(null));
+					String attachmentUrl=SsfsUtil.getInternalAttachmentUrl(request, fe.getParentFolder(), fe, fa);
+					String strMsUri=SsfsUtil.openWithMSExtension(relativeFilePath) + attachmentUrl;
 					if (MiscUtil.hasString(strOpenInEditor)) {
 						String strEditorType;
 						if (BrowserSniffer.is_ie(request))
 						     strEditorType = SsfsUtil.attachmentEditTypeForIE();
 						else strEditorType = SsfsUtil.attachmentEditTypeForNonIE();
+						attachmentUrl=strEditorType!=null && strEditorType.equals("msuri") ? strMsUri : attachmentUrl;
 						if (MiscUtil.hasString(strEditorType)) {
 							// Yes!  Add an edit-in-place toolbar
 							// item for it.
@@ -312,7 +315,7 @@ public class GwtMenuHelper {
 								strOpenInEditor,
 								strEditorType,
 								fa.getId(),
-								SsfsUtil.getInternalAttachmentUrl(request, fe.getParentFolder(), fe, fa));
+								attachmentUrl);
 						}
 					}
 				}

@@ -111,6 +111,7 @@ import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlg2Client;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
+import org.kablink.teaming.ssfs.util.SsfsUtil;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -1614,6 +1615,10 @@ public class BinderViewsHelper {
 		else if ("webdav".equals(et)) {
 			// Via a WebDAV URL!  Launch it.
 			GwtClientHelper.jsEditInPlace_WebDAV(event.getAttachmentUrl());
+		}
+		
+		else if ("msuri".equals(et)){
+			GwtClientHelper.jsLaunchMSUri(event.getAttachmentUrl());
 		}
 		
 		else {
