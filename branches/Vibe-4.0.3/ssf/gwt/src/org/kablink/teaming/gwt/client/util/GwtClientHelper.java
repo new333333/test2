@@ -2206,6 +2206,10 @@ public class GwtClientHelper {
 		$wnd.top.ss_openUrlInWindow({href: url}, windowName);
 	}-*/;
 	
+	public static native void jsLaunchMSUri(String url) /*-{
+		$wnd.top.location.href=url;		
+	}-*/;
+	
 	public static void jsLaunchUrlInWindowAsync(final String url, final String windowName) {
 		deferCommand(new ScheduledCommand() {
 			@Override
