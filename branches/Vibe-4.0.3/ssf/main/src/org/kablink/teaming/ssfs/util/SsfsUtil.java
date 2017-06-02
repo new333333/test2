@@ -367,6 +367,18 @@ public class SsfsUtil {
 		}
 	}
 	
+	public static String openWithMSExtension(String filePath) {
+		String extension = null;
+		int index = filePath.lastIndexOf(".");
+		if(index < 0)
+			return ""; // No extension. can not support edit-in-place
+		else {
+			extension = filePath.substring(index).toLowerCase();
+			String strExtension = SPropsUtil.getString("edit.in.place.extension"+extension, "");
+			return strExtension;
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	private static String getAppFromUserAppConfig(UserProperties userProperties, String extension) {
 		String	reply = null;
