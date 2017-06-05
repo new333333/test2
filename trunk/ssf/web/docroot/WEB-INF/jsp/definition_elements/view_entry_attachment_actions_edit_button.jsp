@@ -61,6 +61,10 @@
 	String ext = "";
 	if (fn.lastIndexOf(".") >= 0) ext = fn.substring(fn.lastIndexOf("."));
 	boolean editInPlaceSupported = false;
+	
+	org.kablink.teaming.domain.DefinableEntity entity=(org.kablink.teaming.domain.DefinableEntity) request.getAttribute("ssDefinitionEntry");
+	String attachmentUrl=SsfsUtil.getInternalAttachmentUrl(request, entity.getParentBinder(),entity, ss_attachedFile);
+	String strMsUri=SsfsUtil.openWithMSExtension(fn) + attachmentUrl;
 %>
   <ssf:ifSupportsEditInPlace relativeFilePath="${ss_attachedFile.fileItem.name}" browserType="<%=strBrowserType%>">
 <%  editInPlaceSupported = true;  %>
@@ -107,6 +111,41 @@
 						  </c:if>
 						</c:if>
 					</ssf:isFileEditorConfiguredForOS>
+				</ssf:editorTypeToUseForEditInPlace>
+				
+				<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="msuri">
+					<c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
+					  <c:if test="${!ss_attachedFileShowEditButton}">
+						  <div class="ss_inline_menu">
+						    <a href="javascript: ;" 
+							  onClick='javascript:<c:if test="${!empty ss_quotaMessage}">alert("${ss_quotaMessage}");</c:if>
+							    window.top.location.href="<%= strMsUri %>";
+								return false;'
+						    ><span><ssf:nlt tag="file.editFile"/></span></a>
+						  </div>
+					  </c:if>
+					  <c:if test="${ss_attachedFileShowEditButton}">
+						    <a href="javascript: ;" 
+							  onClick='javascript:<c:if test="${!empty ss_quotaMessage}">alert("${ss_quotaMessage}");</c:if>
+							    window.top.location.href="<%= strMsUri %>";
+								return false;'
+						    ><span><ssf:nlt tag="file.editFile"/></span></a>
+					  </c:if>
+					</c:if>
+					<c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
+					  <c:if test="${!ss_attachedFileShowEditButton}">
+						  <div class="ss_inline_menu">
+						  <a href="javascript: ;" 
+							onClick='alert("${ss_quotaMessage}");return false;'
+						  ><span><ssf:nlt tag="file.editFile"/></span></a>
+						  </div>
+					  </c:if>
+					  <c:if test="${ss_attachedFileShowEditButton}">
+						  <a href="javascript: ;" 
+							onClick='alert("${ss_quotaMessage}");return false;'
+						  ><span><ssf:nlt tag="file.editFile"/></span></a>
+					  </c:if>
+					</c:if>
 				</ssf:editorTypeToUseForEditInPlace>
 					
 				<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="webdav">
