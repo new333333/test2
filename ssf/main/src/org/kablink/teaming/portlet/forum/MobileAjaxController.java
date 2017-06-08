@@ -921,13 +921,16 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
       	options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.valueOf(pageSize));
       	options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(pageStart));
 
-      	List entryList = new ArrayList();
+      	Integer totalCount;
+		List entryList = new ArrayList();
       	if (family.equals(Constants.FAMILY_FIELD_CALENDAR)) {
       		entryList = ListFolderHelper.findCalendarEvents(bs, request, response, binder, model);
+			totalCount = entryList.size();
       		model.put(WebKeys.FOLDER_ENTRIES, entryList);
       	} else {
       		Map folderEntries = getFolderModule().getEntries(binderId, options);
-	      	model.put(WebKeys.SEARCH_TOTAL_HITS, folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+			totalCount = (Integer) folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL);
+			model.put(WebKeys.SEARCH_TOTAL_HITS, totalCount);
 			if (folderEntries != null) {
 				entryList = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 			}
@@ -937,7 +940,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
       	
 		
       	if (pageNumber.intValue() > 0) prevPage = String.valueOf(pageNumber - 1);
-      	if (entryCount == pageSize && entryCount > ((pageNumber.intValue() + 1) * pageSize)) {
+      	if (entryCount == pageSize && totalCount > ((pageNumber.intValue() + 1) * pageSize)) {
       		nextPage = String.valueOf(pageNumber + 1);
       	}
 		model.put(WebKeys.PAGE_NUMBER, pageNumber.toString());
