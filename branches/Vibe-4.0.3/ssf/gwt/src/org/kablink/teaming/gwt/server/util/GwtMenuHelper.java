@@ -301,7 +301,8 @@ public class GwtMenuHelper {
 						if (BrowserSniffer.is_ie(request))
 						     strEditorType = SsfsUtil.attachmentEditTypeForIE();
 						else strEditorType = SsfsUtil.attachmentEditTypeForNonIE();
-						attachmentUrl=strEditorType!=null && strEditorType.equals("msuri") ? strMsUri : attachmentUrl;
+						strEditorType = (strEditorType!=null && strEditorType.equals("msuri") && (operatingSystem.equalsIgnoreCase("mac") || operatingSystem.equalsIgnoreCase("linux"))) ? "applet" : strEditorType;
+						attachmentUrl = (strEditorType!=null && strEditorType.equals("msuri") && operatingSystem.equalsIgnoreCase("windows")) ? strMsUri : attachmentUrl;
 						if (MiscUtil.hasString(strEditorType)) {
 							// Yes!  Add an edit-in-place toolbar
 							// item for it.

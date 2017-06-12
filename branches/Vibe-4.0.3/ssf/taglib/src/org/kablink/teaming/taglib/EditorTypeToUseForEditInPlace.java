@@ -32,24 +32,29 @@
  */
 package org.kablink.teaming.taglib;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.kablink.teaming.ssfs.util.SsfsUtil;
-
+import org.kablink.util.BrowserSniffer;
 
 public class EditorTypeToUseForEditInPlace extends TagSupport {
 
 	private String browserType;
 	private String editorType;
-	
+	private String osType;
+
 	public int doStartTag() throws JspException {
-		
-		if (browserType == null || "".equals(browserType)) throw new JspException("Browser Type must be specified");
-		if (editorType == null || "".equals(editorType)) throw new JspException("Editor Type must be specified");
+
+		if (browserType == null || "".equals(browserType))
+			throw new JspException("Browser Type must be specified");
+		if (editorType == null || "".equals(editorType))
+			throw new JspException("Editor Type must be specified");
 
 		String strEditorType = "";
-		
+		String operatingSystem = BrowserSniffer.getOSInfo((HttpServletRequest) pageContext.getRequest());
+
 		if (browserType.equals("ie")) {
 			strEditorType = SsfsUtil.attachmentEditTypeForIE();
 		} else if (browserType.equals("nonie")) {
@@ -57,14 +62,19 @@ public class EditorTypeToUseForEditInPlace extends TagSupport {
 		} else {
 			throw new JspException("Browser Type must be 'ie' or 'nonie'");
 		}
-		
+
+		if (operatingSystem != null && operatingSystem.trim().length() > 0
+				&& !strEditorType.equalsIgnoreCase("applet") && (operatingSystem.equalsIgnoreCase("mac") || operatingSystem.equalsIgnoreCase("linux"))) {
+			strEditorType = "applet";
+		}
+
 		if (editorType.equals(strEditorType)) {
 			return EVAL_BODY_INCLUDE;
 		} else {
 			return SKIP_BODY;
 		}
 	}
-	
+
 	public void setEditorType(String editorType) {
 		this.editorType = editorType;
 	}
