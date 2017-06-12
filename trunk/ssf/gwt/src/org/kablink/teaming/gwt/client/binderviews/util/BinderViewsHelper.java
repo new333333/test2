@@ -118,6 +118,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.NamedFrame;
 import com.google.gwt.user.client.ui.UIObject;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Navigator;
 
 /**
@@ -1602,7 +1603,9 @@ public class BinderViewsHelper {
 		// How are we launching the edit-in-place editor?
 		String   et  = event.getEditorType(); if (null == et) et = "";
 		EntityId eid = event.getEntityid();
-		if ("applet".equals(et)) {
+		String osType = event.getOperatingSystem() != null ? event.getOperatingSystem() : "";
+		boolean isPosix=osType.equalsIgnoreCase("mac") || osType.equalsIgnoreCase("linux") ? true :false;
+		if ("applet".equals(et) || isPosix) {
 			// Via an applet!  Launch it.
 			GwtClientHelper.jsEditInPlace_Applet(
 				eid.getBinderId(),
