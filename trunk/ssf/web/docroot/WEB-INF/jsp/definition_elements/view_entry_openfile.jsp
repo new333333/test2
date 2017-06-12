@@ -81,7 +81,7 @@ else{
 	String url=request.getRequestURL()+"?"+request.getQueryString()+"&launchJnlp=true"+"&jsessionid="+request.getSession().getId();
 %>
     <script>
-		window.location="<%=url%>"
+		window.location.href="<%=url%>"
 	</script>
 <%
 }
