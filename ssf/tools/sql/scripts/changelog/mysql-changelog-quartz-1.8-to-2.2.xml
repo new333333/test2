@@ -360,6 +360,10 @@ ENGINE=InnoDB;
 
 	<!-- Add new 'SCHED_TIME' column to 'SSQRTZ_FIRED_TRIGGERS' table -->
 	
+    <changeSet author="jong" context="schema" failOnError="true" id="11-0">
+   	    <sql>delete from SSQRTZ_FIRED_TRIGGERS</sql>
+    </changeSet>
+
     <changeSet author="jong" context="schema" failOnError="true" id="11-1">
    	    <sql>alter table SSQRTZ_FIRED_TRIGGERS add column SCHED_TIME BIGINT(13) not null;</sql>
     </changeSet>
