@@ -104,18 +104,30 @@
 	<!-- Drop all foreign key constraints, so that we can define new ones -->
 
     <changeSet author="jong" context="schema" failOnError="true" id="5-1">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="FK_TRIGGERS_JOB_DETAILS"/>
+        </preConditions>
    	    <sql>alter table SSQRTZ_TRIGGERS drop constraint FK_TRIGGERS_JOB_DETAILS;</sql>
     </changeSet>
 
     <changeSet author="jong" context="schema" failOnError="true" id="5-2">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="FK_BLOB_TRIGGERS_TRIGGERS"/>
+        </preConditions>
    	    <sql>alter table SSQRTZ_BLOB_TRIGGERS drop constraint FK_BLOB_TRIGGERS_TRIGGERS;</sql>
     </changeSet>
 
     <changeSet author="jong" context="schema" failOnError="true" id="5-3">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="FK_CRON_TRIGGERS_TRIGGERS"/>
+        </preConditions>
    	    <sql>alter table SSQRTZ_CRON_TRIGGERS drop constraint FK_CRON_TRIGGERS_TRIGGERS;</sql>
     </changeSet>
 
     <changeSet author="jong" context="schema" failOnError="true" id="5-4">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="FK_SIMPLE_TRIGGERS_TRIGGERS"/>
+        </preConditions>
    	    <sql>alter table SSQRTZ_SIMPLE_TRIGGERS drop constraint FK_SIMPLE_TRIGGERS_TRIGGERS;</sql>
     </changeSet>
 
@@ -390,6 +402,48 @@ CREATE TABLE SSQRTZ_SIMPROP_TRIGGERS
         <dropIndex indexName="IDX_QRTZ_FT_TG" tableName="SSQRTZ_FIRED_TRIGGERS"/>        
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="10-21">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_FT_JOB_NAME"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_FT_JOB_NAME" tableName="SSQRTZ_FIRED_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-22">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_FT_JOB_GROUP"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_FT_JOB_GROUP" tableName="SSQRTZ_FIRED_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-23">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_FT_TRIG_NAME"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_FT_TRIG_NAME" tableName="SSQRTZ_FIRED_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-24">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_FT_TRIG_GROUP"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_FT_TRIG_GROUP" tableName="SSQRTZ_FIRED_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-25">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_FT_TRIG_NM_GP"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_FT_TRIG_NM_GP" tableName="SSQRTZ_FIRED_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-26">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_FT_JOB_REQ_RECOVERY"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_FT_JOB_REQ_RECOVERY" tableName="SSQRTZ_FIRED_TRIGGERS"/>        
+    </changeSet>
+
     <!-- Create indexes for faster queries -->
     
     <changeSet author="jong" context="schema" failOnError="true" id="11-1">
@@ -474,6 +528,10 @@ CREATE TABLE SSQRTZ_SIMPROP_TRIGGERS
 
 	<!-- Add new 'SCHED_TIME' column to 'SSQRTZ_FIRED_TRIGGERS' table -->
 	
+    <changeSet author="jong" context="schema" failOnError="true" id="12-0">
+   	    <sql>delete from SSQRTZ_FIRED_TRIGGERS</sql>
+    </changeSet>
+
     <changeSet author="jong" context="schema" failOnError="true" id="12-1">
    	    <sql>alter table SSQRTZ_FIRED_TRIGGERS add SCHED_TIME NUMBER(13) not null;</sql>
     </changeSet>
