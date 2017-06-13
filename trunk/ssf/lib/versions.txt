@@ -33,13 +33,12 @@ Commons Digester 1.8
 Commons Discovery 0.2
 Commons DBCP 1.2.2
 Commons Fileupload 1.2.2 (from spring distribution)
-Commons HttpClient 3.1 (from spring distribution)
+Commons HttpClient 3.1 (from spring distribution; used by now-obsolete portal login and WebDAV mirrored folder; http://hc.apache.org/httpclient-legacy/index.html)
 Commons io 1.4 (from spring distribution)
 Commons Lang 2.6
 Commons Net 3.3 (for SendMail test program; used by telemetry service)
 Commons Logging 1.1.3 (from Apache HttpClient 4.3.5 distribution)
 Commons Transaction 1.1.1pre1
-Commons XMLIO 0.1pre (for ssfs)
 Concurrent Library 1.3.4
 CyberNeko HTML Parser 1.9.9 (nekohtml.jar - needed by openid4java)
 DbUnit 2.1
@@ -55,6 +54,7 @@ firebug-lite 1.2
 groovy 1.8.9
 Guice 3.0 (used by openid4java)
 gQuery 1.4.2 (jQuery port to GWT)
+guava 19.0 (used by OWASP Java HTML Sanitizer, used by Tika)
 gwt 2.7.0 (Google Web Toolkit)
 gwt-cal 0.9.4 (GWT Calendar widget)
 gwt-crypto 2.3.0-20110518.123759-2 (Crypto module for the Google Web Toolkit)
@@ -135,7 +135,8 @@ Mockito 1.9.5
 MySQL Connector/J 5.1.32 (mysql-connector-java-5.1.32-bin.jar)
 opencmis 0.8.0 (implementation of cmis standard for accessing content management systems)
     This set of libraries is used in the Sharepoint resource driver for accessing the sharepoint
-    document libraries as Netfolders.OpenID4Java 0.9.6
+    document libraries as Netfolders.
+OpenID4Java 0.9.6
 Oracle Database 12c Release 1 (12.1.0.1) JDBC Driver for use with JDK 7 (ojdbc7.jar)
 opensaml 1.0.1 (SAML implementation; used by WSS4J)
 oro 2.0.8 (needed by velocity)
@@ -146,7 +147,7 @@ PostgreSQL JDBC Driver 9.4.1210 (postgresql-9.4.1210.jre7.jar renamed to postgre
 Quartz 2.2.3 (all)
 RabbitMQ Java client library 3.6.5 (triple-licensed under the APL 2.0 and the MPL and the GPL 2.0) NOTE: Spring AMQP/Rabbit requires this library.
 ridl.jar (from OpenOffice 2.0)
-SAAJ 1.2 DO NOT UPGRADE (V1.2 used the ASL1.1, newer versions are from glassfish project which uses cppl and gpl2.0)
+SAAJ 1.2 DO NOT UPGRADE (V1.2 used the ASL 1.1, newer versions are from GlassFish project which uses CDDL 1.1 and GPL 2.0)
 Saxpath 1.0 (for ssfs)
 Simple Logging Facade for Java (SLF4J) api 1.7.7
 Simple Logging Facade for Java (SLF4J) log4j12 1.7.7
@@ -179,7 +180,7 @@ WSDL4J 1.5.1
 WSS4J 1.5.3
 Xalan 2.7.0 (XPath and XSLT implementation; used by WSS4J and others; also includes serializer)
 xmemcached 1.4.3 (Apache License 2.0)
-xml-apis.jar (from OpenOffice)
+XML Commons xml-apis.jar 1.4.01 (used by OpenOffice; http://apache.mirrors.tds.net//xerces/xml-commons/)
 xmlrpc 2.0.1
 xmlsec 1.4.6 (required by WSS4j)
 util-taglib.jar, util-bridges.jar - copied from Liferay 4.3, can be removed after we eliminate references to taglibs from jsps
