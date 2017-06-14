@@ -135,7 +135,6 @@ var ss_entryCount = 0;
 <ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}"
   anchorOnly="true"/>
 									<!-- Search result list -->
-									<c:set var="ssFolderEntriesResults" value="${ssFolderEntries}"/>
 									<jsp:include page="/WEB-INF/jsp/search/result_list.jsp" />
 
 									<c:if test="${ss_pageNumber != 1 || ssPageEndIndex != ssTotalRecords}">

@@ -113,7 +113,7 @@
 		</div>
 
 		<c:set var="ssFolderEntriesResults" value="${ssResultEntries}" />
-		<jsp:include page="/WEB-INF/jsp/search/result_list.jsp" />
+		<%@ include file="/WEB-INF/jsp/search/result_list.jsp" %>
 		
 		<div id="ss_searchResult_header">
 			<div class="ss_dashboardPaginator"> 
