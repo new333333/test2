@@ -70,20 +70,7 @@ function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard,
 		return dest;
 	}
 	
-	this.validateCalendarObj=function(calendarObj){
-		if(!calendarObj) return false;
-		template=calendarObj.templateHTML;
-		if(!template) return true;
-		divindex=template.indexOf(">");
-		if(divindex < 0) return false;
-		template=template.substring(0,divindex);
-		if(!template) return false;
-		if(template.indexOf("display:none") > 0) return false;
-		return true;	
-	}
-	
 	this.loadEventsByDate = function(reqParams, date, calendarObj) {
-		if(!this.validateCalendarObj(calendarObj)) return;		
 		dojo.xhrGet({
 	    	url: ss_buildAdapterUrl(ss_AjaxBaseUrl, mergeObj({operation: "find_calendar_events",
 										binderId: binderId, 
@@ -94,7 +81,9 @@ function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard,
 										reqParams)),
 			handleAs: "json-comment-filtered",
 			error: function(err) {
-				alert(ss_not_logged_in);
+				if (err["name"]!="TypeError") {
+					alert(ss_not_logged_in);
+				}
 			},
 			load: function(data) {
 				calendarObj.addEvents(data, date);
@@ -104,7 +93,6 @@ function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard,
 	}
 	
 	this.loadEntryEvents = function(reqParams, calendarObj) {		
-		if(!this.validateCalendarObj(calendarObj)) return;	
 		dojo.xhrGet({
 	    	url: ss_buildAdapterUrl(ss_AjaxBaseUrl, mergeObj({operation: "find_calendar_events",
 											binderId: binderId, 
@@ -112,7 +100,9 @@ function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard,
 											ssDashboardRequest: isDashboard}, reqParams)),
 			handleAs: "json-comment-filtered",
 			error: function(err) {
-				alert(ss_not_logged_in);
+				if (err["name"]!="TypeError") {
+					alert(ss_not_logged_in);
+				}
 			},
 			load: function(data) {
 				calendarObj.addEvents(data);
@@ -1248,6 +1238,10 @@ function ss_calendarEngine(
 	        for (var i in this.allDayCount) {
 	            if (this.allDayCount[i] > maxEvents) { maxEvents = this.allDayCount[i]; }
 	        }
+			var grid = dojo.byId("ss_cal_dayGridAllDay" + instanceId);
+			if (!grid) {
+				return;
+			}
 	        if (isIE) {
 	            dojo.byId("ss_cal_dayGridAllDay" + instanceId).style.height = ((maxEvents + 1) * 21) + "px";
 	            // Force IE to recalculate the offset of the next blocks
@@ -1657,7 +1651,10 @@ function ss_calendarEngine(
 	        	var eventDisplayIds = this.dayGridEvents[eventId];
 	        	for (var i in eventDisplayIds) {
 					if (eventDisplayIds[i]) {
-		            	dojo._destroyElement(dojo.byId("calevt" + instanceId + eventDisplayIds[i]).parentNode);
+						elem = dojo.byId("calevt" + instanceId + eventDisplayIds[i])
+						if (elem && elem.parentNode) {
+							dojo._destroyElement(elem.parentNode);
+						}
 		            	delete eventDisplayIds[i];
 		           	}
 	            }	        	
@@ -2102,6 +2099,9 @@ function ss_calendarEngine(
 		}
 
 	    var container = dojo.byId(containerId);
+		if (!container) {
+			return;
+		}
 	    var dayOffsetSize = (1.0 / gridDays) * 100.0;
 	
 	    if (day >= gridDays) return;
@@ -2325,6 +2325,9 @@ function ss_calendarEngine(
 		var dayInMonthViewOffset = daysDiff(monthViewInfo.startViewDate, date);
 		
 	    var container = dojo.byId(containerId);
+		if (!container) {
+			return;
+		}
 		
 		var hOffsetSize = 20;
         if (ss_cal_Grid.monthGridWeeks == 6) {
