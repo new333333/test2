@@ -1365,7 +1365,10 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
         	aList = removePreDeletedFromList(aList);
         	dList = removePreDeletedFromList(dList);
         }
-        model.put(ObjectKeys.FOLDER_ENTRY_ANCESTORS, aList);
+
+		dList = removeUnviewableFromList(getFolderModule(), dList);
+
+		model.put(ObjectKeys.FOLDER_ENTRY_ANCESTORS, aList);
         model.put(ObjectKeys.FOLDER_ENTRY_DESCENDANTS, dList);
         //Initialize users
         List<DefinableEntity> allE = new ArrayList(lineage);
@@ -1385,7 +1388,19 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
     	return reply;
     }
          
-    //***********************************************************************************************************   
+    private static List<FolderEntry> removeUnviewableFromList(FolderModule folderModule, List<FolderEntry> list) {
+    	ArrayList<FolderEntry> reply = new ArrayList<FolderEntry>();
+    	int count = ((null == list) ? 0 : list.size());
+    	for (int i = 0; i < count; i += 1) {
+    		FolderEntry fe = list.get(i);
+    		if (folderModule.testAccess(fe, FolderOperation.readEntry)) {
+    			reply.add(fe);
+    		}
+    	}
+    	return reply;
+    }
+
+    //***********************************************************************************************************
 
 	@Override
 	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
