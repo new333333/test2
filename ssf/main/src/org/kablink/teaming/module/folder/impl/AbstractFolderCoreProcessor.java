@@ -647,9 +647,18 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
 	   Map<FolderEntry, FolderEntry> sourceMap = new HashMap();
        getCoreDao().lock(destination);
        String newTitle = (options==null)?null:(String) options.get(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE);
+
+	   // If copying the entry from a mirrored to non-mirrored folder, or from a non-mirrored to mirrored folder,
+	   // override the entry definition in the created entry.  Carrying over the original entry definition causes
+	   // problem when it comes to resolving to repository for attached files due to the way definition facility works.
+	   Definition newEntryDef = null;
+	   if (binder.isMirrored() != destination.isMirrored()) {
+		   newEntryDef = destination.getDefaultEntryDef();
+	   }
+
 	   //get ordered list of entries
 	   for (FolderEntry child:children) {
-		   FolderEntry entry = new FolderEntry(child, destination.getDefaultEntryDef());		
+		   FolderEntry entry = new FolderEntry(child, newEntryDef);
 		   if(child.equals(source) && Validator.isNotNull(newTitle)) { 
 			   // If the caller specified new title for the new entry, then we must set the title 
 			   // of the top-level entry in the copied hierarchy to this title. The titles of the 
@@ -1068,6 +1077,13 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 		final boolean hasTaskLinkage  = ((null != serializationMap) && (!(serializationMap.isEmpty())));
 		final List<Long>      sIds    = (hasTaskLinkage ? new ArrayList<Long>()     : null);
 		final Map<Long, Long> eIdsMap = (hasTaskLinkage ? new HashMap<Long, Long>() : null);
+
+		// If copying the entry from a mirrored to non-mirrored folder, or from a non-mirrored to mirrored folder,
+		// override the entry definition in the created entry.  Carrying over the original entry definition causes
+		// problem when it comes to resolving to repository for attached files due to the way definition facility works.
+		final Definition newEntryDef = (source.isMirrored() != binder.isMirrored()) ?
+			binder.getDefaultEntryDef() : null;
+
 		getTransactionTemplate().execute(new TransactionCallback() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
@@ -1122,12 +1138,12 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 		       					BinderHelper.copyEntryCheckMirrored(source, sEntry, folder);
 		       					okToCopy = true;
 		       				} catch(Exception e) {}
-		       				
-		       				//Inside this routine, we will skip any invalid entries.
+
+							//Inside this routine, we will skip any invalid entries.
 		       				//Callers of this routine should validate the whole binder before calling this routine
 		       				//  if it is not desirable to have an incomplete copy.
 		       				if (okToCopy) {
-			       				FolderEntry dEntry = new FolderEntry(sEntry, folder.getDefaultEntryDef());
+			       				FolderEntry dEntry = new FolderEntry(sEntry, newEntryDef);
 			       				
 			       				if (sEntry.isTop()) {
 			       					sourceMap.clear();
