@@ -75,6 +75,8 @@ import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.definition.notify.Notify;
 import org.kablink.teaming.module.definition.notify.NotifyBuilderUtil;
 import org.kablink.teaming.module.definition.notify.NotifyVisitor;
+import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.mail.EmailFormatter;
@@ -742,7 +744,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		Map params = new HashMap();
 		params.put("ssReplyTo", getReplyTo(entry.getParentBinder()));
 		if (Notify.NotifyType.interactive.equals(notify.getType())) {
-			params.put("org.kablink.teaming.notify.params.replies",getFolderDao().loadEntryDescendants((FolderEntry)entry));
+			params.put("org.kablink.teaming.notify.params.replies", getEntryDescendants((FolderEntry)entry));
 			params.put("org.kablink.teaming.notify.params.showAvatar", Boolean.TRUE);
 			params.put("org.kablink.teaming.notify.params.showAvatarNew", Boolean.TRUE);
 
@@ -843,4 +845,18 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		}
 		
 	}
+	
+	private List<FolderEntry> getEntryDescendants(FolderEntry entry) {
+		List<FolderEntry> children = getFolderDao().loadEntryDescendants((FolderEntry)entry);
+		List<FolderEntry> result = new ArrayList<FolderEntry>();
+		FolderModule folderModule = (FolderModule) SpringContextUtil.getBean("folderModule");
+		for(FolderEntry child:children) {
+			if(child.isPreDeleted())
+				continue;
+			if(folderModule.testAccess(child, FolderOperation.readEntry))
+				result.add(child);
+		}
+		return result;
+	}
+	
 }
