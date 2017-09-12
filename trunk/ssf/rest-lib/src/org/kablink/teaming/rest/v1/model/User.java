@@ -89,7 +89,6 @@ public class User extends Principal {
         this.person = person;
     }
 
-    @Undocumented
     @XmlElement(name="disk_quota")
     public Long getDiskQuota() {
         return diskQuota;
@@ -182,7 +181,6 @@ public class User extends Principal {
         this.middleName = middleName;
     }
 
-    @Undocumented
     @XmlElement(name="mini_blog")
     public LongIdLinkPair getMiniBlog() {
         return miniBlog;
@@ -216,7 +214,6 @@ public class User extends Principal {
         this.phone = phone;
     }
 
-    @Undocumented
     @XmlElement(name="skype_id")
     public String getSkypeId() {
         return skypeId;
@@ -238,7 +235,6 @@ public class User extends Principal {
         this.timeZone = timeZone;
     }
 
-    @Undocumented
     @XmlElement(name="twitter_id")
     public String getTwitterId() {
         return twitterId;

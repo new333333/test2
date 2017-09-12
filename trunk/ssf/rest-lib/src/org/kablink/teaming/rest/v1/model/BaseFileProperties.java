@@ -149,7 +149,6 @@ public abstract class BaseFileProperties extends SearchableObject {
 		this.versionNumber = versionNumber;
 	}
 
-	@Undocumented
     @XmlElement(name="major_version")
 	public Integer getMajorVersion() {
 		return majorVersion;
@@ -159,7 +158,6 @@ public abstract class BaseFileProperties extends SearchableObject {
 		this.majorVersion = majorVersion;
 	}
 
-	@Undocumented
     @XmlElement(name="minor_version")
 	public Integer getMinorVersion() {
 		return minorVersion;
@@ -169,7 +167,6 @@ public abstract class BaseFileProperties extends SearchableObject {
 		this.minorVersion = minorVersion;
 	}
 
-	@Undocumented
 	public String getNote() {
 		return note;
 	}
@@ -178,7 +175,6 @@ public abstract class BaseFileProperties extends SearchableObject {
 		this.note = note;
 	}
 
-	@Undocumented
 	public Integer getStatus() {
 		return status;
 	}

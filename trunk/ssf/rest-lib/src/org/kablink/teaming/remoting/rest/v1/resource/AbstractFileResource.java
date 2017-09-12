@@ -114,7 +114,7 @@ abstract public class AbstractFileResource extends AbstractResource {
         filename = Normalizer.normalize(filename, Normalizer.Form.NFC);
         Date modDate = dateFromISO8601(modDateISO8601);
         DefinableEntity entity = findDefinableEntity(entityType, entityId);
-        FileAttachment fa = findFileAttachment(filename);
+        FileAttachment fa = findFileAttachmentByName(entity, filename);
         if (fa != null) {
             throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file named " + filename + " already exists in the " + entityType + ".", ResourceUtil.buildFileProperties(fa));
         }
@@ -205,7 +205,7 @@ abstract public class AbstractFileResource extends AbstractResource {
         }
     }
 
-    protected FileAttachment findFileAttachment(String fileId)
+    protected FileAttachment getFileAttachment(String fileId)
             throws NoFileByTheIdException {
         FileAttachment fa = getFileModule().getFileAttachmentById(fileId);
         if (fa == null)
@@ -339,7 +339,7 @@ abstract public class AbstractFileResource extends AbstractResource {
     protected void deleteFile(EntityIdentifier.EntityType entityType, long entityId, String filename)
             throws WriteFilesException, WriteEntryDataException, BadRequestException {
         DefinableEntity entity = findDefinableEntity(entityType, entityId);
-        FileAttachment fa = findFileAttachment(filename);
+        FileAttachment fa = findFileAttachmentByName(entity, filename);
         if (fa==null) {
             throw new NoFileByTheNameException(filename);
         }

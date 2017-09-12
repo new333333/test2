@@ -141,7 +141,6 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 
 	@POST
     @Path("legacy_query")
-    @Undocumented
 	public SearchResultList<FolderEntryBrief> getFolderEntriesViaLegacyQuery(@Context HttpServletRequest request,
                                                                              @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                          @QueryParam("first") @DefaultValue("0") Integer offset,
@@ -328,7 +327,6 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 
     @GET
     @Path("{id}/reservation")
-    @Undocumented
     public org.kablink.teaming.rest.v1.model.HistoryStamp getReservation(@PathParam("id") Long id) {
         org.kablink.teaming.domain.FolderEntry hEntry = _getFolderEntry(id);
         org.kablink.teaming.domain.HistoryStamp reservation = hEntry.getReservation();
@@ -350,7 +348,6 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 
     @PUT
     @Path("{id}/reservation")
-    @Undocumented
     public HistoryStamp reserve(@PathParam("id") Long id) {
         _getFolderEntry(id);
         org.kablink.teaming.domain.HistoryStamp reservation = getFolderModule().reserveEntry(null, id);
@@ -359,7 +356,6 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 
     @DELETE
     @Path("{id}/reservation")
-    @Undocumented
     public void unreserve(@PathParam("id") Long id) {
         getFolderModule().unreserveEntry(null, id);
     }

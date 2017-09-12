@@ -99,7 +99,6 @@ public abstract class AbstractDefinableEntityResource extends AbstractFileResour
     @GET
     @Path("{id}/attachments")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
     public SearchResultList<BaseFileProperties> getAttachments(@PathParam("id") long id) {
         DefinableEntity entity = getDefinableEntity(id);
 
@@ -139,7 +138,6 @@ public abstract class AbstractDefinableEntityResource extends AbstractFileResour
         }
     }
 
-    @Undocumented
     @POST
     @Path("{id}/attachments")
     @Consumes("*/*")

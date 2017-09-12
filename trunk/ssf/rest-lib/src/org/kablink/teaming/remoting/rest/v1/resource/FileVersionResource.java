@@ -94,7 +94,7 @@ public class FileVersionResource extends AbstractFileResource {
             throw new ConflictException(ApiErrorCode.NOT_SUPPORTED, e.getLocalizedMessage());
         }
 
-        FileAttachment fa = findFileAttachment(va.getParentAttachment().getId());
+        FileAttachment fa = getFileAttachment(va.getParentAttachment().getId());
 		return ResourceUtil.fileVersionFromFileAttachment(fa.getHighestVersion());
 	}
 	

@@ -78,7 +78,6 @@ public abstract class DefinableEntityBrief extends SearchableObject {
         this.entityType = entityType;
     }
 
-    @Undocumented
     public String getFamily() {
         return family;
     }
@@ -87,7 +86,6 @@ public abstract class DefinableEntityBrief extends SearchableObject {
         this.family = family;
     }
 
-    @Undocumented
     @XmlElement(name = "icon_href")
     public String getIcon() {
         return icon;
@@ -138,7 +136,6 @@ public abstract class DefinableEntityBrief extends SearchableObject {
         this.parentBinder = parentBinder;
     }
 
-    @Undocumented
     @XmlElement(name = "definition")
     public StringIdLinkPair getDefinition() {
         return definition;

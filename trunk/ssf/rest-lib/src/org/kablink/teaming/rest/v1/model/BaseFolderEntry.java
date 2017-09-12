@@ -56,7 +56,6 @@ public abstract class BaseFolderEntry extends Entry {
         this.totalReplyCount = orig.totalReplyCount;
     }
 
-    @Undocumented
     @XmlElement(name = "doc_level")
     public Integer getDocLevel() {
         return docLevel;
@@ -66,7 +65,6 @@ public abstract class BaseFolderEntry extends Entry {
         this.docLevel = docLevel;
     }
 
-    @Undocumented
     @XmlElement(name = "doc_number")
     public String getDocNumber() {
         return docNumber;

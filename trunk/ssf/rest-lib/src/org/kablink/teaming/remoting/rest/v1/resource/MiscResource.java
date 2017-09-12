@@ -238,7 +238,6 @@ public class MiscResource extends AbstractResource {
         }
     }
 
-    @Undocumented
     @POST
     @Path("/legacy_query")
    	public SearchResultList<SearchableObject> legacySearch(@Context HttpServletRequest request,

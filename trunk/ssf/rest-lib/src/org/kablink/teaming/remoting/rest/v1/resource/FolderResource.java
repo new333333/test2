@@ -45,19 +45,15 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
-import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.exc.InternalServerErrorException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
-import org.kablink.teaming.remoting.rest.v1.exc.RestExceptionWrapper;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.FolderEntryBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
@@ -74,7 +70,6 @@ import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.SimpleProfiler;
-import org.kablink.util.VibeRuntimeException;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Junction;
@@ -93,7 +88,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
@@ -139,7 +133,6 @@ public class FolderResource extends AbstractBinderResource {
 
     @POST
     @Path("/legacy_query")
-    @Undocumented
    	public SearchResultList<BinderBrief> getFoldersViaLegacyQuery(@Context HttpServletRequest request,
                                                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                     @QueryParam("first") @DefaultValue("0") Integer offset,
@@ -218,7 +211,6 @@ public class FolderResource extends AbstractBinderResource {
     @GET
     @Path("{id}/binders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
     public Response getSubBinders(@PathParam("id") long id,
                                   @QueryParam("title") String name,
                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -240,7 +232,6 @@ public class FolderResource extends AbstractBinderResource {
     @GET
     @Path("{id}/children")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
     public Response getChildren(@PathParam("id") long id,
                                 @QueryParam("title") String name,
                                 @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -264,7 +255,6 @@ public class FolderResource extends AbstractBinderResource {
 	@GET
 	@Path("{id}/folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
 	public Response getSubFolders(@PathParam("id") long id,
                                   @QueryParam("title") String name,
                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -283,7 +273,6 @@ public class FolderResource extends AbstractBinderResource {
         return Response.ok(subBinders).lastModified(lastModified).build();
 	}
 
-    @Undocumented
     @POST
    	@Path("{id}/folders")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -305,7 +294,6 @@ public class FolderResource extends AbstractBinderResource {
 	@GET
 	@Path("{id}/entries")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
 	public SearchResultList<FolderEntryBrief> getFolderEntries(@PathParam("id") long id,
                                                                @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                                @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -350,7 +338,6 @@ public class FolderResource extends AbstractBinderResource {
    	@Path("{id}/entries")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
    	public FolderEntry createFolderEntry(@PathParam("id") long id,
                                          @QueryParam("file_entry") @DefaultValue("false") boolean fileEntry,
                                          @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -450,7 +437,7 @@ public class FolderResource extends AbstractBinderResource {
         if (sourceId==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No source_id parameter was supplied in the POST data.");
         }
-        FileAttachment existing = findFileAttachment(sourceId);
+        FileAttachment existing = getFileAttachment(sourceId);
         DefinableEntity origEntry = existing.getOwner().getEntity();
         org.kablink.teaming.domain.FolderEntry newEntry = getFolderModule().copyEntry(origEntry.getParentBinder().getId(),
                 origEntry.getId(), id, new String[] {fileName}, null);
@@ -474,7 +461,6 @@ public class FolderResource extends AbstractBinderResource {
      *                          MD5 checksum of the uploaded content does not match the expected value.
      * @param overwriteExisting     If a file already exists with the specified name, this specifies whether to overwrite the file (true) or fail with an error (false).
      */
-    @Undocumented
     @POST
     @Path("{id}/library_files")
     @Consumes(MediaType.MULTIPART_FORM_DATA)

@@ -105,7 +105,6 @@ public class GroupResource extends AbstractPrincipalResource {
      * @param descriptionFormatStr The desired format for the binder description.  Can be "html" or "text".
      * @return  The new Group resource.
      */
-    @Undocumented
 	@POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})

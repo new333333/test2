@@ -75,7 +75,6 @@ public class ZoneConfig extends BaseRestObject {
         this.guid = guid;
     }
 
-    @Undocumented
     @XmlElement(name="binder_quotas")
     public BinderQuotasConfig getBinderQuotasConfig() {
         return binderQuotasConfig;
@@ -135,7 +134,6 @@ public class ZoneConfig extends BaseRestObject {
         this.fileUploadSizeLimit = fileUploadSizeLimit;
     }
 
-    @Undocumented
     public Long getFileVersionsMaxAge() {
         return fileVersionsMaxAge;
     }
