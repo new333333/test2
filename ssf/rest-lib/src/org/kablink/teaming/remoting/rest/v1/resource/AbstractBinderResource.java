@@ -253,7 +253,6 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
      *                      new parent binder is used to determine the type of binder to create.
      * @return Returns a Binder object representing the newly created binder.
      */
-	@Undocumented
     @POST
 	@Path("{id}/binders")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -265,7 +264,6 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return createBinder(id, binder, templateId, toDomainFormat(descriptionFormatStr));
 	}
 
-    @Undocumented
 	@GET
 	@Path("{id}/binder_tree")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -491,7 +489,6 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 	@GET
 	@Path("{id}/files")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
 	public Response getFiles(@PathParam("id") long id,
                                                      @QueryParam("file_name") String fileName,
                                                      @QueryParam("recursive") @DefaultValue("false") boolean recursive,
@@ -515,7 +512,6 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return Response.ok(subFiles).lastModified(lastModified).build();
 	}
 
-    @Undocumented
 	@GET
 	@Path("{id}/library_info")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -597,7 +593,6 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @GET
    	@Path("{id}/team_members")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
    	public SearchResultList<TeamMember> getTeamMembers(@PathParam("id") long id,
             @QueryParam("expand_groups") @DefaultValue("false") boolean expandGroups) {
         org.kablink.teaming.domain.Binder binder = _getBinder(id);
@@ -612,7 +607,6 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @POST
    	@Path("{id}/team_members")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
    	public TeamMember addTeamMember(@PathParam("id") long id, PrincipalBrief principal) {
         _getBinder(id);
         Principal member = getProfileModule().getEntry(principal.getId());
@@ -627,7 +621,6 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @DELETE
    	@Path("{id}/team_members")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
    	public void clearTeamMembers(@PathParam("id") long id) {
         _getBinder(id);
         getBinderModule().setTeamMembershipInherited(id, true);
@@ -636,7 +629,6 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @DELETE
    	@Path("{id}/team_members/{memberId}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
    	public void deleteTeamMember(@PathParam("id") long id, @PathParam("memberId") long memberId) {
         _getBinder(id);
         Set<Long> teamMembers = getBinderModule().getTeamMemberIds(id, false);
@@ -650,7 +642,6 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 
     @GET
     @Path("{id}/tags")
-    @Undocumented
     public SearchResultList<Tag> getTags(@PathParam("id") Long id) {
         org.kablink.teaming.domain.Binder entry = _getBinder(id);
         return getBinderTags(entry, false);
@@ -660,7 +651,6 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @Path("{id}/tags")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
     public SearchResultList<Tag> addTag(@PathParam("id") Long id, Tag tag) {
         _getBinder(id);
         org.kablink.teaming.domain.Tag[] tags = getBinderModule().setTag(id, tag.getName(), tag.isPublic());
@@ -673,7 +663,6 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 
     @DELETE
     @Path("{id}/tags")
-    @Undocumented
     public void deleteTags(@PathParam("id") Long id) {
         org.kablink.teaming.domain.Binder entry = _getBinder(id);
         Collection<org.kablink.teaming.domain.Tag> tags = getBinderModule().getTags(entry);
@@ -684,7 +673,6 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 
     @GET
     @Path("{id}/tags/{tagId}")
-    @Undocumented
     public Tag getTag(@PathParam("id") Long id, @PathParam("tagId") String tagId) {
         org.kablink.teaming.domain.Binder entry = _getBinder(id);
         Collection<org.kablink.teaming.domain.Tag> tags = getBinderModule().getTags(entry);
@@ -698,7 +686,6 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 
     @DELETE
     @Path("{id}/tags/{tagId}")
-    @Undocumented
     public void deleteTag(@PathParam("id") Long id, @PathParam("tagId") String tagId) {
         getFolderModule().deleteTag(null, id, tagId);
     }

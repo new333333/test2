@@ -258,7 +258,6 @@ public class ShareResource extends AbstractResource {
 
     @GET
     @Path("/by_user/{id}/binders")
-    @Undocumented
     public SearchResultList<SharedBinderBrief> getBindersSharedByUser(@PathParam("id") Long userId,
                                                                       @QueryParam("title") String name,
                                                                       @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
@@ -271,7 +270,6 @@ public class ShareResource extends AbstractResource {
 
     @GET
     @Path("/by_user/{id}/binder_tree")
-    @Undocumented
     public BinderTree getSharedByUserBinderTree(@PathParam("id") Long userId,
                                                 @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                 @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
@@ -349,7 +347,6 @@ public class ShareResource extends AbstractResource {
 
     @GET
     @Path("/by_user/{id}/entries")
-    @Undocumented
     public SearchResultList<SharedFolderEntryBrief> getEntriesSharedByUser(@PathParam("id") Long userId,
                                                                            @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                            @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
@@ -360,7 +357,6 @@ public class ShareResource extends AbstractResource {
 
     @GET
     @Path("/by_user/{id}/files")
-    @Undocumented
     public Response getFilesSharedByUser(@PathParam("id") Long userId,
                                                                  @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                  @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
@@ -551,7 +547,6 @@ public class ShareResource extends AbstractResource {
 
     @GET
     @Path("/with_user/{id}/binders")
-    @Undocumented
     public SearchResultList<SharedBinderBrief> getBindersSharedWithUser(@PathParam("id") Long userId,
                                                                         @QueryParam("title") String name,
                                                                         @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
@@ -564,7 +559,6 @@ public class ShareResource extends AbstractResource {
 
     @GET
     @Path("/with_user/{id}/binder_tree")
-    @Undocumented
     public BinderTree getSharedWithUserBinderTree(@PathParam("id") Long userId,
                                                   @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                   @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
@@ -684,7 +678,6 @@ public class ShareResource extends AbstractResource {
 
     @GET
     @Path("/with_user/{id}/entries")
-    @Undocumented
     public SearchResultList<SharedFolderEntryBrief> getEntriesSharedWithUser(@PathParam("id") Long userId,
                                                                              @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                              @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
@@ -695,7 +688,6 @@ public class ShareResource extends AbstractResource {
 
     @GET
     @Path("/with_user/{id}/files")
-    @Undocumented
     public Response getFilesSharedWithUser(@PathParam("id") Long userId,
                                                                    @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                    @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
@@ -866,7 +858,6 @@ public class ShareResource extends AbstractResource {
 
     @GET
     @Path("/public/binders")
-    @Undocumented
     public SearchResultList<SharedBinderBrief> getPublicSharesBinders(
             @QueryParam("title") String name,
             @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
@@ -882,7 +873,6 @@ public class ShareResource extends AbstractResource {
 
     @GET
     @Path("/public/binder_tree")
-    @Undocumented
     public BinderTree getPublicSharesBinderTree(@QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                 @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                 @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
@@ -985,7 +975,6 @@ public class ShareResource extends AbstractResource {
 
     @GET
     @Path("/public/entries")
-    @Undocumented
     public SearchResultList<SharedFolderEntryBrief> getPublicSharesEntries(@QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                            @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                                            @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
@@ -998,7 +987,6 @@ public class ShareResource extends AbstractResource {
 
     @GET
     @Path("/public/files")
-    @Undocumented
     public Response getPublicSharesFiles(@QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                  @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                                  @QueryParam("file_name") String fileName,

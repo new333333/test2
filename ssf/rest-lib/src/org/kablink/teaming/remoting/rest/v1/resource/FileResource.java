@@ -181,7 +181,7 @@ public class FileResource extends AbstractFileResource {
         if (!forceOverwrite && lastVersionNumber==null && (lastMajorVersionNumber==null || lastMinorVersionNumber==null)) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "You must specify one of the following query parameters: force_overwrite, last_version, or last_major_version and last_minor_version.");
         }
-   		FileAttachment fa = findFileAttachment(fileId);
+   		FileAttachment fa = getFileAttachment(fileId);
    		DefinableEntity entity = fa.getOwner().getEntity();
    		InputStream is = getInputStreamFromMultipartFormdata(request);
    		try {
@@ -238,7 +238,7 @@ public class FileResource extends AbstractFileResource {
         if (!forceOverwrite && lastVersionNumber==null && (lastMajorVersionNumber==null || lastMinorVersionNumber==null)) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "You must specify one of the following query parameters: force_overwrite, last_version, or last_major_version and last_minor_version.");
         }
-   		FileAttachment fa = findFileAttachment(fileId);
+   		FileAttachment fa = getFileAttachment(fileId);
    		DefinableEntity entity = fa.getOwner().getEntity();
    		InputStream is = getRawInputStream(request);
    		try {
@@ -281,7 +281,7 @@ public class FileResource extends AbstractFileResource {
     })
    	public Response readFileContentById(@PathParam("id") String fileId,
    			@Context HttpServletRequest request) {
-   		FileAttachment fa = findFileAttachment(fileId);
+   		FileAttachment fa = getFileAttachment(fileId);
    		DefinableEntity entity = fa.getOwner().getEntity();
    		return readFileContent(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName(), getIfModifiedSinceDate(request));
    	}
@@ -297,7 +297,7 @@ public class FileResource extends AbstractFileResource {
     })
    	public Response readThumbnailFileContentById(@PathParam("id") String fileId,
    			@Context HttpServletRequest request) {
-   		FileAttachment fa = findFileAttachment(fileId);
+   		FileAttachment fa = getFileAttachment(fileId);
    		DefinableEntity entity = fa.getOwner().getEntity();
    		return readFileContent(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName(), getIfModifiedSinceDate(request), FileType.thumbnail);
    	}
@@ -313,7 +313,7 @@ public class FileResource extends AbstractFileResource {
     })
    	public Response readScaledFileContentById(@PathParam("id") String fileId,
    			@Context HttpServletRequest request) {
-   		FileAttachment fa = findFileAttachment(fileId);
+   		FileAttachment fa = getFileAttachment(fileId);
    		DefinableEntity entity = fa.getOwner().getEntity();
    		return readFileContent(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName(), getIfModifiedSinceDate(request), FileType.scaled);
    	}
@@ -335,7 +335,7 @@ public class FileResource extends AbstractFileResource {
     public void deleteFileContent(@PathParam("id") String fileId,
                                   @QueryParam("purge") @DefaultValue("false") boolean purge,
                                   @QueryParam("version") Integer lastVersionNumber) throws WriteFilesException, WriteEntryDataException {
-        FileAttachment fa = findFileAttachment(fileId);
+        FileAttachment fa = getFileAttachment(fileId);
         if (lastVersionNumber!=null && !isFileVersionCorrect(fa, lastVersionNumber, null, null)) {
             throw new ConflictException(ApiErrorCode.FILE_VERSION_CONFLICT, "Specified version number does not reflect the current state of the file",
                     ResourceUtil.buildFileProperties(fa));
@@ -358,7 +358,7 @@ public class FileResource extends AbstractFileResource {
     @GET
     @Path("{id}/access")
     public Access getAccessRole(@PathParam("id") String fileId) {
-        FileAttachment fa = findFileAttachment(fileId);
+        FileAttachment fa = getFileAttachment(fileId);
         DefinableEntity entity = fa.getOwner().getEntity();
         if (entity instanceof FolderEntry) {
             return getAccessRole((FolderEntry) entity);
@@ -385,7 +385,7 @@ public class FileResource extends AbstractFileResource {
     })
     public FileProperties renameFile(@PathParam("id") String fileId,
                                      @FormParam("name") String name) throws WriteFilesException, WriteEntryDataException {
-        FileAttachment fa = findFileAttachment(fileId);
+        FileAttachment fa = getFileAttachment(fileId);
         if (name==null || name.length()==0) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'name' form parameter");
         }
@@ -434,7 +434,7 @@ public class FileResource extends AbstractFileResource {
     public FileProperties moveFile(@PathParam("id") String fileId,
                                      @FormParam("folder_id") Long newFolderId,
                                      @FormParam("name") String name) throws WriteFilesException, WriteEntryDataException {
-        FileAttachment fa = findFileAttachment(fileId);
+        FileAttachment fa = getFileAttachment(fileId);
         if (newFolderId ==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'folder_id' form parameter");
         }
@@ -483,7 +483,7 @@ public class FileResource extends AbstractFileResource {
     @Path("{id}/metadata")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public FileProperties getMetaData(@PathParam("id") String fileId) {
-        FileAttachment fa = findFileAttachment(fileId);
+        FileAttachment fa = getFileAttachment(fileId);
         return ResourceUtil.buildFileProperties(fa);
     }
 
@@ -502,7 +502,7 @@ public class FileResource extends AbstractFileResource {
     public FileProperties synchronize(@PathParam("id") String fileId,
                                       @FormParam("synchronize") Boolean sync,
                                       @FormParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
-        FileAttachment fa = findFileAttachment(fileId);
+        FileAttachment fa = getFileAttachment(fileId);
         DefinableEntity entity = fa.getOwner().getEntity();
         if (Boolean.TRUE.equals(sync)) {
             if (entity instanceof FolderEntry) {
@@ -514,12 +514,11 @@ public class FileResource extends AbstractFileResource {
         return null;
     }
 
-    @Undocumented
     @GET
     @Path("{id}/major_version")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public FileProperties getMajorVersion(@PathParam("id") String fileId) {
-        FileAttachment fa = findFileAttachment(fileId);
+        FileAttachment fa = getFileAttachment(fileId);
         FileProperties props = new FileProperties();
         props.setMajorVersion(fa.getMajorVersion());
         return props;
@@ -528,9 +527,8 @@ public class FileResource extends AbstractFileResource {
     @POST
     @Path("{id}/major_version")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
     public FileProperties incrementMajorVersion(@PathParam("id") String fileId) {
-        FileAttachment fa = findFileAttachment(fileId);
+        FileAttachment fa = getFileAttachment(fileId);
         getBinderModule().incrementFileMajorVersion(fa.getOwner().getEntity(), fa);
         return ResourceUtil.buildFileProperties(fa);
     }
@@ -538,9 +536,8 @@ public class FileResource extends AbstractFileResource {
     @GET
     @Path("{id}/versions")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
     public SearchResultList<FileVersionProperties> getVersions(@PathParam("id") String fileId) {
-        FileAttachment fa = findFileAttachment(fileId);
+        FileAttachment fa = getFileAttachment(fileId);
         List<FileVersionProperties> versions = fileVersionsFromFileAttachment(fa);
         SearchResultList<FileVersionProperties> results = new SearchResultList<FileVersionProperties>();
         results.appendAll(versions);
@@ -550,9 +547,8 @@ public class FileResource extends AbstractFileResource {
     @GET
     @Path("{id}/versions/current")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
     public FileVersionProperties getCurrent(@PathParam("id") String fileId) {
-        FileAttachment fa = findFileAttachment(fileId);
+        FileAttachment fa = getFileAttachment(fileId);
         FileVersionProperties props = new FileVersionProperties();
         props.setId(fa.getHighestVersion().getId());
         LinkUriUtil.populateFileVersionLinks(props);
@@ -562,10 +558,9 @@ public class FileResource extends AbstractFileResource {
     @POST
     @Path("{id}/versions/current")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
     public FileVersionProperties setCurrent(@PathParam("id") String fileId,
                                      FileVersionProperties properties) {
-        FileAttachment fa = findFileAttachment(fileId);
+        FileAttachment fa = getFileAttachment(fileId);
         VersionAttachment va = FileUtils.findVersionAttachment(properties.getId());
         if (va==null || !va.getParentAttachment().getId().equals(fa.getId())) {
             throw new NotFoundException(ApiErrorCode.FILE_VERSION_NOT_FOUND, "File version not found");

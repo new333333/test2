@@ -105,7 +105,6 @@ public class UserResource extends AbstractPrincipalResource {
      */
 	@GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
 	public SearchResultList<UserBrief> getUsers(
             @QueryParam("id") Set<Long> ids,
             @QueryParam("keyword") String keyword,
@@ -262,7 +261,6 @@ public class UserResource extends AbstractPrincipalResource {
         return Response.ok().build();
     }
 
-    @Undocumented
     @GET
     @Path("/{id}/teams")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -275,7 +273,6 @@ public class UserResource extends AbstractPrincipalResource {
         return results;
     }
 
-    @Undocumented
     @GET
     @Path("/{id}/favorites")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })

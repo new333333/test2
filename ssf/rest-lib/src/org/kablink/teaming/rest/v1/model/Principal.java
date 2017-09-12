@@ -89,7 +89,6 @@ public abstract class Principal extends Entry {
         this.name = name;
     }
 
-    @Undocumented
     public Boolean isReserved() {
         return reserved;
     }

@@ -120,7 +120,6 @@ public class WorkspaceResource extends AbstractBinderResource {
 
     @POST
     @Path("/legacy_query")
-    @Undocumented
    	public SearchResultList<BinderBrief> getWorkspacesViaLegacyQuery(@Context HttpServletRequest request,
                                                                      @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                                      @QueryParam("first") @DefaultValue("0") Integer offset,
@@ -144,7 +143,6 @@ public class WorkspaceResource extends AbstractBinderResource {
     @GET
     @Path("{id}/binders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
     public Response getSubBinders(@PathParam("id") long id,
                                   @QueryParam("title") String name,
                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -167,7 +165,6 @@ public class WorkspaceResource extends AbstractBinderResource {
     @GET
     @Path("{id}/children")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
     public Response getChildren(@PathParam("id") long id,
                                 @QueryParam("allow_jits") @DefaultValue("true") Boolean allowJits,
                                 @QueryParam("title") String name,
@@ -203,7 +200,6 @@ public class WorkspaceResource extends AbstractBinderResource {
 	@GET
 	@Path("{id}/workspaces")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
 	public Response getSubWorkspaces(@PathParam("id") long id,
                                      @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
 			                         @QueryParam("first") @DefaultValue("0") Integer offset,
@@ -226,7 +222,6 @@ public class WorkspaceResource extends AbstractBinderResource {
    	@Path("{id}/workspaces")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
    	public org.kablink.teaming.rest.v1.model.Workspace createSubWorkspace(@PathParam("id") long id, org.kablink.teaming.rest.v1.model.Workspace workspace,
                                                                           @QueryParam("template") Long templateId,
                                                                           @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
@@ -244,7 +239,6 @@ public class WorkspaceResource extends AbstractBinderResource {
 	@GET
 	@Path("{id}/folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
 	public Response getSubFolders(@PathParam("id") long id,
                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
 			                      @QueryParam("first") @DefaultValue("0") int offset,
@@ -267,7 +261,6 @@ public class WorkspaceResource extends AbstractBinderResource {
    	@Path("{id}/folders")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
    	public org.kablink.teaming.rest.v1.model.Folder createSubFolder(@PathParam("id") long id,
                                                                     org.kablink.teaming.rest.v1.model.Binder binder,
                                                                     @QueryParam("template") Long templateId,

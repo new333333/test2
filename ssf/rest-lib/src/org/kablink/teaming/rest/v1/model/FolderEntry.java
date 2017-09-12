@@ -54,7 +54,6 @@ public class FolderEntry extends BaseFolderEntry {
         this.reservation = orig.reservation;
     }
 
-    @Undocumented
     public HistoryStamp getReservation() {
         return reservation;
     }

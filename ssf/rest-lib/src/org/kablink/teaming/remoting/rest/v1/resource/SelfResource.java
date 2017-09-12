@@ -64,14 +64,9 @@ import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.rest.v1.annotations.Undocumented;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
-import org.kablink.teaming.rest.v1.model.BinderChange;
 import org.kablink.teaming.rest.v1.model.BinderChanges;
 import org.kablink.teaming.rest.v1.model.BinderTree;
-import org.kablink.teaming.rest.v1.model.DefinableEntity;
-import org.kablink.teaming.rest.v1.model.DefinableEntityBrief;
-import org.kablink.teaming.rest.v1.model.FileChange;
 import org.kablink.teaming.rest.v1.model.FileProperties;
-import org.kablink.teaming.rest.v1.model.FolderEntryChange;
 import org.kablink.teaming.rest.v1.model.LibraryInfo;
 import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
 import org.kablink.teaming.rest.v1.model.MobileDevice;
@@ -219,7 +214,6 @@ public class SelfResource extends AbstractFileResource {
      * Get the authenticated user's favorite binders
      * @return Returns a list of BinderBrief objects.
      */
-    @Undocumented
     @GET
     @Path("/favorites")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -237,7 +231,6 @@ public class SelfResource extends AbstractFileResource {
      * Get the teams that the authenticated user is a member of.
      * @return Returns a list of BinderBrief objects.
      */
-    @Undocumented
     @GET
     @Path("/teams")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -776,7 +769,7 @@ public class SelfResource extends AbstractFileResource {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No source_id parameter was supplied in the POST data.");
         }
         Folder folder = getMyFilesFileParent();
-        FileAttachment existing = findFileAttachment(sourceId);
+        FileAttachment existing = getFileAttachment(sourceId);
         org.kablink.teaming.domain.DefinableEntity origEntry = existing.getOwner().getEntity();
         org.kablink.teaming.domain.FolderEntry newEntry = getFolderModule().copyEntry(origEntry.getParentBinder().getId(),
                 origEntry.getId(), folder.getId(), new String[] {fileName}, null);
@@ -1016,7 +1009,6 @@ public class SelfResource extends AbstractFileResource {
         throw new NotFoundException(ApiErrorCode.DEVICE_NOT_FOUND, "No device with ID: " + id);
     }
 
-    @Undocumented
     @GET
     @Path("/my_teams")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -1028,7 +1020,6 @@ public class SelfResource extends AbstractFileResource {
         return fakeFolder;
     }
 
-    @Undocumented
     @GET
     @Path("/my_favorites")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })

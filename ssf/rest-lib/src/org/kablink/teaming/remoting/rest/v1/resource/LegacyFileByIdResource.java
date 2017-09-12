@@ -39,7 +39,6 @@ import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
-import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.LegacyFileProperties;
 
 import javax.servlet.http.HttpServletRequest;
@@ -70,7 +69,7 @@ public class LegacyFileByIdResource extends AbstractFileResource {
 			@QueryParam("lastMinorVersionNumber") Integer lastMinorVersionNumber,
             @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
         boolean forceOverwrite = (lastVersionNumber==null && lastMajorVersionNumber==null && lastMinorVersionNumber==null);
-		FileAttachment fa = findFileAttachment(fileId);
+		FileAttachment fa = getFileAttachment(fileId);
 		DefinableEntity entity = fa.getOwner().getEntity();
 		InputStream is = getInputStreamFromMultipartFormdata(request);
 		try {
@@ -95,7 +94,7 @@ public class LegacyFileByIdResource extends AbstractFileResource {
 			@QueryParam("lastMinorVersionNumber") Integer lastMinorVersionNumber,
             @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
         boolean forceOverwrite = (lastVersionNumber==null && lastMajorVersionNumber==null && lastMinorVersionNumber==null);
-		FileAttachment fa = findFileAttachment(fileId);
+		FileAttachment fa = getFileAttachment(fileId);
 		DefinableEntity entity = fa.getOwner().getEntity();
 		InputStream is = getRawInputStream(request);
 		try {
@@ -120,7 +119,7 @@ public class LegacyFileByIdResource extends AbstractFileResource {
 	@GET
 	public Response readFileContentById(@PathParam("fileid") String fileId,
 			@Context HttpServletRequest request) {
-		FileAttachment fa = findFileAttachment(fileId);
+		FileAttachment fa = getFileAttachment(fileId);
 		DefinableEntity entity = fa.getOwner().getEntity();
 		return readFileContent(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName(), getIfModifiedSinceDate(request));
 	}
@@ -129,7 +128,7 @@ public class LegacyFileByIdResource extends AbstractFileResource {
     @Path("/metadata")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public LegacyFileProperties getMetaData(@PathParam("fileid") String fileId) {
-        FileAttachment fa = findFileAttachment(fileId);
+        FileAttachment fa = getFileAttachment(fileId);
         return new LegacyFileProperties(ResourceUtil.buildFileProperties(fa));
     }
 

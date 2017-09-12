@@ -111,7 +111,6 @@ public class FileProperties extends BaseFileProperties {
 		this.name = name;
 	}
 
-    @Undocumented
     @XmlElement(name="locked_by")
 	public Long getLockedBy() {
 		return lockedBy;
@@ -121,7 +120,6 @@ public class FileProperties extends BaseFileProperties {
 		this.lockedBy = lockedBy;
 	}
 
-    @Undocumented
     @XmlElement(name="lock_expiration")
 	public Calendar getLockExpiration() {
 		return lockExpiration;

@@ -84,7 +84,6 @@ public class PrincipalBrief extends EntryBrief {
         this.emailAddress = emailAddress;
     }
 
-    @Undocumented
     public Boolean getReserved() {
         return reserved;
     }

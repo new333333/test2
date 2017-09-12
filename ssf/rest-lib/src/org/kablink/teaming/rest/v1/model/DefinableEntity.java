@@ -106,7 +106,6 @@ public abstract class DefinableEntity extends SearchableObject {
         this.modification = orig.getModification();
     }
 
-    @Undocumented
     @XmlElement(name="average_rating")
     public AverageRating getAverageRating() {
         return averageRating;
@@ -128,7 +127,6 @@ public abstract class DefinableEntity extends SearchableObject {
         this.creation = creation;
     }
 
-    @Undocumented
     @XmlElement(name="definition")
     public StringIdLinkPair getDefinition() {
         return definition;
@@ -163,7 +161,6 @@ public abstract class DefinableEntity extends SearchableObject {
         this.entityType = entityType;
     }
 
-    @Undocumented
     @XmlElement(name="event_as_ical_string")
     public Boolean isEventAsIcalString() {
         return eventAsIcalString;
@@ -173,7 +170,6 @@ public abstract class DefinableEntity extends SearchableObject {
         this.eventAsIcalString = eventAsIcalString;
     }
 
-    @Undocumented
     @XmlElement(name="family")
     public String getFamily() {
         return family;
@@ -183,7 +179,6 @@ public abstract class DefinableEntity extends SearchableObject {
         this.family = family;
     }
 
-    @Undocumented
     @XmlElement(name="icon_href")
     public String getIcon() {
         return icon;
@@ -273,7 +268,6 @@ public abstract class DefinableEntity extends SearchableObject {
         this.title = title;
     }
 
-    @Undocumented
     @XmlElementWrapper(name="attachments")
     @XmlElement(name = "attachment")
     public BaseFileProperties[] getAttachments() {
@@ -284,7 +278,6 @@ public abstract class DefinableEntity extends SearchableObject {
         this.attachments = attachments;
     }
 
-    @Undocumented
     @XmlElementWrapper(name="custom_fields")
     @XmlElement(name = "field")
     public CustomField [] getCustomFields() {
