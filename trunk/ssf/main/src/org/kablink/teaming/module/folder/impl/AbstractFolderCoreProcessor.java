@@ -658,6 +658,9 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
 
 	   //get ordered list of entries
 	   for (FolderEntry child:children) {
+		   if (child.isPreDeleted()) {
+			   continue;
+		   }
 		   FolderEntry entry = new FolderEntry(child, newEntryDef);
 		   if(child.equals(source) && Validator.isNotNull(newTitle)) { 
 			   // If the caller specified new title for the new entry, then we must set the title 
