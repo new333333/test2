@@ -46,7 +46,7 @@
 <br/>
 <br/>
 <span class="ss_smallprint ss_italic">[<ssf:nlt tag="entry.noEntryByThisTitle"/>]</span>
-<form test="${!empty ssAddEntryTitles}">
+<c:if test="${!empty ssAddEntryTitles}">
 <br/>
 <br/>
 <c:set var="count" value="0"/>
@@ -100,6 +100,7 @@ function ss_setPageFormActionUrl2${renderResponse.namespace}() {
 </c:if>
   <sec:csrfInput />
 </form>
+  </c:if>
 </div>
 
 <ssf:ifadapter>
