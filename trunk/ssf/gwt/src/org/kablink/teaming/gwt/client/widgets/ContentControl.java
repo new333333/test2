@@ -524,7 +524,7 @@ public class ContentControl extends Composite
 		// Reload the URL.
 		ContextChangingEvent.fireOne();						
 		setContentFrameUrl( "",  Instigator.FORCE_FULL_RELOAD              );
-		setViewFromUrl(     url, Instigator.FORCE_FULL_RELOAD, false, null , true);
+		setViewFromUrl(     url, Instigator.FORCE_FULL_RELOAD, false, null , false);
 	}// end reload()
 
 	/*
@@ -1991,7 +1991,7 @@ public class ContentControl extends Composite
 						Instigator.VIEW_FOLDER_ENTRY,
 						false,    // false -> Not a history action.
 						null,// null  -> No history Filr masthead action.
-						true);
+						false);
 			}
 		});
 	}
