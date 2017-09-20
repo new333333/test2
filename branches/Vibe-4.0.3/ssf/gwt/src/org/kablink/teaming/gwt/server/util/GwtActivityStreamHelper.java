@@ -1822,12 +1822,13 @@ public class GwtActivityStreamHelper {
 				"view");
 			
 			if (MiscUtil.hasString(reply)) {
-				// Yes!  Do we need to further truncate what gets
+				// Replace section markup?
+				reply = MarkupUtil.markupSectionsReplacement(reply);
+				// Do we need to further truncate what gets
 				// displayed?
 				int displayWords = m_activityStreamParams.getDisplayWords();
 				if (displayWords != (-1)) {
 					// Yes!  Strip it down it its bare necessities.
-					reply = MarkupUtil.markupSectionsReplacement(reply);
 					if (MiscUtil.hasString(reply)) {
 						reply = Html.wordStripHTML(
 							reply,
