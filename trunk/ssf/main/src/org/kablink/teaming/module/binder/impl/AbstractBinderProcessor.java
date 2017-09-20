@@ -1853,15 +1853,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 					getProfileDao().changeSharedEntityId(shareItemIds, binder);
 				}
 			}
+
+		   // Copy the binder properties
+		   Map sourceProps = source.getProperties();
+		   if (sourceProps!=null) {
+			   binder.setProperties(new HashMap(sourceProps));
+		   }
 			
-		    // Bugzilla 955689:
-			//    If the source folder contains task linkage...
-		    Map serializationMap = ((Map) source.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE));
-		    if (null != serializationMap) {
-			   // ...copy it to the destination folder.
-			   binder.setProperty(ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE, serializationMap);
-		    }
-		    
 		    // (bug 975965)
 		    binder.setWorkflowAssociations(source.getWorkflowAssociations());
 		    binder.setDefinitionsInherited(source.isDefinitionsInherited());
@@ -1870,7 +1868,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
 		   binder.setDescription(source.getDescription());
            binder.setIconName(source.getIconName());
-           binder.setProperty(ObjectKeys.BINDER_PROPERTY_RENDER_JSP_VIEW, source.getProperty(ObjectKeys.BINDER_PROPERTY_RENDER_JSP_VIEW));
        } catch (Exception e) {
     	   throw new InternalException("Error copying '" + source + "' into '" + destination + "' with title '" + title + "'", e);
        }
