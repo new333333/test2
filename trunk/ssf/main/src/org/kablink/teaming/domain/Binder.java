@@ -32,7 +32,13 @@
  */
 package org.kablink.teaming.domain;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -469,7 +475,34 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     	if (properties == null) return null;
     	return properties.get(name);
     }
-    
+
+    public String getSerializedProperties() throws IOException {
+        if (properties==null) {
+            return null;
+        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        try {
+            oos.writeObject(properties);
+            oos.flush();
+            return Base64.getEncoder().encodeToString(baos.toByteArray());
+        } finally {
+            oos.close();
+        }
+    }
+
+    public void setSerializedProperties(String props) throws IOException, ClassNotFoundException {
+        if (props==null) {
+            properties = null;
+        } else {
+            ByteArrayInputStream bais = new ByteArrayInputStream(Base64.getDecoder().decode(props));
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            Object obj = ois.readObject();
+            if (obj instanceof Map) {
+                properties = (Map) obj;
+            }
+        }
+    }
      
     /**
      * Return the pathName

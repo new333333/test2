@@ -1112,6 +1112,16 @@ public class ExportHelper {
 			Element wikiHomePageEle = settingsEle.addElement("wikiHomePageId");
 			wikiHomePageEle.setText(wikiHomePageId);
 		}
+
+		try {
+			String properties = binder.getSerializedProperties();
+			if (properties!=null) {
+                Element propElem = settingsEle.addElement("properties");
+                propElem.setText(properties);
+            }
+		} catch (IOException e) {
+			logger.warn("Failed to export properties for binder: " + binder.getPathName() + ".  Some settings such as column layouts will not be included when the binder is imported.", e);
+		}
 	}
 
 	private static void addAccessControls(WorkArea workArea, Element settingsElement) {
@@ -2901,6 +2911,19 @@ public class ExportHelper {
 				BinderQuota bq = adminModule.getBinderQuota(binder);
 				bq.setDiskQuota(Long.valueOf(binderQuota));
 				adminModule.setBinderQuota(binder, bq);
+			}
+		}
+
+		xPath = "//settings//properties";
+		Element propEle = (Element)entityDoc.selectSingleNode(xPath);
+		if (propEle != null) {
+			String serializedProps = propEle.getText();
+			if (serializedProps != null) {
+				try {
+					binder.setSerializedProperties(serializedProps);
+				} catch (Exception e) {
+					logger.warn("Failed to import properties for binder: " + binder.getPathName() + ".  Some settings such as column layouts will not be included.", e);
+				}
 			}
 		}
 		
