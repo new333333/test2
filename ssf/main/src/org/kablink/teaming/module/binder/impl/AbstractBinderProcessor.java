@@ -1859,6 +1859,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		   if (sourceProps!=null) {
 			   binder.setProperties(new HashMap(sourceProps));
 		   }
+		   binder.setLibrary(source.isLibrary());
 			
 		    // (bug 975965)
 		    binder.setWorkflowAssociations(source.getWorkflowAssociations());
