@@ -396,14 +396,7 @@ abstract public class AbstractFileResource extends AbstractResource {
     protected org.kablink.teaming.domain.FolderEntry synchronizeFolderEntry(final org.kablink.teaming.domain.FolderEntry entry, boolean mirroredOnly) {
         org.kablink.teaming.domain.FolderEntry retEntry;
         Folder folder = entry.getParentFolder();
-        if (folder.isMirrored()) {
-            FolderModule.FileSyncStatus status = getFolderModule().fileSynchronize(entry);
-            if (status == FolderModule.FileSyncStatus.deleted) {
-                throw new NoFolderEntryByTheIdException(entry.getId());
-            } else {
-                retEntry = _getFolderEntry(entry.getId());
-            }
-        } else if (!mirroredOnly) {
+        if (folder.isMirrored() || !mirroredOnly) {
             RunasCallback callback = new RunasCallback()
             {
                 @Override
