@@ -75,6 +75,18 @@ public class ResourceDriverManagerUtil {
 		}
 	}
 	
+	/*
+	public static void main(String[] args) {
+		long value;
+		value = toStorageHashAsLong("rd1");
+		System.out.println("rd1: " + value);
+		value = toStorageHashAsLong("mf13");
+		System.out.println("mf13: " + value);
+		value = toStorageHashAsLong("mf16");
+		System.out.println("mf16: " + value);
+	}
+	*/
+	
 	/**
 	 * Returns whether this driver was instantiated from the static configuration 
 	 * information read from the config files at server startup.
