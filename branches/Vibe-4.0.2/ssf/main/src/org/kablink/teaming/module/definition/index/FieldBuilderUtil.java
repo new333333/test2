@@ -34,6 +34,8 @@ package org.kablink.teaming.module.definition.index;
 
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.NumericField;
 
@@ -47,10 +49,21 @@ import org.kablink.util.search.Constants;
  * @author ?
  */
 public class FieldBuilderUtil {
+	private static final Log logger = LogFactory.getLog(FieldBuilderUtil.class);
+	
 	@SuppressWarnings("unchecked")
 	public static Field[] buildField(DefinableEntity entity, String dataElemName, String fieldBuilderClassName, Map args) {
 		FieldBuilder fieldBuilder = (FieldBuilder) ClassInstanceCache.getInstance(fieldBuilderClassName);
-		return fieldBuilder.buildField(entity, dataElemName, args);
+		try {
+			return fieldBuilder.buildField(entity, dataElemName, args);
+		}
+		catch(ClassCastException e) {
+			if(logger.isDebugEnabled())
+				logger.warn("Error indexing field (element name=" + dataElemName + ", builder class=" + fieldBuilderClassName + ") on entity (id=" + entity.getId() + ", title=" + entity.getTitle() + ") - Consider repairing the entity", e);
+			else 
+				logger.warn("Error indexing field (element name=" + dataElemName + ", builder class=" + fieldBuilderClassName + ") on entity (id=" + entity.getId() + ", title=" + entity.getTitle() + ") - Consider repairing the entity");
+			return null;
+		}
 	}    
 
 	/**
