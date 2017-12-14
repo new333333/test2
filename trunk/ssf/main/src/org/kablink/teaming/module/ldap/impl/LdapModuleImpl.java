@@ -6142,12 +6142,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			List membership = new ArrayList();
 			PartialLdapSyncResults syncResults	= null;
 			//build new membership
-			while(valEnum.hasMoreElements()) {
-				String mDn = ((String)valEnum.nextElement()).trim();
-				uRow = (Object[])dnUsers.get(mDn);
-				if (uRow == null) uRow = (Object[])dnGroups.get(mDn);
-				if (uRow == null || uRow[PRINCIPAL_ID] == null) continue; //never got created
-				membership.add(new Membership(groupId, (Long)uRow[PRINCIPAL_ID]));
+			if(valEnum != null)
+			{
+				while(valEnum.hasMoreElements()) {
+					String mDn = ((String)valEnum.nextElement()).trim();
+					uRow = (Object[])dnUsers.get(mDn);
+					if (uRow == null) uRow = (Object[])dnGroups.get(mDn);
+					if (uRow == null || uRow[PRINCIPAL_ID] == null) continue; //never got created
+					membership.add(new Membership(groupId, (Long)uRow[PRINCIPAL_ID]));
+				}
 			}
 
 			// Do we have a place to store the list of modified groups?
@@ -6436,10 +6439,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 									if(att != null) {
 										members = att.getAll();
 									}
-									
-									if(members != null) {
-										groupCoordinator.syncMembership(groupId, members);
-									}
+									groupCoordinator.syncMembership(groupId, members);
 								}
 								else
 								{
