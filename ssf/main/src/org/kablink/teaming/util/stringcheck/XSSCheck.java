@@ -92,7 +92,7 @@ public class XSSCheck implements StringCheck {
 
 	//Pattern_str6 is used to find onxxx statements (e.g., onClick, onload, onerror)
 	//It is important to realize that these can be preceeded by either a space or a "/"
-	private static final String PATTERN_STR6 = "(?i)(<[\\s]*[^>]*[\\s\"'/]+)(on[^>\\s!#%*+,\\./?@_-]*[\\s]*=[\\s]*(?:\"[^\">]*\"|'[^'>]*'|[^>\\s]*))([^>]*>)";
+	private static final String PATTERN_STR6 = "(?i)(<[\\s]*[^>]*[\\s\"'/]+)(on[^>\\s!#%*+,\\./?@_-]*[\\s]*=[\\s]*(?:\"[^\">]*\"|'[^'>]*'|[^>\\s/]*))([^>]*>|[^/]*//)";
 	
 	private Pattern pattern1;
 	private Pattern pattern1file;
@@ -117,6 +117,12 @@ public class XSSCheck implements StringCheck {
 	private ConcurrentHashMap<Long, Set<String>> trustedGroupsMap;
 	
 	public XSSCheck() {
+		this(SPropsUtil.getBoolean("xss.check.enable"),
+				SPropsUtil.getString("xss.check.mode.default"),
+				SPropsUtil.getString("xss.check.mode.file"));
+	}
+	
+	public XSSCheck(boolean enable, String modeDefault, String modeFile) {
 		pattern1 = Pattern.compile(PATTERN_STR1);
 		pattern1file = Pattern.compile(PATTERN_STR1_FILE);
 		pattern1a = Pattern.compile(PATTERN_STR1a);
@@ -132,9 +138,9 @@ public class XSSCheck implements StringCheck {
 		pattern5 = Pattern.compile(PATTERN_STR5);
 		pattern5a = Pattern.compile(PATTERN_STR5a);
 		pattern6 = Pattern.compile(PATTERN_STR6);
-		enable = SPropsUtil.getBoolean("xss.check.enable");
-		modeDefault = SPropsUtil.getString("xss.check.mode.default");
-		modeFile = SPropsUtil.getString("xss.check.mode.file");
+		this.enable = enable;
+		this.modeDefault = modeDefault;
+		this.modeFile = modeFile;
 		trustedUsersMap = new ConcurrentHashMap<Long, Set<String>>();
 		trustedGroupsMap = new ConcurrentHashMap<Long, Set<String>>();
 
