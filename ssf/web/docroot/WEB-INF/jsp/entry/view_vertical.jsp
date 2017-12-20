@@ -35,7 +35,6 @@
 <% //view a folder forum with the entry at the bottom in an iframe %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
-<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <%
 	//int sliderDivHeight = 18;
 	int sliderDivHeight = 7;

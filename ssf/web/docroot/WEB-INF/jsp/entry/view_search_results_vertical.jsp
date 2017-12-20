@@ -36,7 +36,6 @@
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <%
 	//int sliderDivHeight = 18;
 	int sliderDivHeight = 7;

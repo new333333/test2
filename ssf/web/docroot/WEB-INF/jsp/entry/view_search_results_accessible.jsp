@@ -34,7 +34,6 @@
 %>
 <% //view a folder forum in accessible mode %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
-<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%@ page import="org.kablink.teaming.module.definition.DefinitionUtils" %>
