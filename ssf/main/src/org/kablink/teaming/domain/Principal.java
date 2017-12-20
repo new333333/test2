@@ -87,7 +87,7 @@ public abstract class Principal extends Entry implements IPrincipal {
     protected String type;
     protected String theme="";
     protected String emailAddress=null;
-    private Set principalIds; // set of Long; this field is computed 
+    private Set<Long> principalIds; // set of Long; this field is computed and cached
     protected Map<String,EmailAddress> emailAddresses;//initialized by hibernate access=field
     // these collections are loaded for quicker indexing, hibernate will not persist them
     protected Map<String,EmailAddress> iEmailAddresses;
@@ -442,59 +442,14 @@ public abstract class Principal extends Entry implements IPrincipal {
     public String toString() {
     	return name;
     }
-    /**
-     * This method computes a complete graph of membership starting bottom up
-     * from this user object, and returns their ids as a set of 
-     * <code>Long</code>.
-     * 
-     * TODO I believe it would be more efficient to augment the DAO service to
-     * fetch the entire graph eargerly rather than relying on lazy loading. 
-     * This lazy loading can prove to be unacceptably costly, especially when
-     * the depth of graph is large. But for now...
-     * 
-     * Note: This does not cache the result of the computation, since it can
-     * change any time (TRUE IN THEORY BUT NOT IN PRACTICE: see below)   
-     * 
-     * Note: Our system architecture is such that new persistence session is
-     * created and the user object is re-loaded from the database for each
-     * and every request (ie, interaction between the user and the system).
-     * In other words, we do not cache user object across multiple requests
-     * within a user session. Consequently it is safe to cache the result
-     * of this computation within the user object.
-     * 
-     * Note: This method may load associated groups lazily, which means that
-     * this method is expected to be executed in a valid transactional context.
-     * Otherwise, a data-access runtime exception may be thrown. 
-     * 
-     * @return
-     */	public Set computePrincipalIds(GroupPrincipal reservedGroup) {
-    	// Each thread serving a user request has its own copy of user object.
-    	// Therefore we do not have to use synchronization around principalIds.
-        if (!isActive()) return new HashSet();
-        
-        if(principalIds == null) {
-    		Set ids = new HashSet();
-    		if (reservedGroup != null) {
-    			//this handles the case where all users is part of another group
-    			addPrincipalIds(reservedGroup, ids);
-    		}
-    		addPrincipalIds(this, ids);
-    		principalIds = ids;
-    	}
-        return principalIds;
-    }
-	private void addPrincipalIds(IPrincipal principal, Set ids) {
-		// To prevent infinite loop resulting from possible cycle among
-		// group membership, proceed only if the principal hasn't already
-		// been processed. 
-		if (!principal.isActive()) return;
-		if(ids.add(principal.getId())) {
-			List memberOf = principal.getMemberOf();
-			for(Iterator i = memberOf.iterator(); i.hasNext();) {
-				addPrincipalIds((IPrincipal) i.next(), ids);
-	           }
-	    }
+
+	public Set<Long> getComputedPrincipalIds() {
+		return principalIds;
 	}
+	public void setComputedPrincipalIds(Set<Long> ids) {
+		this.principalIds = ids;
+	}
+	
     /*
      * The following methods are used for performance optimization during indexing.
      * The values of each collection are loaded and built by hand.  
