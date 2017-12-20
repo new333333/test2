@@ -91,8 +91,6 @@ public interface IPrincipal extends PersistentLongId {
     public String getForeignName();
 
     public void setForeignName(String foreignName);
-     
-    public Set computePrincipalIds(GroupPrincipal reservedGroup);
     
     public List getMemberOf();
 
