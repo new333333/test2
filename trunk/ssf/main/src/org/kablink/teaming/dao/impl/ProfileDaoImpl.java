@@ -1973,13 +1973,13 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		        		throw new IllegalArgumentException(p.getClass().getName());
 		        	}
 		        	
-		    		result = new HashSet(p.computePrincipalIds(gp));
+		    		result = new HashSet(computePrincipalIds(p, gp));
 		    	}
 		    	else {
-		    		result = new HashSet(p.computePrincipalIds(null));
+		    		result = new HashSet(computePrincipalIds(p, null));
 		    	}
 	    	} else {
-	    		result = new HashSet(p.computePrincipalIds(null));
+	    		result = new HashSet(computePrincipalIds(p, null));
 	    	}
 	    	ThreadBoundLRUCache.put(result, "getApplicationLevelPrincipalIds", p.getId());
 	    	return new HashSet(result); // Return a copy
@@ -1988,6 +1988,86 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "getApplicationLevelPrincipalIds(Principal)");
     	}	        
     }
+    
+    /**
+     * This method computes a complete graph of membership starting bottom up
+     * from this user object, and returns their ids as a set of <code>Long</code>.
+     * 
+     * @return
+     */
+    private Set<Long> computePrincipalIds(Principal p, GroupPrincipal reservedGroup) {
+    	// Each thread serving a user request has its own copy of user object.
+    	// Therefore we do not have to use synchronization around it.
+        if (!p.isActive()) return new HashSet();
+        
+        Set<Long> computedPrincipalIds = p.getComputedPrincipalIds();        
+        if(computedPrincipalIds == null) {
+        	Set<Long> ids = new HashSet();
+        	ids.add(p.getId());
+        	if(reservedGroup != null)
+        		ids.add(reservedGroup.getId());
+        	computedPrincipalIds = getGroupMembership(ids);
+        	computedPrincipalIds.addAll(ids);
+    		p.setComputedPrincipalIds(computedPrincipalIds);
+    	}
+        return computedPrincipalIds;
+    }
+
+    /**
+     * Given a set of principal ids, return all ids of the groups that the principals are
+     * members of recursively. The result will not include the input principal ids.
+     * 
+     * @param ids
+     * @return
+     */
+	public Set<Long> getGroupMembership(Collection<Long> ids) {   
+		long begin = System.nanoTime();
+		try {
+			if ((ids == null) || ids.isEmpty()) 
+				return new HashSet();
+			Set<Long> groups = (Set)getHibernateTemplate().execute(
+	            new HibernateCallback() {
+	                @Override
+					public Object doInHibernate(Session session) throws HibernateException {
+	                    Set<Long> result = new HashSet();
+	                    List<Membership> mems;
+	                    Set<Long> currentIds = new HashSet(ids);
+	                    while (!currentIds.isEmpty()) {
+	                    	if (currentIds.size() <= inClauseLimit) {
+	                           	mems  = session.createCriteria(Membership.class)
+	                           			.add(Restrictions.in("userId", currentIds))
+	                           			.list();                   		
+	                    	} else {
+	                    		List<Long> idsList = new ArrayList(currentIds);
+	                    		mems = new ArrayList();
+	                    		for (int i=0; i<idsList.size(); i+=inClauseLimit) {
+	                    			List<Membership> partial  = session.createCriteria(Membership.class)
+	                    				.add(Restrictions.in("userId", idsList.subList(i, Math.min(idsList.size(), i+inClauseLimit))))
+	                    				.list();
+	                    			mems.addAll(partial);
+	                    		}
+	           				}
+	                       	currentIds.clear();
+	                       	Long groupId;
+	                       	for(Membership m:mems) {
+	                       		groupId = m.getGroupId();
+								if (!result.contains(groupId) && !ids.contains(groupId)) {
+									result.add(groupId);
+									currentIds.add(groupId);
+								}
+							}
+	                    }
+	                    return result;
+	                }
+	            }
+	        );
+
+			return groups;		
+    	}
+    	finally {
+    		end(begin, "getGroupMembership(Collection<Long>)");
+    	}	        
+	}
     
     @Override
 	public Set<Long> getAllPrincipalIds(Principal principal) {
