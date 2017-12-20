@@ -45,7 +45,6 @@
 <c:set var="ssFolderColumns" value="<%= ssFolderColumns %>" scope="request"/>
 <c:set var="title_entry" value="${ssDefinitionEntry}"/>
 <jsp:useBean id="title_entry" type="org.kablink.teaming.domain.FolderEntry" />
-<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <% //Title view %>
   <c:if test="${empty ss_title_breadcrumbs_seen && 
                     ssDefinitionEntry.entityType == 'folderEntry' && 

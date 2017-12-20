@@ -69,7 +69,7 @@ if (isIECheck) strBrowserType = "ie";
 %>
 
 		<ul class="ss_searchResult ss_nobullet">
-		<c:forEach var="entry" items="${ssFolderEntries}" varStatus="status">
+		<c:forEach var="entry" items="${ssFolderEntriesResults}" varStatus="status">
 			<jsp:useBean id="entry" type="java.util.HashMap" />
 			<%
 			if (!isFilr || (isFilr && !entriesSeen.containsKey(entry.get("_docId")))) {

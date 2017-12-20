@@ -37,7 +37,6 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <% //view a folder forum in accessible mode %>
-<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 
 <%@ page import="org.kablink.teaming.module.definition.DefinitionUtils" %>
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />

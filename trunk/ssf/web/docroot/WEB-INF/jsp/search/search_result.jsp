@@ -117,7 +117,7 @@ var ss_entryCount = 0;
 				
 							<div class="ss_searchContainer">
 								<div id="ss_content">
-									<c:if test="${quickSearch}">
+									<c:if test="${quickSearch}">\
 										<!-- Quick search form -->
 										<%@ include file="/WEB-INF/jsp/search/quick_search_form.jsp" %>
 									</c:if>
@@ -135,7 +135,8 @@ var ss_entryCount = 0;
 <ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}"
   anchorOnly="true"/>
 									<!-- Search result list -->
-									<jsp:include page="/WEB-INF/jsp/search/result_list.jsp" />
+									<c:set var="ssFolderEntriesResults" value="${ssFolderEntries}" />
+									<%@ include file="/WEB-INF/jsp/search/result_list.jsp" %>
 
 									<c:if test="${ss_pageNumber != 1 || ssPageEndIndex != ssTotalRecords}">
 										<!-- Search results navigation -->
