@@ -223,7 +223,8 @@ public class XSSCheck implements StringCheck {
 				if(user != null) {
 					if(getTrustedUserNames(user.getZoneId()).contains(user.getName()))
 						return input; // match found on user list
-					if(!Collections.disjoint(user.computeApplicationLevelGroupNames(), getTrustedGroupNames(user.getZoneId())))
+					Set<String> trustedGroupNames = getTrustedGroupNames(user.getZoneId());
+					if(!trustedGroupNames.isEmpty() && !Collections.disjoint(user.computeApplicationLevelGroupNames(), trustedGroupNames))
 						return input; // match found on group list
 				}
 			}

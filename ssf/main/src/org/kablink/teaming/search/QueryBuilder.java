@@ -826,15 +826,10 @@ public class QueryBuilder {
 			}
 		}
 		String entryAll = getConditionExp(ENTRY_PREFIX, Constants.READ_ACL_ALL, conditionsMet);
-
-		//Start with the Net Folder Root acl
-		String rootPrincipals = idField(principalIds, ROOT_PREFIX, new ArrayList<Long>());
-		rootPrincipals += " OR " + ROOT_PREFIX + Constants.ROOT_FOLDER_ALL;
-		if (user.getIdentityInfo().isInternal() && !user.isShared()) {
-			rootPrincipals += " OR " + ROOT_PREFIX + String.valueOf(allUsersGroupId);
-		} else if (!user.getIdentityInfo().isInternal() && !user.isShared()) {
-			rootPrincipals += " OR " + ROOT_PREFIX + String.valueOf(allExtUsersGroupId);
-		}
+		
+		// 12/19/2017 JK - Since Vibe does not support net folders, all we need is this single fixed
+		// clause to satisfy the expectation - No need to populate clauses with principal ids.
+		String rootPrincipals = ROOT_PREFIX + Constants.ROOT_FOLDER_ALL;
 		qString.append("((" + rootPrincipals + ") AND ");
 		
 		if(so != null)
