@@ -33,6 +33,7 @@
 package org.kablink.teaming.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -45,6 +46,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -1002,8 +1004,8 @@ public void delete(final Folder folder) {
 	                	Set<Long> result = new HashSet<Long>();
 	                	List readObjs = new ArrayList();
 	                	Criteria crit = session.createCriteria(FileAttachment.class)
-	                	.setProjection(Projections.property("owner"))
-						.add(Restrictions.in("owner.owningBinderId", binderIds))
+	                	.setProjection(Projections.property("owner"))	                	
+						.add(idCriterion("owner.owningBinderId", binderIds, inClauseLimit))
 						.add(Restrictions.disjunction()
 								.add(Restrictions.isNull("encrypted"))
 								.add(Restrictions.eq("encrypted", false)))
@@ -1024,7 +1026,24 @@ public void delete(final Folder folder) {
     		end(begin, "findFolderIdsFromWorkflowState(String,String)");
     	}	        
 	}	
+  
+    /*
+     * Create "property is in (...) clause in such a way that it wouldn't stumble on the
+     * Oracle's in-clause hard limit.
+     */
+    private static Criterion idCriterion(String propertyName, List<Long> idsList, int clauseLimit) {
+    	if(idsList.isEmpty())
+    		throw new IllegalArgumentException("There is no input id");
+    	
+    	Disjunction disj = Restrictions.disjunction();
+    	
+		for (int i=0; i<idsList.size(); i+=clauseLimit) {
+			disj.add(Restrictions.in(propertyName, idsList.subList(i, Math.min(idsList.size(), i+clauseLimit))));
+		}
 
+		return disj;
+    }
+    
     /**
      * Returns a List<Folder> of the Home folders that meet the
      * specifications.
@@ -1314,5 +1333,11 @@ public void delete(final Folder folder) {
     	}
 	}
 
-
+	public static void main(String[] args) {
+		Long[] ids = new Long[] {10L,20L,30L,40L,50L,60L, 70L, 80L, 90L, 100L};	
+		Criterion crit = idCriterion("jong.field", Arrays.asList(ids), 1000);
+		System.out.println(crit);
+		crit = idCriterion("jong.field", Arrays.asList(ids), 3);
+		System.out.println(crit);
+	}
 }
