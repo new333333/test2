@@ -107,7 +107,6 @@ import org.kablink.teaming.domain.Visits;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.util.Validator;
 import org.kablink.util.cache.ThreadBoundLRUCache;
@@ -123,7 +122,6 @@ import org.springframework.orm.hibernate3.HibernateSystemException;
  */
 @SuppressWarnings({"unchecked", "deprecation"})
 public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
-	protected int inClauseLimit=1000;
 	private CoreDao coreDao;
 	Map reservedIds = new HashMap();
 	
@@ -135,14 +133,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	private CoreDao getCoreDao() {
 	    return coreDao;
 	}
-    /**
-     * Called after bean is initialized.  
-     */
-	@Override
-	protected void initDao() throws Exception {
-		//some database limit the number of terms 
-		inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
-	}
+	
 	/*
 	 * In most cases this will be initialized at startup and won't change,
 	 * but adding a zone or changing the ids could do it.
