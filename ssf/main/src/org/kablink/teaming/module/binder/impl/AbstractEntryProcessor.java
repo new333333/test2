@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.module.binder.impl;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -170,7 +171,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         }
         Entry newEntry = null;
         try {
-          	// Before doing ANYTHING else, make sure that the files are virus free if virus scanner is available.
+          	// Before doing ANYTHING else (such as creating a file entry), make sure that the server can actually get the
+        	// contents of the uploaded files. This helps avoid costly (and often erratic) cleanup process later on.
+          	SimpleProfiler.start("addEntry_prepareFiles");
+            addEntry_prepareFiles(fileUploadItems);
+            SimpleProfiler.stop("addEntry_prepareFiles");
+        	
+          	// Make sure that the files are virus free if virus scanner is available.
           	SimpleProfiler.start("addEntry_virusScanFiles");
             addEntry_virusScanFiles(fileUploadItems);
             SimpleProfiler.stop("addEntry_virusScanFiles");
@@ -312,11 +319,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         } catch (DataIntegrityViolationException e) {
             if (newEntry != null && newEntry.getId()!=null) {
             	try {
-                    logger.warn("An error occurred during the creation of the folder entry: " + e.getLocalizedMessage() + ".   Will clean up partially created entry.");
+                    logger.warn("An error occurred during the creation of the folder entry. Will clean up partially created entry.", e);
             		deleteEntry(binder, newEntry, false, new HashMap());
             	} catch(Exception e2) {
             		//Any further errors while trying to delete the entry are ignored
-                    logger.warn("Failed to clean up folder entry.", e);
+                    logger.warn("Failed to clean up folder entry.", e2);
             	}
            	}
             throw new DataIntegrityViolationException(e.getLocalizedMessage(), e);
@@ -328,11 +335,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	entryDataErrors.addProblem(new Problem(Problem.GENERAL_PROBLEM, ex));
         	if (newEntry != null && newEntry.getId()!=null) {
         		try {
-                    logger.warn("An error occurred during the creation of the folder entry: " + ex.getLocalizedMessage() + ".   Will clean up partially created entry.");
+                    logger.warn("An error occurred during the creation of the folder entry. Will clean up partially created entry.");
         			deleteEntry(binder, newEntry, false, new HashMap());
         		} catch(Exception e2) {
         			//Any further errors while trying to delete the entry are ignored
-                    logger.warn("Failed to clean up folder entry.", ex);
+                    logger.warn("Failed to clean up folder entry.", e2);
         		}
         	}
         	throw new WriteEntryDataException(entryDataErrors);
@@ -453,6 +460,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	filterErrors.getProblems().addAll(nameErrors.getProblems());
     	filterErrors.getProblems().addAll(checkSumErrors.getProblems());
     	return filterErrors;
+    }
+
+    //no transaction    
+    protected void addEntry_prepareFiles(List<FileUploadItem> fileUploadItems) throws IOException {
+    	for(FileUploadItem fui: fileUploadItems)
+    		fui.makeReentrant();
     }
 
     //no transaction    

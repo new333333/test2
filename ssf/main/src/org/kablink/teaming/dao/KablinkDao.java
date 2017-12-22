@@ -43,10 +43,21 @@ public abstract class KablinkDao extends HibernateDaoSupport {
 	protected Log logger = LogFactory.getLog(getClass());
 	protected boolean debugEnabled = logger.isDebugEnabled();
 	
+	protected int inClauseLimit=1000;
+
 	private boolean inited = false;
 	private long floor = 0; // in milliseconds
 	
 	private static EventsStatistics eventsStatistics; // set by external code
+
+    /**
+     * Called after bean is initialized.  
+     */
+	@Override
+	protected void initDao() throws Exception {
+		//some database limit the number of terms 
+		inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
+	}
 
 	protected void end(long beginInNanoseconds, String methodName) {
 		init();
