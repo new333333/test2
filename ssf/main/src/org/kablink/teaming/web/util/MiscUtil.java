@@ -993,7 +993,7 @@ public final class MiscUtil {
 	 */
 	public static String getIdeasPortalUrl() {
 		// Get the vibe/filr ideas portal url from ssf-ext.properties.
-		String vibeIdeasPortalUrl = SPropsUtil.getString("vibe.ideasPortal", "https://ideas.microfocus.com/mfi/novell-vibe");
+		String vibeIdeasPortalUrl = SPropsUtil.getString("vibe.ideasPortal", "https://ideas.microfocus.com/mfi/mf-vibe");
 		String filrIdeasPortalUrl = SPropsUtil.getString("filr.ideasPortal", "https://ideas.microfocus.com/mfi/novell-filr");
 		if(Utils.checkIfFilr()){
 			return filrIdeasPortalUrl;
