@@ -874,7 +874,7 @@
 	<target name="lb-shell-script-execution-prepare">
 		<mkdir dir="lb-commands/lib"/>
 		<copy todir="lb-commands/lib">
-			<fileset dir="${project.dir}/lib" includes="liquibase.jar,mysql-connector.jar,ojdbc7.jar,jtds.jar,postgresql-jre7.jar"/>
+			<fileset dir="${project.dir}/lib" includes="liquibase.jar,mysql-connector.jar,ojdbc8.jar,jtds.jar,postgresql-jre7.jar"/>
 		</copy>
 		<copy todir="lb-commands">
 			<fileset dir="." includes="scripts/changelog/**"/>
