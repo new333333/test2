@@ -46,7 +46,7 @@ echo ""
 echo "Note: Additional parameters are read in from [db type]-liquibase.properties file."
 }
 
-CLASSPATH=./lib/kablink-teaming-liquibase.jar:./lib/mysql-connector.jar:./lib/ojdbc7.jar:./lib/jtds.jar:./lib/postgresql-jre7.jar
+CLASSPATH=./lib/kablink-teaming-liquibase.jar:./lib/mysql-connector.jar:./lib/ojdbc8.jar:./lib/jtds.jar:./lib/postgresql-jre7.jar
 
 # Set default log level. Valid values are debug, info, warning, severe, off.
 LOG_LEVEL=info

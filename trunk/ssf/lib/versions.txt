@@ -137,7 +137,7 @@ opencmis 0.8.0 (implementation of cmis standard for accessing content management
     This set of libraries is used in the Sharepoint resource driver for accessing the sharepoint
     document libraries as Netfolders.
 OpenID4Java 0.9.6
-Oracle Database 12c Release 1 (12.1.0.1) JDBC Driver for use with JDK 7 (ojdbc7.jar)
+Oracle Database 12c Release 2 (12.2.0.1) JDBC Driver for use with JDK 8 (ojdbc8.jar)
 opensaml 1.0.1 (SAML implementation; used by WSS4J)
 oro 2.0.8 (needed by velocity)
 OWASP Java HTML Sanitizer 20160827.1

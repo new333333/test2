@@ -1,7 +1,7 @@
 @echo off
 if "%OS%" == "Windows_NT" setlocal
 
-set CLASSPATH=.\lib\kablink-teaming-liquibase.jar;.\lib\mysql-connector.jar;.\lib\ojdbc7.jar;.\lib\jtds.jar;.\lib\postgresql-jre7.jar
+set CLASSPATH=.\lib\kablink-teaming-liquibase.jar;.\lib\mysql-connector.jar;.\lib\ojdbc8.jar;.\lib\jtds.jar;.\lib\postgresql-jre7.jar
 
 rem Set default log level. Valid values are debug, info, warning, severe, off.
 set LOG_LEVEL=info
