@@ -593,7 +593,7 @@ public final class ConfigService
 	 * password="" /> </Config>
 	 * 
 	 * <!-- --> <!-- Oracle_Default --> <!-- --> <Config id="Oracle_Default" type="Oracle"> <Resource for="icecore"
-	 * driverClassName="oracle.jdbc.driver.OracleDriver" url="jdbc:oracle:thin:@//localhost:1521/orcl" username="" password="" /> </Config>
+	 * driverClassName="oracle.jdbc.driver.OracleDriver" url="jdbc:oracle:thin:@//localhost:1521:orcl" username="" password="" /> </Config>
 	 * </Database>
 	 * 
 	 * @param document
