@@ -39,6 +39,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Fieldable;
@@ -54,6 +56,8 @@ import static org.kablink.util.search.Constants.*;
  * @author Jong Kim
  */
 public class BasicIndexUtils {
+	
+	private static Log logger = LogFactory.getLog(BasicIndexUtils.class);
     
     // The following fields represent field names. 
     // Note: This defines only those fields that are common across all index
@@ -101,6 +105,26 @@ public class BasicIndexUtils {
         return doc;
     }*/
     
+    private static boolean removeBadFields(Document doc) {
+    	// Bugzilla 1067252 - This method is specifically to handle the reported defect.
+    	
+    	List<Fieldable> originalFields = doc.getFields();
+    	List<Fieldable> goodFields = new ArrayList<>(originalFields.size());
+		for(Fieldable field:originalFields) {
+			if(field != null)
+				goodFields.add(field);
+		}
+    		
+		if(originalFields.size() == goodFields.size()) {
+			return true;
+		}
+		else {
+			originalFields.clear();
+			originalFields.addAll(goodFields);
+			return false;
+		}
+    }
+    
     /**
      * Make sure that the document contains all required fields. 
      * 
@@ -108,6 +132,8 @@ public class BasicIndexUtils {
      * @throws LuceneException if validation fails
      */
     public static void validateDocument(Document doc) throws IllegalArgumentException {
+    	boolean good = removeBadFields(doc);
+    	
 	    Fieldable uidField = doc.getFieldable(UID_FIELD);
 	    if(uidField == null)
 	        throw new IllegalArgumentException("Document must contain a field with name " + UID_FIELD);	  
@@ -118,7 +144,10 @@ public class BasicIndexUtils {
 	    
 	    Fieldable classField = doc.getFieldable(THIS_CLASS_FIELD);
 	    if(classField == null)
-	        throw new IllegalArgumentException("Document must contain a field with name " + THIS_CLASS_FIELD);	  
+	        throw new IllegalArgumentException("Document must contain a field with name " + THIS_CLASS_FIELD);	
+	    
+	    if(!good)
+	    	logger.warn("Encountered a broken entity: " + doc);
     }
     
     public static String getUid(Document doc) {
