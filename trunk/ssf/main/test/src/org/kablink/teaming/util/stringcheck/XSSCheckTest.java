@@ -33,9 +33,9 @@ public class XSSCheckTest {
     @Test
     public void test0() {
 		String in = "<input type=\"text\" onfocus=\"myFunction()\">";
-		System.out.println("INPUT: [" + in + "]");
+		System.out.println("INPUT:     [" + in + "]");
 		String out = check.check(in, false);
-		System.out.println("OUTPUT: [" + out + "]");
+		System.out.println("XSSCHECK:  [" + out + "]");
 		String expected = "<input type=\"text\" >";
 		Assert.assertEquals(expected, out);
     }
@@ -43,9 +43,9 @@ public class XSSCheckTest {
     @Test
     public void test1() {
 		String in = "<input type=\"text\" onfocus=\"myFunction()\" >";
-		System.out.println("INPUT: [" + in + "]");
+		System.out.println("INPUT:     [" + in + "]");
 		String out = check.check(in, false);
-		System.out.println("OUTPUT: [" + out + "]");
+		System.out.println("XSSCHECK:  [" + out + "]");
 		String expected = "<input type=\"text\"  >";
 		Assert.assertEquals(expected, out);
     }
@@ -53,9 +53,9 @@ public class XSSCheckTest {
     @Test
     public void test2() {
     	String in = "<input type=\"text\" onfocus=alert(1)>";
-		System.out.println("INPUT: [" + in + "]");
+		System.out.println("INPUT:     [" + in + "]");
 		String out = check.check(in, false);
-		System.out.println("OUTPUT: [" + out + "]");
+		System.out.println("XSSCHECK:  [" + out + "]");
 
 		String expected = "<input type=\"text\" >";
 		Assert.assertEquals(expected, out);
@@ -64,9 +64,9 @@ public class XSSCheckTest {
     @Test
     public void test3() {
     	String in = "<input type=text autofocus onfocus=alert(1)>";
-		System.out.println("INPUT: [" + in + "]");
+		System.out.println("INPUT:     [" + in + "]");
 		String out = check.check(in, false);
-		System.out.println("OUTPUT: [" + out + "]");
+		System.out.println("XSSCHECK:  [" + out + "]");
 		
 		String expected = "<input type=text autofocus >";
 		Assert.assertEquals(expected, out);
@@ -75,9 +75,9 @@ public class XSSCheckTest {
     @Test
     public void test4() {
     	String in = "402883c6115753d801115777f284000bqlb8f<input type=text autofocus onfocus=alert(1)//ho8xl>";
-		System.out.println("INPUT: [" + in + "]");
+		System.out.println("INPUT:     [" + in + "]");
 		String out = check.check(in, false);
-		System.out.println("OUTPUT: [" + out + "]");
+		System.out.println("XSSCHECK:  [" + out + "]");
 		String expected = "402883c6115753d801115777f284000bqlb8f<input type=text autofocus //ho8xl>";
 		
 		Assert.assertEquals(expected, out);
@@ -86,9 +86,9 @@ public class XSSCheckTest {
     @Test
     public void test5() {
     	String in = "402883c6115753d801115777f284000bqlb8f<input type=text autofocus onfocus=alert(1)//ho8xl";
-		System.out.println("INPUT: [" + in + "]");
+		System.out.println("INPUT:     [" + in + "]");
 		String out = check.check(in, false);
-		System.out.println("OUTPUT: [" + out + "]");
+		System.out.println("XSSCHECK:  [" + out + "]");
 		String expected = "402883c6115753d801115777f284000bqlb8f<input type=text autofocus //ho8xl";
 		
 		Assert.assertEquals(expected, out);
@@ -97,9 +97,9 @@ public class XSSCheckTest {
     @Test
     public void test6() {
     	String in = "402883c6115753d801115777f284000bqlb8f<input type=text autofocus onfocus=alert(1)/ho8xl>";
-		System.out.println("INPUT: [" + in + "]");
+		System.out.println("INPUT:     [" + in + "]");
 		String out = check.check(in, false);
-		System.out.println("OUTPUT: [" + out + "]");
+		System.out.println("XSSCHECK:  [" + out + "]");
 		String expected = "402883c6115753d801115777f284000bqlb8f<input type=text autofocus /ho8xl>";
 		
 		Assert.assertEquals(expected, out);
@@ -108,9 +108,9 @@ public class XSSCheckTest {
     @Test
     public void test7() {
     	String in = "402883c6115753d801115777f284000bqlb8f<input type=text autofocus onfocus=alert(1)/ho8xl";
-		System.out.println("INPUT: [" + in + "]");
+		System.out.println("INPUT:     [" + in + "]");
 		String out = check.check(in, false);
-		System.out.println("OUTPUT: [" + out + "]");
+		System.out.println("XSSCHECK:  [" + out + "]");
 		String expected = "402883c6115753d801115777f284000bqlb8f<input type=text autofocus onfocus=alert(1)/ho8xl";
 		
 		Assert.assertEquals(expected, out);
@@ -119,9 +119,9 @@ public class XSSCheckTest {
     @Test
     public void test8() {
     	String in = "402883c6115753d801115777f284000bqlb8f<input type=text autofocus onfocus=alert(1) //ho8xl>";
-		System.out.println("INPUT: [" + in + "]");
+		System.out.println("INPUT:     [" + in + "]");
 		String out = check.check(in, false);
-		System.out.println("OUTPUT: [" + out + "]");
+		System.out.println("XSSCHECK:  [" + out + "]");
 		String expected = "402883c6115753d801115777f284000bqlb8f<input type=text autofocus  //ho8xl>";
 		
 		Assert.assertEquals(expected, out);
@@ -130,48 +130,220 @@ public class XSSCheckTest {
     @Test
     public void test9() {
     	String in = "402883c6115753d801115777f284000bqlb8f<input type=text autofocus onfocus=alert(1) //ho8xl";
-		System.out.println("INPUT: [" + in + "]");
+		System.out.println("INPUT:     [" + in + "]");
 		String out = check.check(in, false);
-		System.out.println("OUTPUT: [" + out + "]");
+		System.out.println("XSSCHECK:  [" + out + "]");
 		String expected = "402883c6115753d801115777f284000bqlb8f<input type=text autofocus  //ho8xl";
 		
 		Assert.assertEquals(expected, out);
     }
     
+    @Test
+    public void test10() {
+    	String in = "<img src=x onerror=alert(1)>";
+		System.out.println("INPUT:     [" + in + "]");
+		String out = check.check(in, false);
+		System.out.println("XSSCHECK:  [" + out + "]");
+
+		String expected = "<img src=x >";
+		Assert.assertEquals(expected, out);
+    }
+    
+    @Test
+    public void test11() {
+    	String in = "<img src=x //onerror=alert(1)>";
+		System.out.println("INPUT:     [" + in + "]");
+		String out = check.check(in, false);
+		System.out.println("XSSCHECK:  [" + out + "]");
+
+		String expected = "<img src=x //>";
+		Assert.assertEquals(expected, out);
+    }
+    
+    @Test
+    public void test12() {
+    	String in = "<img src=x onerror=alert(1)//>";
+		System.out.println("INPUT:     [" + in + "]");
+		String out = check.check(in, false);
+		System.out.println("XSSCHECK:  [" + out + "]");
+
+		String expected = "<img src=x //>";
+		Assert.assertEquals(expected, out);
+    }
+    
+    @Test
+    public void test13() {
+    	String in = "<img src=x onerror=alert(1)";
+		System.out.println("INPUT:     [" + in + "]");
+		String out = check.check(in, false);
+		System.out.println("XSSCHECK:  [" + out + "]");
+
+		String expected = "<img src=x onerror=alert(1)";
+		Assert.assertEquals(expected, out);
+    }
+
+    @Test
+    public void test14() {
+    	String in = "<img src=x //onerror=alert(1)";
+		System.out.println("INPUT:     [" + in + "]");
+		String out = check.check(in, false);
+		System.out.println("XSSCHECK:  [" + out + "]");
+
+		String expected = "<img src=x //onerror=alert(1)";
+		Assert.assertEquals(expected, out);
+    }
+
+    @Test
+    public void test15() {
+    	String in = "<img src=x onerror=alert(1)//";
+		System.out.println("INPUT:     [" + in + "]");
+		String out = check.check(in, false);
+		System.out.println("XSSCHECK:  [" + out + "]");
+
+		String expected = "<img src=x //";
+		Assert.assertEquals(expected, out);
+    }
+    
+    @Test
+    public void test16() {
+    	String in = "<img src=x>";
+		System.out.println("INPUT:     [" + in + "]");
+		String out = check.check(in, false);
+		System.out.println("XSSCHECK:  [" + out + "]");
+
+		String expected = "<img src=x>";
+		Assert.assertEquals(expected, out);
+    }
+
 	public static void main(String[] args) {
 		XSSCheck check = new XSSCheck(true, "trusted.strip", "trusted.disallow");
+		
 		String in,out;
 		
 		in = "<input type=\"text\" onfocus=\"myFunction()\">";
-		System.out.println("INPUT: [" + in + "]");
+		System.out.println("INPUT:     [" + in + "]");
 		out = check.check(in, false);
-		System.out.println("OUTPUT: [" + out + "]");
+		System.out.println("XSSCHECK:  [" + out + "]");
+		System.out.println("SANITIZER: [" + StringCheckUtil.checkHtml(in) + "]");
+		System.out.println();
 		
 		in = "<input type=\"text\" onfocus=alert(1)>";
-		System.out.println("INPUT: [" + in + "]");
+		System.out.println("INPUT:     [" + in + "]");
 		out = check.check(in, false);
-		System.out.println("OUTPUT: [" + out + "]");
+		System.out.println("XSSCHECK:  [" + out + "]");
+		System.out.println("SANITIZER: [" + StringCheckUtil.checkHtml(in) + "]");
+		System.out.println();
 
 		in = "<input type=text autofocus onfocus=alert(1)>";
-		System.out.println("INPUT: [" + in + "]");
+		System.out.println("INPUT:     [" + in + "]");
 		out = check.check(in, false);
-		System.out.println("OUTPUT: [" + out + "]");
+		System.out.println("XSSCHECK:  [" + out + "]");
+		System.out.println("SANITIZER: [" + StringCheckUtil.checkHtml(in) + "]");
+		System.out.println();
 
 		in = "<input type=text autofocus onfocus=alert(1)";
-		System.out.println("INPUT: [" + in + "]");
+		System.out.println("INPUT:     [" + in + "]");
 		out = check.check(in, false);
-		System.out.println("OUTPUT: [" + out + "]");
+		System.out.println("XSSCHECK:  [" + out + "]");
+		System.out.println("SANITIZER: [" + StringCheckUtil.checkHtml(in) + "]");
+		System.out.println();
+
+		in = "<input type=text autofocus onfocus=alert(1)//";
+		System.out.println("INPUT:     [" + in + "]");
+		out = check.check(in, false);
+		System.out.println("XSSCHECK:  [" + out + "]");
+		System.out.println("SANITIZER: [" + StringCheckUtil.checkHtml(in) + "]");
+		System.out.println();
 
 		in = "402883c6115753d801115777f284000bqlb8f<input type=text autofocus onfocus=alert(1)//ho8xl";
-		System.out.println("INPUT: [" + in + "]");
+		System.out.println("INPUT:     [" + in + "]");
 		out = check.check(in, false);
-		System.out.println("OUTPUT: [" + out + "]");
+		System.out.println("XSSCHECK:  [" + out + "]");
+		System.out.println("SANITIZER: [" + StringCheckUtil.checkHtml(in) + "]");
+		System.out.println();
 
 		in = "402883c6115753d801115777f284000bqlb8f<input type=text autofocus onfocus=alert(1)//ho8xl>";
-		System.out.println("INPUT: [" + in + "]");
+		System.out.println("INPUT:     [" + in + "]");
 		out = check.check(in, false);
-		System.out.println("OUTPUT: [" + out + "]");
+		System.out.println("XSSCHECK:  [" + out + "]");
+		System.out.println("SANITIZER: [" + StringCheckUtil.checkHtml(in) + "]");
+		System.out.println();
 
+		in = "<img src=x onerror=alert(1)>";
+		System.out.println("INPUT:     [" + in + "]");
+		out = check.check(in, false);
+		System.out.println("XSSCHECK:  [" + out + "]");
+		System.out.println("SANITIZER: [" + StringCheckUtil.checkHtml(in) + "]");
+		System.out.println();
+
+		in = "<img src=x //onerror=alert(1)>";
+		System.out.println("INPUT:     [" + in + "]");
+		out = check.check(in, false);
+		System.out.println("XSSCHECK:  [" + out + "]");
+		System.out.println("SANITIZER: [" + StringCheckUtil.checkHtml(in) + "]");
+		System.out.println();
+
+		in = "<img src=x onerror=alert(1)//>";
+		System.out.println("INPUT:     [" + in + "]");
+		out = check.check(in, false);
+		System.out.println("XSSCHECK:  [" + out + "]");
+		System.out.println("SANITIZER: [" + StringCheckUtil.checkHtml(in) + "]");
+		System.out.println();
+
+		// XSSCheck breaks down when the input misses closing angle bracket
+		in = "<img src=x onerror=alert(1)";
+		System.out.println("INPUT:     [" + in + "]");
+		out = check.check(in, false);
+		System.out.println("XSSCHECK:  [" + out + "]");
+		System.out.println("SANITIZER: [" + StringCheckUtil.checkHtml(in) + "]");
+		System.out.println();
+
+		// XSSCheck breaks down when the input misses closing angle bracket
+		in = "<img src=x //onerror=alert(1)";
+		System.out.println("INPUT:     [" + in + "]");
+		out = check.check(in, false);
+		System.out.println("XSSCHECK:  [" + out + "]");
+		System.out.println("SANITIZER: [" + StringCheckUtil.checkHtml(in) + "]");
+		System.out.println();
+
+		// XSSCheck sort of handles this case despite of missing closing angle bracket
+		// due to the changes made on 12/14/2017
+		in = "<img src=x onerror=alert(1)//";
+		System.out.println("INPUT:     [" + in + "]");
+		out = check.check(in, false);
+		System.out.println("XSSCHECK:  [" + out + "]");
+		System.out.println("SANITIZER: [" + StringCheckUtil.checkHtml(in) + "]");
+		System.out.println();
+
+		in = "<img src=x>";
+		System.out.println("INPUT:     [" + in + "]");
+		out = check.check(in, false);
+		System.out.println("XSSCHECK:  [" + out + "]");
+		System.out.println("SANITIZER: [" + StringCheckUtil.checkHtml(in) + "]");
+		System.out.println();
+
+		// XSSCheck breaks down when the input misses closing angle bracket
+		in = "<img src=x onerror=alert(1) abc";
+		System.out.println("INPUT:     [" + in + "]");
+		out = check.check(in, false);
+		System.out.println("XSSCHECK:  [" + out + "]");
+		System.out.println("SANITIZER: [" + StringCheckUtil.checkHtml(in) + "]");
+		System.out.println();
+
+		// XSSCheck breaks down when the input misses closing angle bracket
+		in = "<img src=x onerror=alert(1)abc";
+		System.out.println("INPUT:     [" + in + "]");
+		out = check.check(in, false);
+		System.out.println("XSSCHECK:  [" + out + "]");
+		System.out.println("SANITIZER: [" + StringCheckUtil.checkHtml(in) + "]");
+		System.out.println();
+
+		in = "<img src=x onerror=alert(1)abc>";
+		System.out.println("INPUT:     [" + in + "]");
+		out = check.check(in, false);
+		System.out.println("XSSCHECK:  [" + out + "]");
+		System.out.println("SANITIZER: [" + StringCheckUtil.checkHtml(in) + "]");
+		System.out.println();
 
 	}
 }
