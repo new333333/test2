@@ -174,7 +174,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
           	// Before doing ANYTHING else (such as creating a file entry), make sure that the server can actually get the
         	// contents of the uploaded files. This helps avoid costly (and often erratic) cleanup process later on.
           	SimpleProfiler.start("addEntry_prepareFiles");
-            addEntry_prepareFiles(fileUploadItems);
+            addEntry_prepareFiles(binder, fileUploadItems);
             SimpleProfiler.stop("addEntry_prepareFiles");
         	
           	// Make sure that the files are virus free if virus scanner is available.
@@ -463,9 +463,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
 
     //no transaction    
-    protected void addEntry_prepareFiles(List<FileUploadItem> fileUploadItems) throws IOException {
-    	for(FileUploadItem fui: fileUploadItems)
-    		fui.makeReentrant();
+    protected void addEntry_prepareFiles(Binder binder, List<FileUploadItem> fileUploadItems) throws IOException {
+    	if(!binder.isMirrored()) {
+	    	for(FileUploadItem fui: fileUploadItems)
+	    		fui.makeReentrant();
+    	}
     }
 
     //no transaction    
