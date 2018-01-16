@@ -65,8 +65,9 @@ public class BasicAudit extends ZonedObject {
 		userProfile((short)14),
 		landingpage((short)15),
 		wiki((short)16),
-		workspace((short)17);
-		
+		workspace((short)17),
+		comment((short)18);
+
 		short value;
 		
 		EntityFamily(short value) {
@@ -243,9 +244,15 @@ public class BasicAudit extends ZonedObject {
 	}
 
 	protected void setEntityFamily(String entityFamilyStr) {
-		if(entityFamilyStr != null)
-			this.entityFamily = EntityFamily.valueOf(entityFamilyStr).getValue();
-		else
+		if(entityFamilyStr != null) {
+			EntityFamily fam;
+			try {
+				fam = EntityFamily.valueOf(entityFamilyStr);
+			} catch (IllegalArgumentException e) {
+				fam = EntityFamily.custom;
+			}
+			this.entityFamily = fam.getValue();
+		} else
 			this.entityFamily = null;
 	}
 
